@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/24 21:23:06 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/24 21:33:06 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ unsigned int Server::getBody() const{
 std::string Server::getErrorPath() const{
 	return (this->error_path);
 }
+std::string Server::getRootPath() const{
+	return (this->root_path);
+}
 std::string Server::getIp() const{
 	return (this->ip);
 }
@@ -40,8 +43,16 @@ std::vector<t_routes> Server::getRoutes() const{
 
 std::ostream&	operator<<(std::ostream& os, Server const& Server)
 {
+	std::vector<t_routes> routes;
+
+	routes = Server.getRoutes();
 	os << GREEN << "Server name: " << Server.getName() << std::endl
 	<< RED << "Body size: " << Server.getBody() << std::endl
 	<< BLUE << "Port: " << Server.getPort() << std::endl
 	<< GREEN << "IP: " << Server.getIp() << END << std::endl;
+	for (std::vector<t_routes>::iterator i = routes.begin(); i != routes.end(); i++)
+	{
+		os << YELLOW << 
+	}
+	return (os);
 }

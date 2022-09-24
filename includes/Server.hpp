@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/24 21:22:27 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/24 21:30:03 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,18 @@ typedef struct s_routes
 class Server
 {
 private:
-	std::string		name;
-	std::string		ip;
-	std::string		port;
-	unsigned int	body_size;
-	std::string		error_path;
+	std::string				root_path;
+	std::string				name;
+	std::string				ip;
+	std::string				port;
+	unsigned int			body_size;
+	std::string				error_path;
 	std::vector<t_routes>	routes;
 public:
 	Server();
 	~Server();
 	unsigned int	getBody() const;
+	std::string		getRootPath() const;
 	std::string		getErrorPath() const;
 	std::string		getIp() const;
 	std::string		getPort() const;
