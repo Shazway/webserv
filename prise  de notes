@@ -1,0 +1,108 @@
+Resume de  la video https://www.youtube.com/watch?v=B_uB7oTHUh8
+
+Notre webserv peut faire tourner plusieurs sites, chaque site est contenu dans un dossier
+
+adresse d'un site : IP:port, ou bien nom du serveur
+
+Le navigateur fait la requete http
+
+les sockets : c'est des fd en gros, un fichier temporaire, qui peut etre ouvert de differentes facons
+
+Le navigateur contacte la socket, la socket cree un fd et le client va echanger avec le fd
+Il y a donc un fd par client, qui sera ferme a la fin de la connexion
+
+la fonction select (vieille version, on peut utiliser poll). Select est a l'exam
+Select va parcourir tous les fd et sockets pour verifier leur etat. S'ils ont besoin d'un truc, il leur en prend/donne un peu
+
+29:04
+
+Comment organiser son equipe : c'est bien d'avoir quelqu'un qui aime le front-end (pour faire le HTML des sites). Chez eux:
+Sasha : front-end, parsing du config
+Lui : select, nginx, CGI
+Camil : parsing des requetes et leurs reponses
+
+requetes : GET, POST, DELETE
+GET : on veut recevoir une info du site
+POST : on veut donner un truc au site. Va contenir les donnees dans la requete
+DELETE : supprimer un fichier du site
+
+int num = 0;
+struct sockadr  addr; /*(contient l'IP et le port)*/
+int s = socket(-----);
+bind(s, addr);
+listen(s, 32/*=nb de demandes de connexion autorisees dans la file d'attente, sur internet on conseille 32*/);
+int opt = 1;
+setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); /*a la fermeture du programme, il arrive que le fichier tmp de fd ne soit pas bien supprime, ce qui cause une erreur a la prochaine utilisation. Cette fonction permet d'ecraser le vieux fichier. l'int opt ne sert a rien*/
+
+fdset   tab; /*va contenir les sockets/fd. On va utiliser une macro*/
+FD_ZERO(&tab); /*met a zero*/
+FD_SET(s, &tab); /*pour ajouter s a tab*/
+
+52:00
+
+FD_CLR(s, &tab) /*pour supprimer une socket*/
+FD_ISSET(s, &tab) /*pour verifier si s est present dans tab*/
+
+/*num va nous permettre de suivre les connexions*/
+if (s>= num)
+    num = s + 1;
+
+while (num) /*=while(true)
+{
+    fdread = lasauvegarderead;
+    fdwrite = lasauvegardewrite; /*pour stocker les sauvegarde de fd, on prefere list a vector parce qu'on en supprime et ajoute sans cesse*/
+    /*remplir fdread et fdwrite*/
+    select(num, &fdread, &fdwrite, 0, 0); /*(fdread/write = fdset des trucs qui veulent lire/ecrire)*/
+    /*select va prendre les deux sets et virer les fds/sockets qui ne doivent pas y etre*/
+
+    /*si select rend une erreur, continue() pour ne pas crash*/
+
+    for (/*parcourir le vector de sockets*/)
+    {
+        if (FD_ISSET)
+        {
+            fd = accept(s, &addr, sizeof(addr)); /*cree le fd qui sera utilise pour cette connexion*/
+            fcntl(fd, NON_BLOCKING,-------); /*non blocking pour ne pas bloquer le programme si on recoit 0bytes, genre demande de deconnexion*/
+            FD_SET(s, &lasauvegarderead);
+            FD_SET(s, &lasauvegardewrite);
+            if (fd>= num)
+                num = fd + 1;
+        }
+    }
+    for (/*parcourir les fdread/*)
+        r = recv(fd, &buffer, 2048) /*=read, 2048 peut etre change pour une autre taille. Si read renvoie <= 0 il faut virer ce fd des sauvegardes et le fermer*/
+    for (/*parcourir les fdwrite/*)
+        send(fd, &buffer, 2048) /*=write*/
+    /*ATTENTION on ne send pas a recv dans le meme tour de boucle de select, mais c'est normalement gere grace a l'initialisation*/
+}
+
+les requetes http:
+
+HEAD (= GET, POST, DELETE, la taille du body, et le keepalive de la connexion)
+\n\n
+BODY (si POST)
+
+1:40:00
+
+class Parser
+
+server {
+    listen 127.0.0.1:8080
+    root www/serv1  //le dossier ou se trouve le site
+    maxbodysize 200 //en ko
+    methods GET//on ne prend que GET, pas POST par exemple
+    location { //location sert quand il y a des droits differents pour certains dossiers
+        /upload { //ici le dossier /upload
+            methods GET, POST
+        }
+    }
+    autoindex ON //
+}
+
+
+
+
+
+Telli : config
+
+Marina : requetes http, les erreurs de requetes
