@@ -17,16 +17,7 @@
 #include "Colors.hpp"
 #include <iterator>
 
-typedef struct s_routes
-{
-	std::string	name;
-	std::string	path;
-	std::string	default_file;
-	bool		auto_index;
-	bool		GET;
-	bool		POST;
-	bool		DELETE;
-}	t_routes;
+
 
 class Server
 {

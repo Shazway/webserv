@@ -94,13 +94,21 @@ server {
     location { //location sert quand il y a des droits differents pour certains dossiers
         /upload { //ici le dossier /upload
             methods GET, POST
+            index index.html
         }
     }
     autoindex ON //
 }
 
+CGI : la vieille techno pour faire des pages dynamiques
+127.0.0.1:8080/cgi_bin/date.php (ou sh, python, perl ...)
+location /cgi_bin/
+bin_path /usr/bin/python
 
 
+Codes d'erreur aux requetes HTTP liees aux methodes :
+501 -> non implemented
+405 -> Method not allowed
 
 
 Telli : config
