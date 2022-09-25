@@ -6,13 +6,13 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/25 16:32:51 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/25 17:16:59 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Server::Server(): name(), ip(), port(), body_size(), error_path(), routes(){return ;}
+Server::Server(): name(), ip(), port(), body_size(), error_paths(), routes(){return ;}
 
 Server::~Server(){
 	//free mem ?//
@@ -22,8 +22,17 @@ Server::~Server(){
 unsigned int Server::getBody() const{
 	return (this->body_size);
 }
-std::string Server::getErrorPath() const{
-	return (this->error_path);
+std::string Server::getErrorPath(int code) const{
+	std::map<int, std::string>::const_iterator i = error_paths.find(code);
+	if (i == error_paths.end())
+		return ("");
+	return ((*i).second);
+}
+void Server::addErrorPath(int error, std::string path){
+	try{error_paths[error] = path;}
+	catch(const std::exception& e){
+		std::cerr << RED << e.what() << END << std::endl;
+	}
 }
 std::string Server::getRootPath() const{
 	return (this->root_path);
@@ -54,10 +63,6 @@ Routes const&	Server::getRoute(int index){
 
 void	Server::setBody(unsigned int body){
 	body_size = body;
-}
-
-void	Server::setErrorPath(std::string path){
-	error_path = path;
 }
 
 void	Server::setRootPath(std::string path){
