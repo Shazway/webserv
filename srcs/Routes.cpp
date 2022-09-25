@@ -2,8 +2,18 @@
 #include <iostream>
 #include <string>
 
+//CREER L'ARBRE TOUS LES DOSSIERS SONT DES NOEUDS//
+Routes::Routes()
+{
+	std::string	tab[3] = {"GET", "POST", "DELETE"};
+	t_method	tmp;
 
-
+	for (int i = 0; i < 3; i++){
+		tmp.name = tab[i];
+		tmp.rule = false;
+		methods.push_back(tmp);
+	}
+}
 
 std::string Routes::getName() const
 {
@@ -40,39 +50,39 @@ bool	Routes::getAutoindex() const
 	return (_auto_index);
 }
 
-void	Routes::setAutoindex(bool index)
+void	Routes::setAutoindex(bool autoindex)
 {
-	_auto_index = index;
+	_auto_index = autoindex;
 }
 
 bool	Routes::getGET() const
 {
-	return (_GET);
+	return (methods[GET].rule);
 }
 
 void	Routes::setGET(bool get)
 {
-	_GET = get;
+	methods[GET].rule = get;
 }
 
 bool	Routes::getPOST() const
 {
-	return (_POST);
+	return (methods[POST].rule);
 }
 
 void	Routes::setPOST(bool post)
 {
-	_POST = post;
+	methods[POST].rule = post;
 }
 
 bool	Routes::getDELETE() const
 {
-	return (_DELETE);
+	return (methods[DELETE].rule);
 }
 
 void	Routes::setDELETE(bool del)
 {
-	_DELETE = del;
+	methods[DELETE].rule = del;
 }
 
 

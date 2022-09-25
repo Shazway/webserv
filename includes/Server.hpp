@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/25 17:09:02 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/25 18:56:39 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "Colors.hpp"
 #include <iterator>
 #include "Routes.hpp"
-
+#include <string.h>
 
 class Server
 {
@@ -50,6 +50,7 @@ public:
 	void			setName(std::string name);
 	void			addRoute(Routes const& Routes);
 	void			checkIndex(int index);
+	bool			checkAllowedMethods(std::string method, std::string path);
 };
 
 class	WrongIndexForRootVectorException : public std::exception{

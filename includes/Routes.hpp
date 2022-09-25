@@ -2,18 +2,26 @@
 # define ROUTES_HPP
 #include <iostream>
 # include <string>
+# include <vector>
+
+# define GET 0
+# define POST 1
+# define DELETE 2
+
+typedef struct s_method
+{
+	bool		rule;
+	std::string	name;
+}	t_method;
 
 class Routes
 {
 	private:
-		std::string	_name;
-		std::string	_path;
-		std::string	_default_file;
-		bool		_auto_index;
-		bool		_GET;
-		bool		_POST;
-		bool		_DELETE;
-
+		std::string				_name;
+		std::string				_path;
+		std::string				_default_file;
+		bool					_auto_index;
+		std::vector<t_method>	methods;
 	public:
 		Routes();
 		~Routes();
@@ -24,7 +32,7 @@ class Routes
 	std::string getDefaultFile() const;
 	void	setDefaultFile(std::string default_file);
 	bool	getAutoindex() const;
-	void	setAutoindex(bool index);
+	void	setAutoindex(bool autoindex);
 	bool	getGET() const;
 	void	setGET(bool get);
 	bool	getPOST() const;
