@@ -3,6 +3,7 @@
 
 # include <iostream>
 # include <string>
+# include "Server.hpp"
 
 class HttpRequest
 {
@@ -28,7 +29,7 @@ class HttpRequest
 		void		setConnection(std::string connection);
 		std::string	getContentType();
 		void		setContentType(std::string contentType);
-		std::string	getContentLengh();
+		unsigned int	getContentLengh();
 		void		setContentLengh(std::string contentLengh);
 		std::string	getBody();
 		void		setBody(std::string body);
@@ -36,16 +37,18 @@ class HttpRequest
 	private:
 		//request line
 		std::string	_method;
-		std::string _path;
+		std::string	_path;
 		std::string	_queryString;
-		std::string _httpVersion;
+		std::string	_httpVersion;
 		//header
 		std::string	_host;
 		std::string	_connection;
-		std::string _contentType;
-		std::string _contentLengh;
+		std::string	_contentType;
+		unsigned int	_contentLengh;
 		//body
 		std::string	_body;
+
+		Server	&serv;
 
 
 
