@@ -3,7 +3,7 @@
 
 # include <iostream>
 # include <string>
-# include <set>
+# include <map>
 
 typedef	struct s_allowedMethods
 {
@@ -27,7 +27,7 @@ class MethodTree
 		void	addExecption(std::string path, bool get, bool post, bool del);
 
 	private:
-		std::set<std::string, t_allowedMethods>	_subdirectories;
+		std::map<std::string, t_allowedMethods>	_subdirectories;
 
 };
 

@@ -48,14 +48,24 @@ std::ostream &			operator<<( std::ostream & o, MethodTree const & i )
 
 bool	MethodTree::isAllowed(std::string method, std::string path)
 {
-
+	std::map<std::string, t_allowedMethods>::iterator it;
+	it = _subdirectories.lower_bound(path);
+	if (!method.compare("GET"))
+		return ((*it).second.GET);
+	if (!method.compare("POST"))
+		return ((*it).second.POST);
+	if (!method.compare("DELETE"))
+		return ((*it).second.DELETE);
+	return (false);
 }
 
 void	MethodTree::addExecption(std::string path, bool get, bool post, bool del)
 {
-	t_allowedMethods	allowed;
-	allowed.GET = get;
-	_subdirectories[path] = allowed;
+	t_allowedMethods allow;
+	allow.GET = get;
+	allow.POST = post;
+	allow.DELETE = del;
+	_subdirectories[path] = allow;
 }
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
