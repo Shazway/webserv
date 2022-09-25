@@ -15,20 +15,22 @@ class Routes
 		bool		_DELETE;
 
 	public:
-        std::string getName();
-        void        setName(std::string name);
-        std::string getPath();
-        void        setPath(std::string path);
-        std::string getDefaultFile();
-        void        setDefaultFile(std::string default_file);
-        bool        getAutoindex();
-        void        setAutoindex(bool index);
-        bool        getGET();
-        void        setGET(bool get);
-        bool        getPOST();
-        void        setPOST(bool post);
-        bool        getDELETE();
-        void        setDELETE(bool del);
+		Routes();
+		~Routes();
+	std::string getName() const;
+	void	setName(std::string name);
+	std::string getPath() const;
+	void	setPath(std::string path);
+	std::string getDefaultFile() const;
+	void	setDefaultFile(std::string default_file);
+	bool	getAutoindex() const;
+	void	setAutoindex(bool index);
+	bool	getGET() const;
+	void	setGET(bool get);
+	bool	getPOST() const;
+	void	setPOST(bool post);
+	bool	getDELETE() const;
+	void	setDELETE(bool del);
 };
 
 std::ostream&	operator<<(std::ostream& os, Routes const &route);

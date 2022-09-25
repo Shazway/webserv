@@ -3,87 +3,89 @@
 #include <string>
 
 
-std::string Routes::getName()
-{
-    return (_name);
-};
 
-void        Routes::setName(std::string name)
-{
-    _name = name;
-};
 
-std::string Routes::getPath()
+std::string Routes::getName() const
 {
-    return (_path);
-};
+	return (_name);
+}
 
-void        Routes::setPath(std::string path)
+void	Routes::setName(std::string name)
 {
-    _path = path;
-};
+	_name = name;
+}
 
-std::string Routes::getDefaultFile()
+std::string Routes::getPath() const
 {
-    return (_default_file);
-};
+	return (_path);
+}
 
-void        Routes::setDefaultFile(std::string default_file)
+void	Routes::setPath(std::string path)
 {
-    _default_file = default_file;
-};
+	_path = path;
+}
 
-bool        Routes::getAutoindex()
+std::string Routes::getDefaultFile() const
 {
-    return (_auto_index);
-};
+	return (_default_file);
+}
 
-void        Routes::setAutoindex(bool index)
+void	Routes::setDefaultFile(std::string default_file)
 {
-    _auto_index = index;
-};
+	_default_file = default_file;
+}
 
-bool        Routes::getGET()
+bool	Routes::getAutoindex() const
 {
-    return (_GET);
-};
+	return (_auto_index);
+}
 
-void        Routes::setGET(bool get)
+void	Routes::setAutoindex(bool index)
 {
-    _GET = get;
-};
+	_auto_index = index;
+}
 
-bool        Routes::getPOST()
+bool	Routes::getGET() const
 {
-    return (_POST);
-};
+	return (_GET);
+}
 
-void        Routes::setPOST(bool post)
+void	Routes::setGET(bool get)
 {
-    _POST = post;
-};
+	_GET = get;
+}
 
-bool        Routes::getDELETE()
+bool	Routes::getPOST() const
 {
-    return (_DELETE);
-};
+	return (_POST);
+}
 
-void        Routes::setDELETE(bool del)
+void	Routes::setPOST(bool post)
 {
-    _DELETE = del;
-};
+	_POST = post;
+}
+
+bool	Routes::getDELETE() const
+{
+	return (_DELETE);
+}
+
+void	Routes::setDELETE(bool del)
+{
+	_DELETE = del;
+}
 
 
 
 std::ostream&	operator<<(std::ostream& os, Routes const &route)
 {
-    os << "Name : " << route.getName() << std::endl;
-    os << "Path: " << route.getPath() << std::endl;
-    os << "Default file : " << route.getDefaultFile() << std::endl;
-    os << "Autoindex : " << (route.getAutoindex() ? "yes" : "no") << std::endl;
-    os << "GET : " << (route.getGET() ? "allowed" : "forbidden") << std::endl;
-    os << "GET : " << (route.getPOST() ? "allowed" : "forbidden") << std::endl;
-    os << "GET : " << (route.getDELETE() ? "allowed" : "forbidden") << std::endl;
+	os << "Name : " << route.getName() << std::endl;
+	os << "Path: " << route.getPath() << std::endl;
+	os << "Default file : " << route.getDefaultFile() << std::endl;
+	os << "Autoindex : " << (route.getAutoindex() ? "yes" : "no") << std::endl;
+	os << "GET : " << (route.getGET() ? "allowed" : "forbidden") << std::endl;
+	os << "GET : " << (route.getPOST() ? "allowed" : "forbidden") << std::endl;
+	os << "GET : " << (route.getDELETE() ? "allowed" : "forbidden") << std::endl;
 
-    return (os);
-};
+	return (os);
+}
