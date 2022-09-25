@@ -28,6 +28,12 @@
 		"system_error": "cpp",
 		"type_traits": "cpp",
 		"typeinfo": "cpp",
-		"utility": "cpp"
+		"utility": "cpp",
+		"array": "cpp",
+		"map": "cpp",
+		"tuple": "cpp",
+		"set": "cpp",
+		"functional": "cpp",
+		"fstream": "cpp"
 	}
 }

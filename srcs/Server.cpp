@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/25 19:28:52 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/25 21:56:39 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ void Server::addErrorPath(int error, std::string path){
 }
 std::string Server::getRootPath() const{
 	return (this->root_path);
+}
+std::string Server::getConfigPath() const{
+	return (this->config_path);
 }
 std::string Server::getIp() const{
 	return (this->ip);
@@ -67,6 +70,9 @@ void	Server::setBody(unsigned int body){
 void	Server::setRootPath(std::string path){
 	root_path = path;
 }
+void	Server::setConfigPath(std::string path){
+	config_path = path;
+}
 
 void	Server::setPort(std::string port){
 	this->port = port;
@@ -76,43 +82,6 @@ void	Server::setName(std::string name){
 }
 void	Server::addRoute(Routes const& Routes){
 	this->routes.push_back(Routes);
-}
-
-std::string	getRouteName(std::string path)
-{
-	if (path.empty())
-		return ("");
-	return (path.substr(path.rfind('/'), path.size() - path.rfind('/')));
-}
-
-bool		checkMethodRule(Routes const route, std::string method)
-{
-	if (method == "GET")
-		return (route.getGET());
-	else if (method == "POST")
-		return (route.getPOST());
-	else if (method == "DELETE")
-		return (route.getDELETE());
-}
-
-bool	Server::checkAllowedMethods(std::string method, std::string path)
-{
-	//ADD ERROR CODE IF NOT A REAL METHOD//
-	if (method != "GET" && method != "POST" && method != "DELETE")
-		return (false);
-	std::string	folder_name = getRouteName(path);
-	std::vector<Routes>::reverse_iterator	i = routes.rbegin();
-
-	while (i != routes.rend()){
-		if ((*i).getName() == folder_name)
-			break;
-		i++;
-	}
-	if (i == routes.rend())
-		return (checkMethodRule((*i), method));
-	while (i != routes.rend()){
-		if (check)
-	}
 }
 
 std::ostream&	operator<<(std::ostream& os, Server const& Server)

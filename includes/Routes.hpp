@@ -20,7 +20,6 @@ class Routes
 		std::string				_name;
 		std::string				_path;
 		std::string				_default_file;
-		bool					_auto_index;
 		std::vector<t_method>	methods;
 	public:
 		Routes();
