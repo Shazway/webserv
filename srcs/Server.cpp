@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/24 21:45:50 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/25 16:32:51 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,39 @@ std::string Server::getName() const{
 }
 std::vector<Routes> Server::getRoutes() const{
 	return (this->routes);
+}
+void	Server::checkIndex(int index){
+	if (index < 0 || index > this->routes.size())
+		throw(WrongIndexForRootVectorException());
+}
+Routes const&	Server::getRoute(int index){
+	try{checkIndex(index);}
+	catch(const std::exception& e){
+		std::cerr << RED << e.what() << END << std::endl;
+	}
+	return (this->routes[index]);
+}
+
+void	Server::setBody(unsigned int body){
+	body_size = body;
+}
+
+void	Server::setErrorPath(std::string path){
+	error_path = path;
+}
+
+void	Server::setRootPath(std::string path){
+	root_path = path;
+}
+
+void	Server::setPort(std::string port){
+	this->port = port;
+}
+void	Server::setName(std::string name){
+	this->name = name;
+}
+void	Server::addRoute(Routes const& Routes){
+	this->routes.push_back(Routes);
 }
 
 std::ostream&	operator<<(std::ostream& os, Server const& Server)
