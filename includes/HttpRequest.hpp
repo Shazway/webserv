@@ -36,6 +36,7 @@ class HttpRequest
 
 	private:
 		//request line
+		bool		_partiallyCompleted;
 		std::string	_method;
 		std::string	_path;
 		std::string	_queryString;

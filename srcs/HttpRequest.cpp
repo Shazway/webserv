@@ -9,6 +9,7 @@
 
 HttpRequest::HttpRequest()
 {
+	_partiallyCompleted = false;
 }
 
 HttpRequest::HttpRequest( const HttpRequest & src )
