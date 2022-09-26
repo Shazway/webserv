@@ -7,9 +7,9 @@
 
 typedef	struct s_allowedMethods
 {
-	bool	GET;
-	bool	POST;
-	bool	DELETE;
+	bool	get;
+	bool	post;
+	bool	del;
 }				t_allowedMethods;
 
 class MethodTree
