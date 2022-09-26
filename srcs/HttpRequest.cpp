@@ -7,9 +7,8 @@
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-HttpRequest::HttpRequest()
+HttpRequest::HttpRequest() : _partiallyCompleted(false)
 {
-	_partiallyCompleted = false;
 }
 
 HttpRequest::HttpRequest( const HttpRequest & src )
@@ -54,6 +53,16 @@ std::ostream &			operator<<( std::ostream & o, HttpRequest const & i )
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
+
+bool		HttpRequest::getPartiallyCompleted()
+{
+	return (_partiallyCompleted);
+}
+
+void		HttpRequest::setPartiallyCompleted(bool partiallyCmpleted)
+{
+	_partiallyCompleted = partiallyCmpleted;
+}
 std::string	HttpRequest::getMethod()
 {
 	return (_method);

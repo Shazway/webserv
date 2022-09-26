@@ -15,6 +15,8 @@ class HttpRequest
 		~HttpRequest();
 
 		HttpRequest &		operator=( HttpRequest const & rhs );
+		bool		getPartiallyCompleted();
+		void		setPartiallyCompleted(bool partiallyCmpleted);
 		std::string	getMethod();
 		void		setMethod(std::string method);
 		std::string	getPath();
