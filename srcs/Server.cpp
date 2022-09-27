@@ -6,13 +6,19 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/27 17:40:06 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/27 18:31:19 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Server::Server(): name(), ip(), port(), body_size(), error_paths(), routes(){return ;}
+const	char*	WrongIndexForRootVectorException::what() const throw(){
+	return ("Wrong index to get route /!\\");
+}
+
+Server::Server(): name(), ip(), port(), body_size(), error_paths(), routes(){
+	return ;
+}
 
 Server::~Server(){
 	return ;
@@ -48,20 +54,6 @@ int Server::getPort() const{
 std::string Server::getName() const{
 	return (this->name);
 }
-std::vector<Routes> Server::getRoutes() const{
-	return (this->routes);
-}
-void	Server::checkIndex(int index){
-	if (index < 0 || index > (int)this->routes.size())
-		throw(WrongIndexForRootVectorException());
-}
-Routes const&	Server::getRoute(int index){
-	try{checkIndex(index);}
-	catch(const std::exception& e){
-		std::cerr << RED << e.what() << END << std::endl;
-	}
-	return (this->routes[index]);
-}
 
 void	Server::setBody(std::string body){
 	body_size = atoi(body.c_str());
@@ -81,9 +73,6 @@ void	Server::setPort(std::string port){
 void	Server::setName(std::string name){
 	this->name = name;
 }
-void	Server::addRoute(Routes const& Routes){
-	this->routes.push_back(Routes);
-}
 
 bool	Server::getAutoIndex() const
 {
@@ -99,15 +88,10 @@ void	Server::setAutoIndex(std::string autoindex)
 
 std::ostream&	operator<<(std::ostream& os, Server const& Server)
 {
-	std::vector<Routes> routes;
 
-	routes = Server.getRoutes();
 	os << GREEN << "Server name: " << Server.getName() << std::endl
 	<< RED << "Body size: " << Server.getBody() << std::endl
 	<< BLUE << "Port: " << Server.getPort() << std::endl
 	<< GREEN << "IP: " << Server.getIp() << END << std::endl;
-	for (std::vector<Routes>::iterator i = routes.begin(); i != routes.end(); i++){
-		os << YELLOW << *i << END << std::endl;
-	}
 	return (os);
 }

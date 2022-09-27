@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/27 17:43:17 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/27 18:28:30 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <map>
 #include "Colors.hpp"
 #include <iterator>
-#include "Routes.hpp"
+#include "MethodTree.hpp"
 #include <string.h>
 #include <MethodTree.hpp>
 #include <stdlib.h>
@@ -34,7 +34,7 @@ private:
 	unsigned int				body_size;
 	std::map<int, std::string>	error_paths;
 	bool						auto_index;
-	std::vector<Routes>			routes;
+	MethodTree					routes;
 public:
 	Server();
 	~Server();
@@ -45,9 +45,7 @@ public:
 	std::string			getIp() const;
 	int					getPort() const;
 	std::string			getName() const;
-	std::vector<Routes>	getRoutes() const;
 	std::string			getErrorPath(int code) const;
-	Routes const&		getRoute(int index);
 	void			setBody(std::string body);
 	void			setRootPath(std::string path);
 	void			setConfigPath(std::string path);
@@ -55,7 +53,6 @@ public:
 	void			setIp(std::string Ip);
 	void			setPort(std::string port);
 	void			setName(std::string name);
-	void			addRoute(Routes const& Routes);
 	void			checkIndex(int index);
 	void			setAutoIndex(std::string autoindex);
 	MethodTree		methods;
@@ -65,8 +62,5 @@ class	WrongIndexForRootVectorException : public std::exception{
 	virtual const char*	what() const throw();
 };
 
-const	char*	WrongIndexForRootVectorException::what() const throw(){
-	return ("Wrong index to get route /!\\");
-}
 std::ostream&	operator<<(std::ostream& os, Server const& Server);
 #endif

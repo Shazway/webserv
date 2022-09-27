@@ -6,11 +6,11 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/27 17:41:47 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/27 19:54:52 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Routes.hpp"
+
 #include "Server.hpp"
 #include "Exceptions.hpp"
 #include <iostream>
@@ -33,56 +33,35 @@ void	fill_content(std::ifstream& file, std::vector<std::string>& content)
 	}
 }
 
-Routes	create_route(std::string methods)
+void	fill_info(Server& Serv, std::string info, std::string content)
 {
-	Routes	route;
-
-	if (methods.find("GET") != std::string::npos)
-		route.setGET(true);
-	if (methods.find("POST") != std::string::npos)
-		route.setPOST(true);
-	if (methods.find("DELETE") != std::string::npos)
-		route.setDELETE(true);
-	route.setName("root");
-	route.setPath("/");
-	return (route);
-}
-
-void	fill_info(Server& Serv, std::string info)
-{
-	if (info == "listen")
-		Serv.setPort(info.substr(info.find_first_of("0123456789"), info.size()));
+	if (info == "port")
+		Serv.setPort(content.substr(content.find_first_of("0123456789"), content.size()));
 	if (info == "server_name")
-		Serv.setName(info.substr(info.find_first_not_of(' '), info.size()));
+		Serv.setName(content.substr(content.find_first_not_of(' '), content.size()));
 	if (info == "body_size")
-		Serv.setBody(info.substr(info.find_first_not_of(' '), info.size()));
+		Serv.setBody(content.substr(content.find_first_not_of(' '), content.size()));
 	if (info == "root")
-		Serv.setRootPath(info.substr(info.find_first_not_of(' '), info.size()));
-	if (info == "method")
-		Serv.addRoute(create_route(info.substr(info.find_first_not_of(' '), info.size())));
-	/*if (info == "autoindex")
-		Serv.setAutoIndex(info.substr(info.find_first_not_of(' '), info.size()));*/
+		Serv.setRootPath(content.substr(content.find_first_not_of(' '), content.size()));
+	/*	(void)Serv;
+		std::cout << " " << BLUE << info << END << std::endl;
+		(void)content;*/
 }
 
 void	fill_serv(Server& Serv, std::vector<std::string> content)
 {
-	std::string	serv_info[7] = {"listen", "server_name", "root", "method",
-								"body_size", "autoindex"};
+	std::string	serv_info[7] = {"port", "server_name", "root", "method",
+								"body_size", "autoindex", "host"};
 
 	for (std::vector<std::string>::iterator i = content.begin(); i != content.end(); i++)
 	{
-		for (int j = 0; j < 7; j++)
+		//std::cout << GREEN << (*i).data() << END << std::endl;
+		for (int j = 0; j < 6; j++)
 		{
 			if ((*i).find(serv_info[j]) != std::string::npos)
 			{
-				try
-				{
-					fill_info(Serv, serv_info[j]);
-				}
-				catch(const std::exception& e)
-				{
-					std::cerr << RED << e.what() << END << std::endl;
-				}
+				//std::cout << "Here j is " << j << RED << (*i).data() << END << std::endl;
+				fill_info(Serv, serv_info[j], (*i).substr((*i).find_first_of(' '), (*i).find_first_of(';') - 1));
 			}
 		}
 	}
@@ -94,7 +73,8 @@ void	setup_config(Server& Serv)
 	std::ifstream				file;
 	std::string	location_info[3] = {"subpath", "location_method", "index"};
 
-	file.open(Serv.getConfigPath(), std::ios_base::in);
+	std::cout << Serv.getConfigPath() << std::endl;
+	file.open(Serv.getConfigPath().c_str() , std::ios_base::in);
 	if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
 	{
 		std::cerr << RED

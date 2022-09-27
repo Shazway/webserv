@@ -36,5 +36,6 @@
 		"functional": "cpp",
 		"fstream": "cpp",
 		"optional": "cpp"
-	}
+	},
+	"C_Cpp.errorSquiggles": "Disabled"
 }

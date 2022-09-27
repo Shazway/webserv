@@ -10,6 +10,7 @@ MethodTree::MethodTree()
 
 MethodTree::MethodTree( const MethodTree & src )
 {
+	(void)src;
 }
 
 
@@ -32,12 +33,14 @@ MethodTree &				MethodTree::operator=( MethodTree const & rhs )
 	//{
 		//this->_value = rhs.getValue();
 	//}
+	(void)rhs;
 	return *this;
 }
 
 std::ostream &			operator<<( std::ostream & o, MethodTree const & i )
 {
 	//o << "Value = " << i.getValue();
+	(void)i;
 	return o;
 }
 
