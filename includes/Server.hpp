@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/27 18:28:30 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/27 20:53:19 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ private:
 	unsigned int				body_size;
 	std::map<int, std::string>	error_paths;
 	bool						auto_index;
-	MethodTree					routes;
 public:
 	Server();
 	~Server();
@@ -46,6 +45,7 @@ public:
 	int					getPort() const;
 	std::string			getName() const;
 	std::string			getErrorPath(int code) const;
+	std::map<int, std::string>	getErrorPaths() const;
 	void			setBody(std::string body);
 	void			setRootPath(std::string path);
 	void			setConfigPath(std::string path);
@@ -55,7 +55,7 @@ public:
 	void			setName(std::string name);
 	void			checkIndex(int index);
 	void			setAutoIndex(std::string autoindex);
-	MethodTree		methods;
+	MethodTree		routes;
 };
 
 class	WrongIndexForRootVectorException : public std::exception{

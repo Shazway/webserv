@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/27 18:31:19 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/27 21:47:22 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,9 @@ int Server::getPort() const{
 std::string Server::getName() const{
 	return (this->name);
 }
+std::map<int, std::string> Server::getErrorPaths() const{
+	return (this->error_paths);
+}
 
 void	Server::setBody(std::string body){
 	body_size = atoi(body.c_str());
@@ -64,6 +67,9 @@ void	Server::setRootPath(std::string path){
 }
 void	Server::setConfigPath(std::string path){
 	config_path = path;
+}
+void	Server::setIp(std::string Ip){
+	this->ip = Ip;
 }
 
 void	Server::setPort(std::string port){
@@ -86,12 +92,23 @@ void	Server::setAutoIndex(std::string autoindex)
 		this->auto_index = false;
 }
 
+
 std::ostream&	operator<<(std::ostream& os, Server const& Server)
 {
+	std::map<int, std::string> errors;
 
+	errors = Server.getErrorPaths();
 	os << GREEN << "Server name: " << Server.getName() << std::endl
-	<< RED << "Body size: " << Server.getBody() << std::endl
 	<< BLUE << "Port: " << Server.getPort() << std::endl
-	<< GREEN << "IP: " << Server.getIp() << END << std::endl;
+	<< GREEN << "IP: " << Server.getIp() << std::endl
+	<< RED << "Body size: " << Server.getBody() << std::endl
+	<< MAGENTA << "Root path: " << Server.getRootPath() << END << std::endl
+	<< Server.routes << std::endl;
+	for (std::map<int, std::string>::iterator i = errors.begin(); i != errors.end(); i++)
+	{
+		os << YELLOW << (*i).first << " ";
+		os << YELLOW << (*i).second << std::endl;
+	}
+	os << END;
 	return (os);
 }

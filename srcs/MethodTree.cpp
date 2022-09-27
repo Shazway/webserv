@@ -1,4 +1,5 @@
 #include "MethodTree.hpp"
+#include "Colors.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -39,9 +40,17 @@ MethodTree &				MethodTree::operator=( MethodTree const & rhs )
 
 std::ostream &			operator<<( std::ostream & o, MethodTree const & i )
 {
-	//o << "Value = " << i.getValue();
-	(void)i;
-	return o;
+	std::map<std::string, t_allowedMethods> tree = i.getTree();
+
+	for (std::map<std::string, t_allowedMethods>::iterator it = tree.begin(); it != tree.end(); it++)
+	{
+		o << GREEN << "Path: " << (*it).first << std::endl;
+		o << "GET: " << ((*it).second.get ? "enabled" : "disabled") << ", ";
+		o << "POST: " << ((*it).second.post ? "enabled" : "disabled") << ", ";
+		o << "DEL: " << ((*it).second.del ? "enabled" : "disabled") << std::endl;
+	}
+	o << END;
+	return (o);
 }
 
 
@@ -73,6 +82,9 @@ void	MethodTree::addExecption(std::string path, bool get, bool post, bool del)
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
-
+std::map<std::string, t_allowedMethods> MethodTree::getTree() const
+{
+	return (this->_subdirectories);
+}
 
 /* ************************************************************************** */

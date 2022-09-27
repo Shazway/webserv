@@ -25,6 +25,7 @@ class MethodTree
 
 		bool	isAllowed(std::string method, std::string path);
 		void	addExecption(std::string path, bool get, bool post, bool del);
+		std::map<std::string, t_allowedMethods>	getTree() const;
 
 	private:
 		std::map<std::string, t_allowedMethods>	_subdirectories;
