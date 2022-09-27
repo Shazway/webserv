@@ -7,7 +7,9 @@ SRC_PATH	=	srcs/
 OBJ_PATH	=	obj/
 INC	=	-Iincludes
 
-SRC_NAME	=	main.cpp Server.cpp
+SRC_NAME	=	test_main.cpp			\
+				Server.cpp				\
+				Routes.cpp
 OBJ_NAME	=	$(SRC_NAME:.cpp=.o)
 
 OBJ	=	$(addprefix $(OBJ_PATH), $(OBJ_NAME))

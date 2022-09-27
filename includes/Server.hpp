@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/25 21:55:54 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/27 17:43:17 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include "Routes.hpp"
 #include <string.h>
 #include <MethodTree.hpp>
+#include <stdlib.h>
 
 class Server
 {
@@ -28,25 +29,26 @@ private:
 	std::string					root_path;
 	std::string					name;
 	std::string					ip;
-	std::string					port;
+	std::string					method;
+	int							port;
 	unsigned int				body_size;
 	std::map<int, std::string>	error_paths;
-	bool						_auto_index;
+	bool						auto_index;
 	std::vector<Routes>			routes;
 public:
 	Server();
 	~Server();
 	unsigned int		getBody() const;
+	bool				getAutoIndex() const;
 	std::string			getRootPath() const;
 	std::string			getConfigPath() const;
-	std::string			getErrorPath(int code) const;
 	std::string			getIp() const;
-	std::string			getPort() const;
+	int					getPort() const;
 	std::string			getName() const;
 	std::vector<Routes>	getRoutes() const;
-	std::string			getErrorPath(int index) const;
+	std::string			getErrorPath(int code) const;
 	Routes const&		getRoute(int index);
-	void			setBody(unsigned int body);
+	void			setBody(std::string body);
 	void			setRootPath(std::string path);
 	void			setConfigPath(std::string path);
 	void			addErrorPath(int error, std::string path);
@@ -55,12 +57,14 @@ public:
 	void			setName(std::string name);
 	void			addRoute(Routes const& Routes);
 	void			checkIndex(int index);
+	void			setAutoIndex(std::string autoindex);
 	MethodTree		methods;
 };
 
 class	WrongIndexForRootVectorException : public std::exception{
 	virtual const char*	what() const throw();
 };
+
 const	char*	WrongIndexForRootVectorException::what() const throw(){
 	return ("Wrong index to get route /!\\");
 }

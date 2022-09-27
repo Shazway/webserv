@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/25 21:56:39 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/09/27 17:40:06 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ std::string Server::getConfigPath() const{
 std::string Server::getIp() const{
 	return (this->ip);
 }
-std::string Server::getPort() const{
+int Server::getPort() const{
 	return (this->port);
 }
 std::string Server::getName() const{
@@ -52,7 +52,7 @@ std::vector<Routes> Server::getRoutes() const{
 	return (this->routes);
 }
 void	Server::checkIndex(int index){
-	if (index < 0 || index > this->routes.size())
+	if (index < 0 || index > (int)this->routes.size())
 		throw(WrongIndexForRootVectorException());
 }
 Routes const&	Server::getRoute(int index){
@@ -63,8 +63,8 @@ Routes const&	Server::getRoute(int index){
 	return (this->routes[index]);
 }
 
-void	Server::setBody(unsigned int body){
-	body_size = body;
+void	Server::setBody(std::string body){
+	body_size = atoi(body.c_str());
 }
 
 void	Server::setRootPath(std::string path){
@@ -75,13 +75,26 @@ void	Server::setConfigPath(std::string path){
 }
 
 void	Server::setPort(std::string port){
-	this->port = port;
+	this->port = atoi(port.c_str());
 }
+
 void	Server::setName(std::string name){
 	this->name = name;
 }
 void	Server::addRoute(Routes const& Routes){
 	this->routes.push_back(Routes);
+}
+
+bool	Server::getAutoIndex() const
+{
+	return (this->auto_index);
+}
+void	Server::setAutoIndex(std::string autoindex)
+{
+	if (autoindex.find("true") != std::string::npos)
+		this->auto_index = true;
+	if (autoindex.find("false") != std::string::npos)
+		this->auto_index = false;
 }
 
 std::ostream&	operator<<(std::ostream& os, Server const& Server)

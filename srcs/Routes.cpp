@@ -45,16 +45,6 @@ void	Routes::setDefaultFile(std::string default_file)
 	_default_file = default_file;
 }
 
-bool	Routes::getAutoindex() const
-{
-	return (_auto_index);
-}
-
-void	Routes::setAutoindex(bool autoindex)
-{
-	_auto_index = autoindex;
-}
-
 bool	Routes::getGET() const
 {
 	return (methods[GET].rule);
