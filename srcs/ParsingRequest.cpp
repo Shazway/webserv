@@ -4,13 +4,12 @@
 #include <string>
 #include <map>
 
-//appele par la partie avec les sockets, stocker les httpRequest dans un map
 
 int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 {
 	int     i = 0, j = 0;
 	std::string::iterator it = bufferString.begin();
-	while (*it >= "A" && *it <= "Z")
+	while (*it >= 'A' && *it <= 'Z')
 	{
 		it++;
 		i++;
@@ -18,13 +17,13 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 	if (i < 2)
 		return (CODE_NO_METHOD);
 	request.setMethod(bufferString.substr(0, i - 1));
-	while (*it == " ")
+	while (*it == ' ')
 	{
 		it++;
 		i++;
 	}
 	j = i;
-	while (*it != " " && *it != "?")
+	while (*it != ' ' && *it != '?')
 	{
 		it++;
 		j++;
@@ -32,12 +31,12 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 	if (j - i < 1)
 		return (CODE_NO_PATH);
 	request.setPath(bufferString.substr(i, j - 1));
-	if (*it == "?")
+	if (*it == '?')
 	{
 		it++;
 		i = j + 1;
 		j = i;
-		while (*it != " ")
+		while (*it != ' ')
 		{
 			it++;
 			j++;
@@ -46,7 +45,7 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 			return (CODE_NO_QUERY);
 		request.setQueryString(bufferString.substr(i, j - 1));
 	}
-	while (*it == " ")
+	while (*it == ' ')
 	{
 		it++;
 		j++;
@@ -56,7 +55,7 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 		return (CODE_NO_HTTP_VERSION);
 	j = 0;
 	it = bufferString.begin();
-	while (j < 4 || *it == " ")
+	while (j < 4 || *it == ' ')
 	{
 		j++;
 		it++;
@@ -71,8 +70,8 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 
 int	parsingHeader(HttpRequest &request, std::string &bufferString)
 {
-	std::string	headers[4] = {"Host: ", "Connection: ", "Content-Type: ", "Content-Length: "}
-	int	(HttpRequest::ft[4])(std::string) = {&HttpRequest::setHost, &HttpRequest::setConnection, &HttpRequest::set_ContentType, &HttpRequest::ContentType};
+	std::string	headers[4] = {"Host: ", "Connection: ", "Content-Type: ", "Content-Length: "};
+	int	(HttpRequest::ft[4])(std::string) = {&HttpRequest::setHost, &HttpRequest::setConnection, &HttpRequest::setContentType, &HttpRequest::setContentType};
 	int	pos;
 	std::string	current;
 	int error = 0;
@@ -96,9 +95,10 @@ int	parsingHeader(HttpRequest &request, std::string &bufferString)
 	}
 }
 
-int parsingRequest(HttpRequest &request, char* buffer)
+//appele par la partie avec les sockets, stocker les httpRequest dans un map
+
+int parsingRequest(HttpRequest &request, std::string bufferString)
 {
-    std::string bufferString = buffer;
     std::string requestLine;
     if (bufferString.empty())
         return (0);
@@ -126,7 +126,7 @@ int parsingRequest(HttpRequest &request, char* buffer)
 	{
 		request.setBody(bufferString);
 		if (request.getBody().length() >= request.getContentLengh())
-			request.getPartiallyCompleted(false);
+			request.setPartiallyCompleted(false);
 	}
 	return (0);
 }

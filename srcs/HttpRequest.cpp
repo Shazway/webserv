@@ -3,6 +3,13 @@
 #include <algorithm>
 #include <string>
 
+# define CODE_NO_METHOD 1
+# define CODE_NO_PATH 2
+# define CODE_NO_QUERY 3
+# define CODE_NO_HTTP_VERSION 4
+# define CODE_UNSUPPORTED_HTTP_VERSION 5
+
+
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
@@ -40,7 +47,16 @@ HttpRequest &				HttpRequest::operator=( HttpRequest const & rhs )
 
 std::ostream &			operator<<( std::ostream & o, HttpRequest const & i )
 {
-	//o << "Value = " << i.getValue();
+	o << "PartiallyCompleted = " << i.getPartiallyCompleted() ? "entame" : "pret ou vide" << std::endl;
+	o << "Method = " << i.getMethod() << std::endl;
+	o << "Path = " << i.getPath() << std::endl;
+	o << "Query string = " << i.getQueryString() << std::endl;
+	o << "HTTP version = " << i.getHttpVersion() << std::endl;
+	o << "Host = " << i.getHost() << std::endl;
+	o << "Connection = " << i.getConnection() << std::endl;
+	o << "Content type = " << i.getContentType() << std::endl;
+	o << "Content lengh = " << i.getContentLengh() << std::endl;
+
 	return o;
 }
 
