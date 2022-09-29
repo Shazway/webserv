@@ -7,7 +7,7 @@
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-HttpRequest::HttpRequest() : _partiallyCompleted(false)
+HttpRequest::HttpRequest() : _partiallyCompleted(false), _contentLengh(0)
 {
 }
 
@@ -170,7 +170,7 @@ std::string	HttpRequest::getBody()
 
 void		HttpRequest::setBody(std::string body)
 {
-	_body = body;
+	_body += body;
 }
 
 /* ************************************************************************** */
