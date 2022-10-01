@@ -9,7 +9,7 @@
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-HttpRequest::HttpRequest(Server &serv) : _partiallyCompleted(false), _method(""), _path(""), _queryString(""), _httpVersion(""), _host(""), _connection(""), _contentType(""), _contentLengh(0), _body(""), _serv(serv)
+HttpRequest::HttpRequest(Server &serv) : _partiallyCompleted(false), _method(""), _path(""), _queryString(""), _httpVersion(""), _host(""), _connection(""), _contentType(""), _contentLength(0), _body(""), _serv(serv)
 {
 }
 
@@ -50,7 +50,7 @@ std::ostream &			operator<<( std::ostream & o, HttpRequest const & i )
 	o << "Host = " << i.getHost() << std::endl;
 	o << "Connection = " << i.getConnection() << std::endl;
 	o << "Content type = " << i.getContentType() << std::endl;
-	o << "Content lengh = " << i.getContentLengh() << std::endl;
+	o << "Content lengh = " << i.getContentLength() << std::endl;
 
 	return o;
 }
@@ -82,7 +82,10 @@ std::string	HttpRequest::getMethod() const
 void		HttpRequest::setMethod(std::string method)
 {
 	if (!_serv.checkAllowedMethods(method, _path))
+	{
+		std::cout << method << std::endl;
 		throw (ForbiddenMethodException());//ici, mettre l'erreur pour une methode interdite
+	}
 	_method = method;
 }
 
@@ -122,8 +125,6 @@ std::string	HttpRequest::getHttpVersion() const
 
 void		HttpRequest::setHttpVersion(std::string httpVersion)
 {
-	if (httpVersion.compare("HTTP/1.1") && httpVersion.compare("HTTP/1.0"))
-		throw (HttpVersionException());//erreur de version HTTP invalide
 	_httpVersion = httpVersion;
 }
 
@@ -161,17 +162,17 @@ void		HttpRequest::setContentType(std::string contentType)
 	_contentType = contentType;
 }
 
-unsigned int	HttpRequest::getContentLengh() const
+unsigned int	HttpRequest::getContentLength() const
 {
-	return (_contentLengh);
+	return (_contentLength);
 }
 
-void		HttpRequest::setContentLengh(std::string contentLengh)
+void		HttpRequest::setContentLength(std::string ContentLength)
 {
-	unsigned int	nb = std::stoul(contentLengh);
+	unsigned int	nb = std::stoul(ContentLength);
 	if (nb > _serv.getBody())
 		throw (LongBodyException());//erreur de body trop long pour notre config
-	_contentLengh = nb;
+	_contentLength = nb;
 }
 
 std::string	HttpRequest::getBody() const

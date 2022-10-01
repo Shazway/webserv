@@ -37,8 +37,8 @@ class HttpRequest
 		void		setConnection(std::string connection);
 		std::string	getContentType() const;
 		void		setContentType(std::string contentType);
-		unsigned int	getContentLengh() const;
-		void		setContentLengh(std::string contentLengh);
+		unsigned int	getContentLength() const;
+		void		setContentLength(std::string ContentLength);
 		std::string	getBody() const;
 		void		setBody(std::string body);
 		Server	&_serv;
@@ -54,7 +54,7 @@ class HttpRequest
 		std::string	_host;
 		std::string	_connection;
 		std::string	_contentType;
-		unsigned int	_contentLengh;
+		unsigned int	_contentLength;
 		//body
 		std::string	_body;
 
