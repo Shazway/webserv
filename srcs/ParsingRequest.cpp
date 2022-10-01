@@ -16,7 +16,7 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 	}
 	if (i < 2)
 		return (CODE_NO_METHOD);
-	request.setMethod(bufferString.substr(0, i - 1));
+	request.setMethod(bufferString.substr(0, i));
 	while (*it == ' ')
 	{
 		it++;
@@ -30,7 +30,7 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 	}
 	if (j - i < 1)
 		return (CODE_NO_PATH);
-	request.setPath(bufferString.substr(i, j - 1));
+	request.setPath(bufferString.substr(i, j - i));
 	if (*it == '?')
 	{
 		it++;
@@ -43,16 +43,28 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 		}
 		if (j - i < 1)
 			return (CODE_NO_QUERY);
-		request.setQueryString(bufferString.substr(i, j - 1));
+		request.setQueryString(bufferString.substr(i, j));
 	}
 	while (*it == ' ')
 	{
 		it++;
 		j++;
 	}
-	bufferString = bufferString.substr(j, std::string::npos);
-	if (bufferString.find("HTTP") != 0 || bufferString.find('\n') < 8)
+	std::cout << "coucou" << std::endl;
+	bufferString = bufferString.substr(j, bufferString.find("\n") - j);
+	std::cout << "coucou2" << std::endl;
+	if (bufferString == "HTTP 1.0" || bufferString == "HTTP/1.0")
+		request.setHttpVersion("1.0");
+	else if (bufferString == "HTTP 1.1" || bufferString == "HTTP/1.1")
+		request.setHttpVersion("1.1");
+	std::cout << "coucou3" << std::endl;
+
+	//else
+	//	return (CODE_NO_HTTP_VERSION);
+
+	/*if (bufferString.find("HTTP") != 0 || bufferString.find('\n') < 8)
 		return (CODE_NO_HTTP_VERSION);
+	std::cout << bufferString << std::endl;
 	j = 0;
 	it = bufferString.begin();
 	while (j < 4 || *it == ' ')
@@ -63,36 +75,38 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 	bufferString = bufferString.substr(j, bufferString.find('\n'));
 	if (bufferString.compare("1.0") && bufferString.compare("1.1"))
 		return (CODE_UNSUPPORTED_HTTP_VERSION);
-	request.setHttpVersion(bufferString);
+	request.setHttpVersion(bufferString);*/
 
 	return (0);
 }
 
 int	parsingHeader(HttpRequest &request, std::string &bufferString)
 {
-	std::string	headers[4] = {"Host: ", "Connection: ", "Content-Type: ", "Content-Length: "};
-	int	(HttpRequest::ft[4])(std::string) = {&HttpRequest::setHost, &HttpRequest::setConnection, &HttpRequest::setContentType, &HttpRequest::setContentType};
 	int	pos;
 	std::string	current;
 	int error = 0;
 
-	while (bufferString.find("\n"))
+	while (!bufferString.empty())
 	{
 		pos = bufferString.find(" ");
 		if (pos == std::string::npos)
 			continue ;
 		current = bufferString.substr(0, pos + 1); 
-		for (int i = 0; i < 4; i++)
-		{
-			if (current == headers[i])
-			{
-				error =*ft[i](bufferString.substr(pos + 1), bufferString.find("\n"));
-				if (error)
-					return (error);
-			}
-		}
-		bufferString = bufferString.substr(bufferString.find("\n") + 1, std::string::npos);
+		if (current == "Host: ")
+			request.setHost(bufferString.substr(pos + 1, bufferString.find("\n") - (pos + 1)));
+		if (current == "Connection: ")
+			request.setConnection(bufferString.substr(pos + 1, bufferString.find("\n") - (pos + 1)));
+		if (current == "Content-Type: ")
+			request.setContentType(bufferString.substr(pos + 1, bufferString.find("\n") - (pos + 1)));
+		if (current == "Content-Length: ")
+			request.setContentLength(bufferString.substr(pos + 1, bufferString.find("\n") - (pos + 1)));
+		pos = bufferString.find("\n");
+		if (pos == std::string::npos)
+			bufferString = "";
+		else
+			bufferString = bufferString.substr(pos + 1, std::string::npos);
 	}
+	return (0);
 }
 
 //appele par la partie avec les sockets, stocker les httpRequest dans un map
@@ -112,20 +126,22 @@ int parsingRequest(HttpRequest &request, std::string bufferString)
 		if (error)
 			return (error);
     //  getline de header
+
 		int	n = bufferString.find("\n");
 		bufferString = bufferString.substr(n + 1, std::string::npos);
 		error = parsingHeader(request, bufferString);
 		if (error)
 			return (error);
+	std::cout << "coucou4" << std::endl;
     }
     //recuperation du body
     //si on a recupere tout le body, mettre partiallyCompleted a 0, sinon 1
 
     //return le code d'erreur si souci, sinon 0
-	if (request.getContentLengh())
+	if (request.getContentLength())
 	{
 		request.setBody(bufferString);
-		if (request.getBody().length() >= request.getContentLengh())
+		if (request.getBody().length() >= request.getContentLength())
 			request.setPartiallyCompleted(false);
 	}
 	return (0);

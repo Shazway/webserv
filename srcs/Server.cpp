@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/01 17:50:36 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/01 23:36:37 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,11 @@ Server& Server::operator=(Server const& assign)
 	method = assign.method;
 	auto_index = assign.auto_index;
 	return (*this);
+}
+
+bool			Server::checkAllowedMethods(std::string method, std::string path)
+{
+	return (routes.isAllowed(method, path));
 }
 
 std::ostream&	operator<<(std::ostream& os, Server const& Server)
