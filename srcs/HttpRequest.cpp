@@ -3,24 +3,19 @@
 #include <algorithm>
 #include <string>
 
-# define CODE_NO_METHOD 1
-# define CODE_NO_PATH 2
-# define CODE_NO_QUERY 3
-# define CODE_NO_HTTP_VERSION 4
-# define CODE_UNSUPPORTED_HTTP_VERSION 5
 
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-HttpRequest::HttpRequest() : _partiallyCompleted(false), _contentLengh(0)
+HttpRequest::HttpRequest(Server &serv) : _partiallyCompleted(false), _method(""), _path(""), _queryString(""), _httpVersion(""), _host(""), _connection(""), _contentType(""), _contentLengh(0), _body(""), _serv(serv)
 {
 }
 
-HttpRequest::HttpRequest( const HttpRequest & src )
+/*HttpRequest::HttpRequest( const HttpRequest & src )
 {
-}
+}*/
 
 
 /*
@@ -47,7 +42,7 @@ HttpRequest &				HttpRequest::operator=( HttpRequest const & rhs )
 
 std::ostream &			operator<<( std::ostream & o, HttpRequest const & i )
 {
-	o << "PartiallyCompleted = " << i.getPartiallyCompleted() ? "entame" : "pret ou vide" << std::endl;
+	o << "PartiallyCompleted = " << (i.getPartiallyCompleted() ? "entame" : "pret ou vide") << std::endl;
 	o << "Method = " << i.getMethod() << std::endl;
 	o << "Path = " << i.getPath() << std::endl;
 	o << "Query string = " << i.getQueryString() << std::endl;
@@ -70,7 +65,7 @@ std::ostream &			operator<<( std::ostream & o, HttpRequest const & i )
 ** --------------------------------- ACCESSOR ---------------------------------
 */
 
-bool		HttpRequest::getPartiallyCompleted()
+bool		HttpRequest::getPartiallyCompleted() const
 {
 	return (_partiallyCompleted);
 }
@@ -79,7 +74,7 @@ void		HttpRequest::setPartiallyCompleted(bool partiallyCmpleted)
 {
 	_partiallyCompleted = partiallyCmpleted;
 }
-std::string	HttpRequest::getMethod()
+std::string	HttpRequest::getMethod() const
 {
 	return (_method);
 }
@@ -87,11 +82,11 @@ std::string	HttpRequest::getMethod()
 void		HttpRequest::setMethod(std::string method)
 {
 	if (!_serv.checkAllowedMethods(method, _path))
-		throw ();//ici, mettre l'erreur pour une methode interdite
+		throw (ForbiddenMethodException());//ici, mettre l'erreur pour une methode interdite
 	_method = method;
 }
 
-std::string	HttpRequest::getPath()
+std::string	HttpRequest::getPath() const
 {
 	return (_path);
 }
@@ -100,7 +95,7 @@ void		HttpRequest::setPath(std::string path)
 {
 	int root = path.find("/");
 	if (root == std::string::npos)
-		throw (); //erreur de pas un chemin valide
+		throw (UnexpectedValueException()); //erreur de pas un chemin valide
 	if (root == 0)
 		_path = path;
 	else
@@ -110,7 +105,7 @@ void		HttpRequest::setPath(std::string path)
 	}
 }
 
-std::string	HttpRequest::getQueryString()
+std::string	HttpRequest::getQueryString() const
 {
 	return (_queryString);
 }
@@ -120,7 +115,7 @@ void		HttpRequest::setQueryString(std::string query)
 	_queryString = query;
 }
 
-std::string	HttpRequest::getHttpVersion()
+std::string	HttpRequest::getHttpVersion() const
 {
 	return (_httpVersion);
 }
@@ -128,11 +123,11 @@ std::string	HttpRequest::getHttpVersion()
 void		HttpRequest::setHttpVersion(std::string httpVersion)
 {
 	if (httpVersion.compare("HTTP/1.1") && httpVersion.compare("HTTP/1.0"))
-		throw ();//erreur de version HTTP invalide
+		throw (HttpVersionException());//erreur de version HTTP invalide
 	_httpVersion = httpVersion;
 }
 
-std::string	HttpRequest::getHost()
+std::string	HttpRequest::getHost() const
 {
 	return (_host);
 }
@@ -140,11 +135,11 @@ std::string	HttpRequest::getHost()
 void		HttpRequest::setHost(std::string host)
 {
 	if (!_host.empty())
-		throw (); //erreur double definition du host
+		throw (DoubleHostException()); //erreur double definition du host
 	_host = host;
 }
 
-std::string	HttpRequest::getConnection()
+std::string	HttpRequest::getConnection() const
 {
 	return (_connection);
 }
@@ -152,11 +147,11 @@ std::string	HttpRequest::getConnection()
 void		HttpRequest::setConnection(std::string connection)
 {
 	if (connection.compare("Keep-Alive"))
-		throw ();//erreur valeur inconnue
+		throw (UnexpectedValueException());//erreur valeur inconnue
 	_connection = connection;
 }
 
-std::string	HttpRequest::getContentType()
+std::string	HttpRequest::getContentType() const
 {
 	return (_contentType);
 }
@@ -166,7 +161,7 @@ void		HttpRequest::setContentType(std::string contentType)
 	_contentType = contentType;
 }
 
-unsigned int	HttpRequest::getContentLengh()
+unsigned int	HttpRequest::getContentLengh() const
 {
 	return (_contentLengh);
 }
@@ -174,12 +169,12 @@ unsigned int	HttpRequest::getContentLengh()
 void		HttpRequest::setContentLengh(std::string contentLengh)
 {
 	unsigned int	nb = std::stoul(contentLengh);
-	if (nb > serv.getBody())
-		throw ();//erreur de body trop long pour notre config
+	if (nb > _serv.getBody())
+		throw (LongBodyException());//erreur de body trop long pour notre config
 	_contentLengh = nb;
 }
 
-std::string	HttpRequest::getBody()
+std::string	HttpRequest::getBody() const
 {
 	return (_body);
 }

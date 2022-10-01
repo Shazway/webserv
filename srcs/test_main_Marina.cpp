@@ -2,33 +2,38 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <fstream>
 #include "Colors.hpp"
 
-int parsingRequest(HttpRequest &request, char* buffer);
+int parsingRequest(HttpRequest &request, std::string buffer);
 
 int	main(int ac, char** av)
 {
-	std::istream	file;
-	HttpRequest		request;
-	std::string		buffer;
+	Server			serv;
+	HttpRequest		request(serv);
+	char * buffer = new char [2048];
+	std::ifstream	file(buffer, std::ifstream::binary);
 
 	if (ac == 1)
-		file.open("test_socket.txt" , std::ios_base::in);
+		std::ifstream file("test_socket.txt" , std::ifstream::binary);
 	else
-		file.open(av[1] , std::ios_base::in);
-	if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
+		std::ifstream file(av[1] , std::ifstream::binary);
+	if (!std::istream::read(buffer, 2048))
 	{
 		std::cout << RED
-		<< "Failed to open the test file " << END << std::endl;
+		<< "Failed to read the test file " << END << std::endl;
+		delete[] buffer;
 		return (0);
 	}
-	if (parsingRequest(request, std::istream::read(file, buffer)))
+	if (parsingRequest(request, buffer))
 	{
 		std::cout << RED
 		<< "Failed to parse " << END  << std::endl << request << std::endl;
+		delete[] buffer;
 		return (0);
 	}
 	std::cout << RED
 		<< "Victoire (en theorie) " << END  << std::endl << request << std::endl;
+	delete[] buffer;
 	return (0);
 }

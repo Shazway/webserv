@@ -55,6 +55,7 @@ public:
 	void			setName(std::string name);
 	void			checkIndex(int index);
 	void			setAutoIndex(std::string autoindex);
+	bool			checkAllowedMethods(std::string method, std::string path);
 	MethodTree		routes;
 };
 

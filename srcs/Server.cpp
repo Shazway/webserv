@@ -92,6 +92,10 @@ void	Server::setAutoIndex(std::string autoindex)
 		this->auto_index = false;
 }
 
+bool			Server::checkAllowedMethods(std::string method, std::string path)
+{
+	return (routes.isAllowed(method, path));
+}
 
 std::ostream&	operator<<(std::ostream& os, Server const& Server)
 {
