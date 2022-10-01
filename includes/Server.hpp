@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/27 20:53:19 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/01 22:12:26 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@
 #include <string.h>
 #include <MethodTree.hpp>
 #include <stdlib.h>
+#include "Parsing.hpp"
+
+//Vector string//
+typedef std::vector<std::string> v_str;
+//Vector string iterator//
+typedef std::vector<std::string>::iterator v_str_it;
+
 
 class Server
 {
@@ -36,6 +43,7 @@ private:
 	bool						auto_index;
 public:
 	Server();
+	Server(Server const& serv);
 	~Server();
 	unsigned int		getBody() const;
 	bool				getAutoIndex() const;
@@ -50,12 +58,13 @@ public:
 	void			setRootPath(std::string path);
 	void			setConfigPath(std::string path);
 	void			addErrorPath(int error, std::string path);
-	void			setIp(std::string Ip);
-	void			setPort(std::string port);
+	bool			setIp(std::string Ip);
+	bool			setPort(std::string port);
 	void			setName(std::string name);
 	void			checkIndex(int index);
 	void			setAutoIndex(std::string autoindex);
 	MethodTree		routes;
+	Server&	operator=(Server const& assign);
 };
 
 class	WrongIndexForRootVectorException : public std::exception{

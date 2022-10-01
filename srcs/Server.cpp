@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/27 21:47:22 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/01 17:50:36 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,11 @@ const	char*	WrongIndexForRootVectorException::what() const throw(){
 }
 
 Server::Server(): name(), ip(), port(), body_size(), error_paths(), routes(){
+	return ;
+}
+Server::Server(Server const& serv)
+{
+	*this = serv;
 	return ;
 }
 
@@ -92,6 +97,19 @@ void	Server::setAutoIndex(std::string autoindex)
 		this->auto_index = false;
 }
 
+Server& Server::operator=(Server const& assign)
+{
+	name = assign.name;
+	ip = assign.ip;
+	port = assign.port;
+	body_size = assign.body_size;
+	error_paths = assign.error_paths;
+	routes = assign.routes;
+	config_path = assign.config_path;
+	method = assign.method;
+	auto_index = assign.auto_index;
+	return (*this);
+}
 
 std::ostream&	operator<<(std::ostream& os, Server const& Server)
 {

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/27 18:27:24 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/01 23:25:52 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,28 @@
 # define PARSING_HPP
 #include "Server.hpp"
 
+typedef bool	(*parse_elem)(std::vector<std::string> const& , Server&);
+typedef struct s_parser
+{
+	std::string		serv_info;
+	parse_elem		s;
+} t_parser;
 
-void	setup_config(Server& Serv);
+std::vector<Server>	setup_config(char* config_path);
 void	fill_serv(Server& Serv, std::vector<std::string> content);
 void	fill_info(Server& Serv, std::string info);
 void	fill_content(std::ifstream& file, std::vector<std::string>& content);
 std::string	find_string_tab(std::string name, std::string *tab, int size);
 
+//PARSE ELEMS
+void	ft_split(std::string str, v_str& v, std::string delim);
+bool	set_port(v_str const& args, Server& serv);
+bool	set_ip(v_str const& args, Server& serv);
+bool	set_name(v_str const& args, Server& serv);
+bool	set_root(v_str const& args, Server& serv);
+bool	set_method(v_str const& args, Server& serv);
+bool	set_bodysize(v_str const& args, Server& serv);
+bool	add_errorpath(v_str const& args, Server& serv);
+bool	set_autoIndex(v_str const& args, Server& serv);
 
 #endif

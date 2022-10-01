@@ -1,28 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test_main.cpp                                      :+:      :+:    :+:   */
+/*   ft_split.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/01 17:39:33 by tmoragli         ###   ########.fr       */
+/*   Created: 2022/10/01 21:52:43 by tmoragli          #+#    #+#             */
+/*   Updated: 2022/10/01 23:25:34 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
 #include "Parsing.hpp"
+#include "Server.hpp"
+#include <cstring>
 
-int	main(int ac, char **av)
+void	ft_split(std::string str, v_str& v, std::string delim)
 {
-	if (ac != 2)
+	size_t i = 0;
+	std::string	tmp;
+
+	while ((i = str.find(delim)) != std::string::npos)
 	{
-		std::cerr << RED <<
-		"/!\\ Wrong number of arguments:\nTry ./webserv <path_to_config_file> /!\\"
-		<< END << std::endl;
-		return (1);
+		tmp = str.substr(0, i);
+		v.push_back(tmp);
+		str.erase(0, i + delim.size());
 	}
-	else
-		std::vector<Server> servers(setup_config(av[1]));
-	return (0);
+	v.push_back(str);
 }

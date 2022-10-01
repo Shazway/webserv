@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/09/27 22:01:57 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/01 23:35:41 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,12 @@
 #include "Exceptions.hpp"
 #include <iostream>
 #include <fstream>
+
+void	display_v_str(std::vector<std::string> v_str)
+{
+	for (v_str_it i = v_str.begin(); i != v_str.end(); i++)
+		std::cout << (*i) << std::endl;
+}
 
 std::string	find_string_tab(std::string name, std::string *tab, int size){
 	for (int i = 0; i < size; i++){
@@ -54,63 +60,62 @@ void	add_error_code(Server& Serv, std::string content)
 
 	tmp = content.substr(content.find_first_of("0123456789"), content.size());
 	code = atoi(tmp.c_str());
-	path = content.substr(content.find_last_of(' '), content.find_last_not_of(";"));
+	path = content.substr(content.find_last_of(' '), content.find_last_not_of(';'));
 	std::cout << RED << path << END << std::endl;
 	Serv.addErrorPath(code, path);
 }
 
-void	fill_info(Server& Serv, std::string info, std::string content, std::string& path)
+void	display_servers(std::vector<Server> servers)
 {
-	if (info == "port")
-		Serv.setPort(content.substr(content.find_first_of("0123456789"), content.find_last_not_of(';')));
-	if (info == "server_name")
-		Serv.setName(content.substr(content.find_first_not_of(' '), content.find_last_not_of(';')));
-	if (info == "body_size")
-		Serv.setBody(content.substr(content.find_first_not_of(' '), content.find_last_not_of(';')));
-	if (info == "root")
-		Serv.setRootPath(content.substr(content.find_first_not_of(' '), content.find_last_not_of(';')));
-	if (info == "host")
-		Serv.setIp(content.substr(content.find_first_not_of(' '), content.find_last_not_of(';')));
-	if (info == "error_path")
-		add_error_code(Serv, content);
-	if (info == "method")
-		add_method(Serv, content, path);
+	for (std::vector<Server>::iterator i = servers.begin(); i != servers.end(); i++)
+		std::cout << (*i) << std::endl;
 }
 
-void	fill_serv(Server& Serv, std::vector<std::string> content)
+bool	fill_servers(std::vector<Server>& servers, v_str content, t_parser parse[8])
 {
-	std::string	serv_info[9] = {"port", "server_name", "root", "method",
-								"body_size", "autoindex", "host", "error_path"};
+	v_str	args;
 
-	std::string	path = "/";
-	for (std::vector<std::string>::iterator i = content.begin(); i != content.end(); i++)
+	for (v_str_it it = content.begin(); it != content.end(); i++)
 	{
-		for (int j = 0; j < 9; j++)
+		if ((*it).find("server:"))
 		{
-			if ((*i).find(serv_info[j]) != std::string::npos)
+			for (int i = 0; i < 8; i++)
 			{
-				fill_info(Serv, serv_info[j], (*i).substr((*i).find_first_of(' '), (*i).find_first_of(';') - 1), path);
+				if ((*it).find(parse[i].serv_info))
+				{
+					ft_split((*it).data(), args, " ");
+					parse[i].s(args, )
+				}
 			}
 		}
 	}
 }
 
-void	setup_config(Server& Serv)
+std::vector<Server>	setup_config(char* config_path)
 {
-	std::vector<std::string>	content;
+	std::vector<Server>			servers;
 	std::ifstream				file;
-	std::string	location_info[3] = {"subpath", "location_method", "index"};
+	v_str						content;
+	t_parser const	parse[8] = {{"error_path", &add_errorpath}, {"ip", &set_ip},
+							{"name", &set_name}, {"root", set_root},
+							{"method", &add_method}, {"body_size", &set_bodysize},
+							{"autoindex", &set_autoIndex}, {"port", &set_port}};
 
-	file.open(Serv.getConfigPath().c_str() , std::ios_base::in);
+	file.open(config_path, std::ios_base::in);
 	if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
 	{
 		std::cerr << RED
 		<< "Failed to open config file from path: "
-		<< Serv.getConfigPath() << END << std::endl;
+		<< config_path << END << std::endl;
+		return (servers);
 	}
-	else
-		fill_content(file, content);
+	fill_content(file, content);
 	file.close();
-	fill_serv(Serv, content);
-	std::cout << Serv << std::endl;
+	if (!fill_servers(servers, content, parse))
+	{
+		std::cerr << RED << "Error while parsing file, see error message above" << END std::endl;
+		return (servers);
+	}
+	display_servers(servers);
+	return (servers);
 }

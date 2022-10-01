@@ -1,7 +1,7 @@
 NAME	=	webserv
 
 CC	=	c++
-FLAGS = -Wall -Wextra -Werror -std=c++98 -g3
+FLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -ggdb
 
 SRC_PATH	=	srcs/
 OBJ_PATH	=	obj/
