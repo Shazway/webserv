@@ -50,14 +50,11 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 		it++;
 		j++;
 	}
-	std::cout << "coucou" << std::endl;
 	bufferString = bufferString.substr(j, bufferString.find("\n") - j);
-	std::cout << "coucou2" << std::endl;
 	if (bufferString == "HTTP 1.0" || bufferString == "HTTP/1.0")
 		request.setHttpVersion("1.0");
 	else if (bufferString == "HTTP 1.1" || bufferString == "HTTP/1.1")
 		request.setHttpVersion("1.1");
-	std::cout << "coucou3" << std::endl;
 
 	//else
 	//	return (CODE_NO_HTTP_VERSION);
@@ -80,7 +77,7 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 	return (0);
 }
 
-int	parsingHeader(HttpRequest &request, std::string &bufferString)
+int	parsingHeader(HttpRequest &request, std::string bufferString)
 {
 	int	pos;
 	std::string	current;
@@ -129,10 +126,14 @@ int parsingRequest(HttpRequest &request, std::string bufferString)
 
 		int	n = bufferString.find("\n");
 		bufferString = bufferString.substr(n + 1, std::string::npos);
-		error = parsingHeader(request, bufferString);
+		n = bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? bufferString.find("\n\n") : bufferString.find("\r\n\r\n");
+		error = parsingHeader(request, bufferString.substr(0, n));
 		if (error)
 			return (error);
-	std::cout << "coucou4" << std::endl;
+		if (n == std::string::npos)
+			bufferString = "";
+		else
+			bufferString = bufferString.substr(n + (bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? 2 : 4), std::string::npos);
     }
     //recuperation du body
     //si on a recupere tout le body, mettre partiallyCompleted a 0, sinon 1

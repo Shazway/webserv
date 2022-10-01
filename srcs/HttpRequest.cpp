@@ -51,6 +51,8 @@ std::ostream &			operator<<( std::ostream & o, HttpRequest const & i )
 	o << "Connection = " << i.getConnection() << std::endl;
 	o << "Content type = " << i.getContentType() << std::endl;
 	o << "Content lengh = " << i.getContentLength() << std::endl;
+	o << "Body = " << i.getBody() << std::endl;
+
 
 	return o;
 }
