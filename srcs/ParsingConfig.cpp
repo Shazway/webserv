@@ -6,13 +6,13 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/01 23:35:41 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/02 20:35:56 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "Server.hpp"
 #include "Exceptions.hpp"
+#include "Parsing.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -71,24 +71,47 @@ void	display_servers(std::vector<Server> servers)
 		std::cout << (*i) << std::endl;
 }
 
-bool	fill_servers(std::vector<Server>& servers, v_str content, t_parser parse[8])
+bool	parse_server(Server& serv, v_str content, v_str_it it, t_parser parse[8])
 {
 	v_str	args;
 
-	for (v_str_it it = content.begin(); it != content.end(); i++)
+	if (it != content.end() && (*it).find("server:") != std::string::npos)
+		it++;
+	while (it != content.end() && (*it).find("server:") == std::string::npos)
 	{
-		if ((*it).find("server:"))
+		for (int i = 0; i < 8; i++)
 		{
-			for (int i = 0; i < 8; i++)
+			if ((*it).find(parse[i].serv_info))
 			{
-				if ((*it).find(parse[i].serv_info))
-				{
-					ft_split((*it).data(), args, " ");
-					parse[i].s(args, )
-				}
+				ft_split((*it).data(), args, " ");
+				args.erase(args.begin());
+				if (!parse[i].s(args, serv))
+					return (false);
 			}
 		}
 	}
+	return (true);
+}
+
+bool	fill_servers(std::vector<Server>& servers, v_str content, t_parser parse[8])
+{
+	v_str	args;
+	Server	tmp_serv;
+
+	for (v_str_it it = content.begin(); it != content.end(); it++)
+	{
+		if (it == content.end())
+			break ;
+		if ((*it).find("server:"))
+		{
+			if (!parse_server(tmp_serv, content, it, parse))
+				return (false);
+			servers.push_back(tmp_serv);
+			if (it != content.end())
+				it++;
+		}
+	}
+	return (true);
 }
 
 std::vector<Server>	setup_config(char* config_path)
@@ -96,7 +119,7 @@ std::vector<Server>	setup_config(char* config_path)
 	std::vector<Server>			servers;
 	std::ifstream				file;
 	v_str						content;
-	t_parser const	parse[8] = {{"error_path", &add_errorpath}, {"ip", &set_ip},
+	t_parser	parse[8] = {{"error_path", &add_errorpath}, {"ip", &set_ip},
 							{"name", &set_name}, {"root", set_root},
 							{"method", &add_method}, {"body_size", &set_bodysize},
 							{"autoindex", &set_autoIndex}, {"port", &set_port}};
@@ -113,7 +136,7 @@ std::vector<Server>	setup_config(char* config_path)
 	file.close();
 	if (!fill_servers(servers, content, parse))
 	{
-		std::cerr << RED << "Error while parsing file, see error message above" << END std::endl;
+		std::cerr << RED << "Error while parsing file, see error message above" << END << std::endl;
 		return (servers);
 	}
 	display_servers(servers);
