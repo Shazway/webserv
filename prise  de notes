@@ -109,6 +109,17 @@ bin_path /usr/bin/python
 Codes d'erreur aux requetes HTTP liees aux methodes :
 501 -> non implemented
 405 -> Method not allowed
+1xx : information
+2xx : succes
+3xx : redirection
+4xx : erreur client
+5xx : erreur serveur
+
+reponses HTTP :
+	status line = HTTP version + code + reason phrase
+	general header | response header | entity header
+	CRLF
+	body
 
 
 Telli : config
