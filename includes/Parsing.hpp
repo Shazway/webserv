@@ -6,13 +6,19 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/01 23:25:52 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/02 15:39:59 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSING_HPP
 # define PARSING_HPP
 #include "Server.hpp"
+
+class Server;
+//Vector string//
+typedef std::vector<std::string> v_str;
+//Vector string iterator//
+typedef std::vector<std::string>::iterator v_str_it;
 
 typedef bool	(*parse_elem)(std::vector<std::string> const& , Server&);
 typedef struct s_parser
@@ -33,7 +39,7 @@ bool	set_port(v_str const& args, Server& serv);
 bool	set_ip(v_str const& args, Server& serv);
 bool	set_name(v_str const& args, Server& serv);
 bool	set_root(v_str const& args, Server& serv);
-bool	set_method(v_str const& args, Server& serv);
+bool	add_method(v_str const& args, Server& serv);
 bool	set_bodysize(v_str const& args, Server& serv);
 bool	add_errorpath(v_str const& args, Server& serv);
 bool	set_autoIndex(v_str const& args, Server& serv);

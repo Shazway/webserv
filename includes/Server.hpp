@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/01 22:12:26 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/02 15:37:00 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,8 @@ public:
 	void			setRootPath(std::string path);
 	void			setConfigPath(std::string path);
 	void			addErrorPath(int error, std::string path);
-	bool			setIp(std::string Ip);
-	bool			setPort(std::string port);
+	void			setIp(std::string Ip);
+	void			setPort(std::string port);
 	void			setName(std::string name);
 	void			checkIndex(int index);
 	void			setAutoIndex(std::string autoindex);
