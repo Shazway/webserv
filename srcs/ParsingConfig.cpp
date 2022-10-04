@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/04 20:33:11 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/04 22:17:24 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,6 @@ void	fill_content(std::ifstream& file, std::vector<std::string>& content)
 	while (std::getline(file, line)){
 		content.push_back(line);
 	}
-	display_v_str(content);
-	std::cout << MAGENTA << "Size of content is: " << content.size() << END << std::endl;
 }
 
 void	add_method(Server& Serv, std::string content, std::string& path)
@@ -76,7 +74,6 @@ void	display_servers(std::vector<Server> servers)
 bool	parse_server(Server& serv, v_str &content, v_str_it& it, t_parser parse[8])
 {
 	v_str	args;
-	std::cout << "content.end (parse) = " << &(*content.end()) << std::endl;
 
 	if (it != content.end() && (*it).find("server:") != std::string::npos)
 		it++;
@@ -86,7 +83,6 @@ bool	parse_server(Server& serv, v_str &content, v_str_it& it, t_parser parse[8])
 		{
 			if ((*it).find(parse[i].serv_info) != std::string::npos)
 			{
-				std::cout << "info no " << i << std::endl;
 				ft_split((*it).data(), args, " ");
 				args.erase(args.begin());
 				if (!parse[i].s(args, serv))
@@ -98,14 +94,8 @@ bool	parse_server(Server& serv, v_str &content, v_str_it& it, t_parser parse[8])
 				args.clear();
 			}
 		}
-		std::cout << &(*it) << std::endl;
 		it++;
 	}
-	/*if (it != content.end() && it != content.begin() && (*it).find("server:") != std::string::npos)
-	{
-		std::cout << YELLOW << "Before -- it is: " << "[" << *it << "]" << END << std::endl;
-		it--;
-	}*/
 	return (true);
 }
 
@@ -119,9 +109,6 @@ bool	fill_servers(std::vector<Server>& servers, v_str content, t_parser parse[8]
 	{
 		if (it != content.end() && (*it).find("server:") != std::string::npos)
 		{
-			std::cout << BLUE << "Server found starting parse: " << END << std::endl;
-	std::cout << "content.end (fill) = " << &(*content.end()) << std::endl;
-
 			if (!parse_server(tmp_serv, content, it, parse))
 				return (false);
 			servers.push_back(tmp_serv);
@@ -159,7 +146,6 @@ std::vector<Server>	setup_config(char* config_path)
 	}
 	std::cout << "-------------" << std::endl;
 	std::cout << "-------------" << std::endl;
-	std::cout << "Size of servers: " << servers.size() << std::endl;
 	display_servers(servers);
 	return (servers);
 }
