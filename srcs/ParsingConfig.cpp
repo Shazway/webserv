@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/02 20:35:56 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/04 20:33:11 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,17 @@
 #include <iostream>
 #include <fstream>
 
-void	display_v_str(std::vector<std::string> v_str)
-{
-	for (v_str_it i = v_str.begin(); i != v_str.end(); i++)
-		std::cout << (*i) << std::endl;
-}
-
 std::string	find_string_tab(std::string name, std::string *tab, int size){
 	for (int i = 0; i < size; i++){
 		if (tab[i] == name)
 			return (tab[i]);
 	}
 	return ("");
+}
+void	display_v_str(std::vector<std::string> str)
+{
+	for (std::vector<std::string>::iterator i = str.begin(); i != str.end(); i++)
+		std::cout << "[" <<(*i) << "]" << std::endl;
 }
 
 void	fill_content(std::ifstream& file, std::vector<std::string>& content)
@@ -37,6 +36,8 @@ void	fill_content(std::ifstream& file, std::vector<std::string>& content)
 	while (std::getline(file, line)){
 		content.push_back(line);
 	}
+	display_v_str(content);
+	std::cout << MAGENTA << "Size of content is: " << content.size() << END << std::endl;
 }
 
 void	add_method(Server& Serv, std::string content, std::string& path)
@@ -71,9 +72,11 @@ void	display_servers(std::vector<Server> servers)
 		std::cout << (*i) << std::endl;
 }
 
-bool	parse_server(Server& serv, v_str content, v_str_it it, t_parser parse[8])
+
+bool	parse_server(Server& serv, v_str content, v_str_it& it, t_parser parse[8])
 {
 	v_str	args;
+	int count = 0;
 
 	if (it != content.end() && (*it).find("server:") != std::string::npos)
 		it++;
@@ -81,15 +84,32 @@ bool	parse_server(Server& serv, v_str content, v_str_it it, t_parser parse[8])
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			if ((*it).find(parse[i].serv_info))
+			if ((*it).find(parse[i].serv_info) != std::string::npos)
 			{
 				ft_split((*it).data(), args, " ");
+				std::cout << GREEN << "args before erase" << END << std::endl;
+				display_v_str(args);
+				std::cout << GREEN << "args after erase" << END << std::endl;
 				args.erase(args.begin());
+				display_v_str(args);
 				if (!parse[i].s(args, serv))
+				{
+					std::cerr << RED << "Encountered problem at: " << parse[i].serv_info << " wrong arguments: " << END;
+					display_v_str(args);
 					return (false);
+				}
+				args.clear();
 			}
 		}
+		it++;
+		count++;
+		std::cout << YELLOW << *it << " Before segv and count is: " << count << " size of content is: " << content.size() << END << std::endl;
 	}
+	/*if (it != content.end() && it != content.begin() && (*it).find("server:") != std::string::npos)
+	{
+		std::cout << YELLOW << "Before -- it is: " << "[" << *it << "]" << END << std::endl;
+		it--;
+	}*/
 	return (true);
 }
 
@@ -97,19 +117,20 @@ bool	fill_servers(std::vector<Server>& servers, v_str content, t_parser parse[8]
 {
 	v_str	args;
 	Server	tmp_serv;
+	v_str_it it = content.begin();
 
-	for (v_str_it it = content.begin(); it != content.end(); it++)
+	while (it != content.end())
 	{
-		if (it == content.end())
-			break ;
-		if ((*it).find("server:"))
+		if (it != content.end() && (*it).find("server:") != std::string::npos)
 		{
+			std::cout << BLUE << "Server found starting parse: " << END << std::endl;
 			if (!parse_server(tmp_serv, content, it, parse))
 				return (false);
 			servers.push_back(tmp_serv);
-			if (it != content.end())
-				it++;
 		}
+		it++;
+		if (it == content.end())
+			std::cout << RED << "Hello the end of vector here++" << END <<std::endl;
 	}
 	return (true);
 }
@@ -139,6 +160,9 @@ std::vector<Server>	setup_config(char* config_path)
 		std::cerr << RED << "Error while parsing file, see error message above" << END << std::endl;
 		return (servers);
 	}
+	std::cout << "-------------" << std::endl;
+	std::cout << "-------------" << std::endl;
+	std::cout << "Size of servers: " << servers.size() << std::endl;
 	display_servers(servers);
 	return (servers);
 }

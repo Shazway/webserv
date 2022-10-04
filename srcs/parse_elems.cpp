@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/02 15:40:11 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/04 19:13:13 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,18 +43,18 @@ bool	set_root(v_str const& args, Server& serv)
 }
 bool	add_method(v_str const& args, Server& serv)
 {
-	if (args.size() != 2)
+	if (args.size() < 1)
 		return (false);
 
 	t_allowedMethods	allowed;
 
-	if (args[0].find("GET"))
+	if (args[0].find("GET") != std::string::npos)
 		allowed.get = true;
-	if (args[0].find("POST"))
+	if (args[0].find("POST") != std::string::npos)
 		allowed.post = true;
-	if (args[0].find("DELETE"))
+	if (args[0].find("DELETE") != std::string::npos)
 		allowed.del = true;
-	Serv.routes.addExecption(args[1], allowed.get, allowed.post, allowed.del);
+	serv.routes.addExecption(args[1], allowed.get, allowed.post, allowed.del);
 	return (true);
 }
 
@@ -70,7 +70,9 @@ bool	add_errorpath(v_str const& args, Server& serv)
 {
 	if (args.size() != 2)
 		return (false);
-	int error = args[0];
+	std::string	string = args.front();
+	const char* tmp = string.c_str();
+	int error = atoi(tmp);
 	serv.addErrorPath(error, args[1]);
 	return (true);
 }
