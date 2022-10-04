@@ -73,10 +73,10 @@ void	display_servers(std::vector<Server> servers)
 }
 
 
-bool	parse_server(Server& serv, v_str content, v_str_it& it, t_parser parse[8])
+bool	parse_server(Server& serv, v_str &content, v_str_it& it, t_parser parse[8])
 {
 	v_str	args;
-	int count = 0;
+	std::cout << "content.end (parse) = " << &(*content.end()) << std::endl;
 
 	if (it != content.end() && (*it).find("server:") != std::string::npos)
 		it++;
@@ -86,12 +86,9 @@ bool	parse_server(Server& serv, v_str content, v_str_it& it, t_parser parse[8])
 		{
 			if ((*it).find(parse[i].serv_info) != std::string::npos)
 			{
+				std::cout << "info no " << i << std::endl;
 				ft_split((*it).data(), args, " ");
-				std::cout << GREEN << "args before erase" << END << std::endl;
-				display_v_str(args);
-				std::cout << GREEN << "args after erase" << END << std::endl;
 				args.erase(args.begin());
-				display_v_str(args);
 				if (!parse[i].s(args, serv))
 				{
 					std::cerr << RED << "Encountered problem at: " << parse[i].serv_info << " wrong arguments: " << END;
@@ -101,9 +98,8 @@ bool	parse_server(Server& serv, v_str content, v_str_it& it, t_parser parse[8])
 				args.clear();
 			}
 		}
+		std::cout << &(*it) << std::endl;
 		it++;
-		count++;
-		std::cout << YELLOW << *it << " Before segv and count is: " << count << " size of content is: " << content.size() << END << std::endl;
 	}
 	/*if (it != content.end() && it != content.begin() && (*it).find("server:") != std::string::npos)
 	{
@@ -124,13 +120,14 @@ bool	fill_servers(std::vector<Server>& servers, v_str content, t_parser parse[8]
 		if (it != content.end() && (*it).find("server:") != std::string::npos)
 		{
 			std::cout << BLUE << "Server found starting parse: " << END << std::endl;
+	std::cout << "content.end (fill) = " << &(*content.end()) << std::endl;
+
 			if (!parse_server(tmp_serv, content, it, parse))
 				return (false);
 			servers.push_back(tmp_serv);
 		}
-		it++;
-		if (it == content.end())
-			std::cout << RED << "Hello the end of vector here++" << END <<std::endl;
+		else
+			it++;
 	}
 	return (true);
 }
