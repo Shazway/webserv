@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/04 22:12:24 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/07 02:39:49 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,25 +41,7 @@ bool	set_root(v_str & args, Server& serv)
 	serv.setName(args[0]);
 	return (true);
 }
-bool	add_method(v_str& args, Server& serv)
-{
-	if (args.size() < 1)
-		return (false);
 
-	t_allowedMethods	allowed;
-
-	for (v_str_it it = args.begin(); it != args.end(); it++)
-	{
-		if (args[0].find("GET") != std::string::npos)
-			allowed.get = true;
-		if (args[0].find("POST") != std::string::npos)
-			allowed.post = true;
-		if (args[0].find("DELETE") != std::string::npos)
-			allowed.del = true;
-	}
-	serv.routes.addExecption(args[1], allowed.get, allowed.post, allowed.del);
-	return (true);
-}
 
 bool	set_bodysize(v_str & args, Server& serv)
 {
@@ -85,5 +67,36 @@ bool	set_autoIndex(v_str & args, Server& serv)
 	if (args.size() != 1)
 		return (false);
 	serv.setAutoIndex(args[0]);
+	return (true);
+}
+
+bool	method_set_path(v_str& args, std::string& path)
+{
+	std::cout << "test method_set path" << std::endl;
+	if (args.size() != 1)
+		return (false);
+	std::cout << "test method_set path" << std::endl;
+	path = args.back();
+	return (true);
+}
+
+bool	add_methods(v_str& args, t_allowedMethods& allowed)
+{
+	std::cout << "test method_add rules" << std::endl;
+	if (args.empty())
+		return (false);
+	std::cout << "test method_add rules" << std::endl;
+	allowed.del = false;
+	allowed.get = false;
+	allowed.post = false;
+	for (v_str_it it = args.begin(); it != args.end(); it++)
+	{
+		if ((*it).find("GET") != std::string::npos)
+			allowed.get = true;
+		if ((*it).find("POST") != std::string::npos)
+			allowed.post = true;
+		if ((*it).find("DELETE") != std::string::npos)
+			allowed.del = true;
+	}
 	return (true);
 }

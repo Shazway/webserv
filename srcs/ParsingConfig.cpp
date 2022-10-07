@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/04 22:17:24 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/07 02:45:09 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,15 +71,100 @@ void	display_servers(std::vector<Server> servers)
 }
 
 
-bool	parse_server(Server& serv, v_str &content, v_str_it& it, t_parser parse[8])
+bool	parse_root(Server& serv, v_str& content, v_str_it& it)
+{
+	t_method	method;
+	v_str		args;
+
+	if (it != content.end() && (*it).find("root:") != std::string::npos)
+		it++;
+	while (it != content.end() && (*it).find("\t\t") != std::string::npos)
+	{
+		std::cout << "here" << std::endl;
+		if ((*it).find("r_path") != std::string::npos)
+		{
+			ft_split((*it), args, " ");
+			args.erase(args.begin());
+			std::cout << "r_path" << std::endl;
+			if (!method_set_path(args, method.path))
+				return (false);
+			args.clear();
+		}
+		if ((*it).find("r_method") != std::string::npos)
+		{
+			ft_split((*it), args, " ");
+			args.erase(args.begin());
+			std::cout << "r_method" << std::endl;
+			if (!add_methods(args, method.allowed))
+				return (false);
+			args.clear();
+		}
+		it++;
+	}
+	if (method.path.empty())
+		return (false);
+	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
+	return (true);
+}
+//!\\S'OCCUPER DU INDEX.HTML DANS LE CONF
+bool	parse_location(Server& serv, v_str& content, v_str_it& it)
+{
+	t_method	method;
+	v_str		args;
+
+	if (it != content.end() && (*it).find("location:") != std::string::npos)
+		it++;
+	while (it != content.end() && (*it).find("\t\t") != std::string::npos)
+	{
+		if ((*it).find("l_path") != std::string::npos)
+		{
+			ft_split((*it), args, " ");
+			args.erase(args.begin());
+			if (!method_set_path(args, method.path))
+				return (false);
+			args.clear();
+		}
+		if ((*it).find("l_method") != std::string::npos)
+		{
+			ft_split((*it), args, " ");
+			args.erase(args.begin());
+			if (!add_methods(args, method.allowed))
+				return (false);
+			args.clear();
+		}
+		it++;
+	}
+	if (method.path.empty())
+		return (false);
+	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
+	return (true);
+}
+//A RAJOUTER: INDEX.HTML TREE
+
+bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 {
 	v_str	args;
+	t_parser	parse[6] = {{"error_path", &add_errorpath}, {"ip", &set_ip},
+							{"name", &set_name}, {"body_size", &set_bodysize},
+							{"autoindex", &set_autoIndex}, {"port", &set_port}};
 
 	if (it != content.end() && (*it).find("server:") != std::string::npos)
 		it++;
 	while (it != content.end() && (*it).find("server:") == std::string::npos)
 	{
-		for (int i = 0; i < 8; i++)
+		if ((*it).find("location:") != std::string::npos)
+		{
+			std::cout << "location:" << std::endl;
+			if (!parse_location(serv, content, it))
+				return (false);
+		}
+		else if ((*it).find("root:") != std::string::npos)
+		{
+			std::cout << "root:" << std::endl;
+			if (!parse_root(serv, content, it))
+				return (false);
+		}
+		for (int i = 0; i < 6; i++)
 		{
 			if ((*it).find(parse[i].serv_info) != std::string::npos)
 			{
@@ -87,7 +172,8 @@ bool	parse_server(Server& serv, v_str &content, v_str_it& it, t_parser parse[8])
 				args.erase(args.begin());
 				if (!parse[i].s(args, serv))
 				{
-					std::cerr << RED << "Encountered problem at: " << parse[i].serv_info << " wrong arguments: " << END;
+					std::cerr << RED << "Encountered problem at line: " << *it
+					<< parse[i].serv_info << " wrong arguments: " << END;
 					display_v_str(args);
 					return (false);
 				}
@@ -99,7 +185,7 @@ bool	parse_server(Server& serv, v_str &content, v_str_it& it, t_parser parse[8])
 	return (true);
 }
 
-bool	fill_servers(std::vector<Server>& servers, v_str content, t_parser parse[8])
+bool	fill_servers(std::vector<Server>& servers, v_str content)
 {
 	v_str	args;
 	Server	tmp_serv;
@@ -109,7 +195,7 @@ bool	fill_servers(std::vector<Server>& servers, v_str content, t_parser parse[8]
 	{
 		if (it != content.end() && (*it).find("server:") != std::string::npos)
 		{
-			if (!parse_server(tmp_serv, content, it, parse))
+			if (!parse_server(tmp_serv, content, it))
 				return (false);
 			servers.push_back(tmp_serv);
 		}
@@ -124,10 +210,6 @@ std::vector<Server>	setup_config(char* config_path)
 	std::vector<Server>			servers;
 	std::ifstream				file;
 	v_str						content;
-	t_parser	parse[8] = {{"error_path", &add_errorpath}, {"ip", &set_ip},
-							{"name", &set_name}, {"root", set_root},
-							{"method", &add_method}, {"body_size", &set_bodysize},
-							{"autoindex", &set_autoIndex}, {"port", &set_port}};
 
 	file.open(config_path, std::ios_base::in);
 	if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
@@ -139,7 +221,7 @@ std::vector<Server>	setup_config(char* config_path)
 	}
 	fill_content(file, content);
 	file.close();
-	if (!fill_servers(servers, content, parse))
+	if (!fill_servers(servers, content))
 	{
 		std::cerr << RED << "Error while parsing file, see error message above" << END << std::endl;
 		return (servers);

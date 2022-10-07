@@ -47,9 +47,8 @@ std::ostream &			operator<<( std::ostream & o, MethodTree const & i )
 		o << GREEN << "Path: " << (*it).first << std::endl;
 		o << "GET: " << ((*it).second.get ? "enabled" : "disabled") << ", ";
 		o << "POST: " << ((*it).second.post ? "enabled" : "disabled") << ", ";
-		o << "DEL: " << ((*it).second.del ? "enabled" : "disabled") << std::endl;
+		o << "DEL: " << ((*it).second.del ? "enabled" : "disabled") << END << std::endl;
 	}
-	o << END;
 	return (o);
 }
 
