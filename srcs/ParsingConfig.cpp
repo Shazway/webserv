@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 18:15:18 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 19:06:14 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 	t_method	method;
 	std::string	index;
 	v_str		args;
+	bool		l_method = false;
 
 	if (it != content.end() && (*it).find("location:") != std::string::npos)
 		it++;
@@ -84,6 +85,7 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 			args.erase(args.begin());
 			if (!add_methods(args, method.allowed))
 				return (false);
+			l_method = true;
 			args.clear();
 		}
 		if ((*it).find("l_index") != std::string::npos)
@@ -98,8 +100,10 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 	}
 	if (method.path.empty())
 		return (false);
-	serv.html.addExecption(method.path, index);
-	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
+	if (!index.empty())
+		serv.html.addExecption(method.path, index);
+	if (l_method)
+		serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
 	return (true);
 }
 
@@ -145,7 +149,6 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 		}
 		it++;
 	}
-	std::cout << serv << std::endl;
 	return (true);
 }
 
@@ -161,11 +164,7 @@ bool	fill_servers(std::vector<Server>& servers, v_str content)
 		{
 			if (!parse_server(tmp_serv, content, it))
 				return (false);
-			std::cout << "tmp = " << std::endl;
-			std::cout << tmp_serv << std::endl;
 			servers.push_back(tmp_serv);
-			std::cout << "back = " << std::endl;
-			std::cout << servers.back() << std::endl;
 		}
 		else
 			it++;

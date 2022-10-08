@@ -75,7 +75,7 @@ int	running(std::vector<Server> &servers)
 			}
 		}
 	}
-
+	return 0;
 }
 
 int	main(int ac, char** av)
