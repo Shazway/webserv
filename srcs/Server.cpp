@@ -109,6 +109,7 @@ Server& Server::operator=(Server const& assign)
 	config_path = assign.config_path;
 	method = assign.method;
 	auto_index = assign.auto_index;
+	html = assign.html;
 	return (*this);
 }
 

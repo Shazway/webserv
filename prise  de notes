@@ -45,7 +45,7 @@ FD_ISSET(s, &tab) /*pour verifier si s est present dans tab*/
 
 /*num va nous permettre de suivre les connexions*/
 if (s>= num)
-    num = s + 1;
+num = s + 1;
 
 while (num) /*=while(true)
 {

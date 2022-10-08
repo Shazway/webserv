@@ -161,7 +161,11 @@ bool	fill_servers(std::vector<Server>& servers, v_str content)
 		{
 			if (!parse_server(tmp_serv, content, it))
 				return (false);
+			std::cout << "tmp = " << std::endl;
+			std::cout << tmp_serv << std::endl;
 			servers.push_back(tmp_serv);
+			std::cout << "back = " << std::endl;
+			std::cout << servers.back() << std::endl;
 		}
 		else
 			it++;
