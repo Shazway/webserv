@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 15:50:05 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 15:50:52 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,7 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 		}
 		it++;
 	}
+	// AFFICHAGE ICI BON
 	std::cout << serv << std::endl;
 	return (true);
 }
