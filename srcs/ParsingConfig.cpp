@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 16:06:01 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 16:07:33 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 
 	if (it != content.end() && (*it).find("server:") != std::string::npos)
 		it++;
-	while (it != content.end() && (*it).find("server:") == std::string::npos)
+	while (it != content.end() && (*it).find("\t") != std::string::npos)
 	{
 		if ((*it).find("location:") != std::string::npos)
 		{
