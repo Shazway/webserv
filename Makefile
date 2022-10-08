@@ -21,6 +21,7 @@ SRC	=	$(addprefix $(SRC_PATH), $(SRC_NAME))
 
 $(NAME):	$(OBJ)
 	$(CC) $(FLAGS) $(INC) $(OBJ) -o $(NAME)
+	clear
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.cpp
 	mkdir -p $(@D)

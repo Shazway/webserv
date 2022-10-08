@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/07 02:39:49 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 15:04:44 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,20 +72,16 @@ bool	set_autoIndex(v_str & args, Server& serv)
 
 bool	method_set_path(v_str& args, std::string& path)
 {
-	std::cout << "test method_set path" << std::endl;
 	if (args.size() != 1)
 		return (false);
-	std::cout << "test method_set path" << std::endl;
 	path = args.back();
 	return (true);
 }
 
 bool	add_methods(v_str& args, t_allowedMethods& allowed)
 {
-	std::cout << "test method_add rules" << std::endl;
 	if (args.empty())
 		return (false);
-	std::cout << "test method_add rules" << std::endl;
 	allowed.del = false;
 	allowed.get = false;
 	allowed.post = false;

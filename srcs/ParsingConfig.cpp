@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/07 02:45:09 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 15:27:07 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 #include "Parsing.hpp"
 #include <iostream>
 #include <fstream>
+
+void	print_separator()
+{
+	std::cout << WHITE << "~~~~~~~~~~~~~~~~~~" << END << std::endl;
+}
 
 std::string	find_string_tab(std::string name, std::string *tab, int size){
 	for (int i = 0; i < size; i++){
@@ -66,8 +71,15 @@ void	add_error_code(Server& Serv, std::string content)
 
 void	display_servers(std::vector<Server> servers)
 {
+	int count = 1;
 	for (std::vector<Server>::iterator i = servers.begin(); i != servers.end(); i++)
+	{
+		print_separator();
+		std::cout << BLUE << "Server number " << count << END << std::endl;
 		std::cout << (*i) << std::endl;
+		print_separator();
+		count++;
+	}
 }
 
 
@@ -80,12 +92,10 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 		it++;
 	while (it != content.end() && (*it).find("\t\t") != std::string::npos)
 	{
-		std::cout << "here" << std::endl;
 		if ((*it).find("r_path") != std::string::npos)
 		{
 			ft_split((*it), args, " ");
 			args.erase(args.begin());
-			std::cout << "r_path" << std::endl;
 			if (!method_set_path(args, method.path))
 				return (false);
 			args.clear();
@@ -94,7 +104,6 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 		{
 			ft_split((*it), args, " ");
 			args.erase(args.begin());
-			std::cout << "r_method" << std::endl;
 			if (!add_methods(args, method.allowed))
 				return (false);
 			args.clear();
@@ -104,6 +113,9 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 	if (method.path.empty())
 		return (false);
 	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
+	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
+	std::cout << serv << std::endl;
+	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
 	return (true);
 }
 //!\\S'OCCUPER DU INDEX.HTML DANS LE CONF
@@ -137,6 +149,9 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 	if (method.path.empty())
 		return (false);
 	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
+	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
+	std::cout << serv << std::endl;
+	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
 	return (true);
 }
 //A RAJOUTER: INDEX.HTML TREE
@@ -154,13 +169,11 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 	{
 		if ((*it).find("location:") != std::string::npos)
 		{
-			std::cout << "location:" << std::endl;
 			if (!parse_location(serv, content, it))
 				return (false);
 		}
 		else if ((*it).find("root:") != std::string::npos)
 		{
-			std::cout << "root:" << std::endl;
 			if (!parse_root(serv, content, it))
 				return (false);
 		}
@@ -226,8 +239,6 @@ std::vector<Server>	setup_config(char* config_path)
 		std::cerr << RED << "Error while parsing file, see error message above" << END << std::endl;
 		return (servers);
 	}
-	std::cout << "-------------" << std::endl;
-	std::cout << "-------------" << std::endl;
 	display_servers(servers);
 	return (servers);
 }
