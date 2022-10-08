@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/01 23:36:37 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 16:59:02 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ bool	Server::getAutoIndex() const
 {
 	return (this->auto_index);
 }
+
 void	Server::setAutoIndex(std::string autoindex)
 {
 	if (autoindex.find("true") != std::string::npos)
@@ -116,17 +117,18 @@ bool			Server::checkAllowedMethods(std::string method, std::string path)
 	return (routes.isAllowed(method, path));
 }
 
-std::ostream&	operator<<(std::ostream& os, Server const& Server)
+std::ostream&	operator<<(std::ostream& os, Server const& serv)
 {
 	std::map<int, std::string> errors;
 
-	errors = Server.getErrorPaths();
-	os << GREEN << "Server name: " << Server.getName() << std::endl
-	<< BLUE << "Port: " << Server.getPort() << std::endl
-	<< GREEN << "IP: " << Server.getIp() << std::endl
-	<< RED << "Body size: " << Server.getBody() << std::endl
-	<< MAGENTA << "Root path: " << Server.getRootPath() << END << std::endl
-	<< Server.routes << std::endl;
+	errors = serv.getErrorPaths();
+	os << GREEN << "Server name: " << serv.getName() << std::endl
+	<< BLUE << "Port: " << serv.getPort() << std::endl
+	<< GREEN << "IP: " << serv.getIp() << std::endl
+	<< RED << "Body size: " << serv.getBody() << std::endl
+	<< MAGENTA << "Routes: " << serv.getRootPath() << END << std::endl
+	<< serv.routes << std::endl
+	<< CYAN << "Indexes: " << serv.html << END << std::endl << std::endl;
 	for (std::map<int, std::string>::iterator i = errors.begin(); i != errors.end(); i++)
 	{
 		os << YELLOW << (*i).first << " ";

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/02 15:37:00 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 16:49:59 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <MethodTree.hpp>
 #include <stdlib.h>
 #include "Parsing.hpp"
+#include "IndexTree.hpp"
 
 //Vector string//
 typedef std::vector<std::string> v_str;
@@ -65,6 +66,7 @@ public:
 	void			setAutoIndex(std::string autoindex);
 	bool			checkAllowedMethods(std::string method, std::string path);
 	MethodTree		routes;
+	IndexTree		html;
 	Server&	operator=(Server const& assign);
 };
 

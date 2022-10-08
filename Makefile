@@ -8,9 +8,10 @@ OBJ_PATH	=	obj/
 INC	=	-Iincludes
 
 SRC_NAME	=	test_main.cpp			\
+				MethodTree.cpp			\
+				IndexTree.cpp			\
 				Server.cpp				\
 				ParsingConfig.cpp		\
-				MethodTree.cpp			\
 				ft_split.cpp			\
 				parse_elems.cpp			\
 				print_functions.cpp

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 16:25:23 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 18:04:13 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 {
 //A RAJOUTER: INDEX.HTML TREE
 	t_method	method;
+	std::string	index;
 	v_str		args;
 
 	if (it != content.end() && (*it).find("location:") != std::string::npos)
@@ -85,10 +86,19 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 				return (false);
 			args.clear();
 		}
+		if ((*it).find("l_index") != std::string::npos)
+		{
+			ft_split((*it), args, " ");
+			args.erase(args.begin());
+			if (!add_index(args, index))
+				return (false);
+			args.clear();
+		}
 		it++;
 	}
 	if (method.path.empty())
 		return (false);
+	serv.html.addExecption(method.path, index);
 	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
 	return (true);
 }

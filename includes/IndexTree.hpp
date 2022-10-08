@@ -3,7 +3,7 @@
 
 # include <iostream>
 # include <string>
-
+# include <map>
 class IndexTree
 {
 
@@ -15,7 +15,7 @@ class IndexTree
 
 		IndexTree &		operator=( IndexTree const & rhs );
 
-		void	addExecption(std::string path, bstd::string index);
+		void	addExecption(std::string path, std::string index);
 		std::map<std::string, std::string>	getTree() const;
 
 	private:

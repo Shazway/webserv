@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 15:04:44 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 18:03:27 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,5 +94,13 @@ bool	add_methods(v_str& args, t_allowedMethods& allowed)
 		if ((*it).find("DELETE") != std::string::npos)
 			allowed.del = true;
 	}
+	return (true);
+}
+
+bool	add_index(v_str& args, std::string index)
+{
+	if (args.size() != 1)
+		return (false);
+	index = args.front();
 	return (true);
 }
