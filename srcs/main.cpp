@@ -14,6 +14,8 @@
 #include <sys/select.h>
 #include <fcntl.h>
 
+//pour start
+
 //extraire les donnees pertinentes de Server pour les mettre dans sockaddr
 void	init_addr(struct sockaddr *addr, Server serveur);
 
@@ -30,6 +32,9 @@ int	running(std::vector<Server> &servers)
 	Socket				socketMaker;
 	fd_set				fdread;
 	fd_set				fdwrite;
+	HttpRequest		tmp_request;
+	std::map<int, HttpRequest> requests;
+	std::string			buffer;
 
 	int opt; //ne sert a rien, mais calme le proto de setsockopt
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
@@ -46,7 +51,7 @@ int	running(std::vector<Server> &servers)
 	while (true)
 	{
 		initFdSet(fdread, &sockets, fds);
-		initFdSet(fdread, NULL, fds);
+		initFdSet(fdwrite, NULL, fds);
 		if (select(num, &fdread, &fdwrite, 0, 0) < 1)
 			continue ;
 		//for des sockets
@@ -67,7 +72,27 @@ int	running(std::vector<Server> &servers)
 		{
 			if (FD_ISSET((*it).getS(), fdread))
 			{
-
+				if (recv((*it).getS(), buffer, 2048, 0) <= 0)
+				{
+					close ((*it).getS());
+					fds.erase((*it).getS());
+				}
+				else if (!buffer.empty())
+				{
+					do
+					{
+						try
+						{
+							ParsingRequest(tmp_request, buffer);
+						}
+						catch(const std::exception& e)
+						{
+							std::cerr << RED << e.what()<< END << std::endl;
+						}
+					}
+					while (tmp_request.getPartiallyCompleted());
+					requests[(*it).getS()] = tmp_request;
+				}
 			}
 			if (FD_ISSET((*it).getS(), fdwrite))
 			{

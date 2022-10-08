@@ -22,7 +22,7 @@ class Socket
 
 	private:
 		int	_s;
-		struct sockaddr	_addr;
+		struct sockaddr	_addr;tocker les httpRequest dans un map
 
 };
 

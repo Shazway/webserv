@@ -7,7 +7,7 @@
 
 int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 {
-	int     i = 0, j = 0;
+	int	 i = 0, j = 0;
 	std::string::iterator it = bufferString.begin();
 	while (*it >= 'A' && *it <= 'Z')
 	{
@@ -105,24 +105,23 @@ int	parsingHeader(HttpRequest &request, std::string bufferString)
 	}
 	return (0);
 }
-
 //appele par la partie avec les sockets, stocker les httpRequest dans un map
 
 int parsingRequest(HttpRequest &request, std::string bufferString)
 {
-    std::string requestLine;
-    if (bufferString.empty())
-        return (0);
-    //normalement le buffer est assez grand pour avoir tout le header
-    //si !partiallyCompleted
-    if (!request.getPartiallyCompleted())
-    {
-    //  getline de request line
+	std::string requestLine;
+	if (bufferString.empty())
+		return (0);
+	//normalement le buffer est assez grand pour avoir tout le header
+	//si !partiallyCompleted
+	if (!request.getPartiallyCompleted())
+	{
+	// getline de request line
 		request.setPartiallyCompleted(true);
-        int error = parsingRequestLine(request, bufferString);
+		int error = parsingRequestLine(request, bufferString);
 		if (error)
 			return (error);
-    //  getline de header
+	// getline de header
 
 		int	n = bufferString.find("\n");
 		bufferString = bufferString.substr(n + 1, std::string::npos);
@@ -134,11 +133,11 @@ int parsingRequest(HttpRequest &request, std::string bufferString)
 			bufferString = "";
 		else
 			bufferString = bufferString.substr(n + (bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? 2 : 4), std::string::npos);
-    }
-    //recuperation du body
-    //si on a recupere tout le body, mettre partiallyCompleted a 0, sinon 1
+	}
+	//recuperation du body
+	//si on a recupere tout le body, mettre partiallyCompleted a 0, sinon 1
 
-    //return le code d'erreur si souci, sinon 0
+	//return le code d'erreur si souci, sinon 0
 	if (request.getContentLength())
 	{
 		request.setBody(bufferString);
