@@ -11,7 +11,7 @@ MethodTree::MethodTree()
 
 MethodTree::MethodTree( const MethodTree & src )
 {
-	(void)src;
+	_subdirectories = src._subdirectories;
 }
 
 
@@ -30,11 +30,10 @@ MethodTree::~MethodTree()
 
 MethodTree &				MethodTree::operator=( MethodTree const & rhs )
 {
-	//if ( this != &rhs )
-	//{
-		//this->_value = rhs.getValue();
-	//}
-	(void)rhs;
+	if ( this != &rhs )
+	{
+		_subdirectories = rhs._subdirectories;
+	}
 	return *this;
 }
 
