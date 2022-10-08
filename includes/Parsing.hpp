@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/07 02:36:38 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 16:25:39 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,10 @@ typedef struct s_method
 	t_allowedMethods	allowed;
 } t_method;
 
-std::vector<Server>	setup_config(char* config_path);
+std::vector<Server>	parse_config(char* config_path);
 void	fill_serv(Server& Serv, std::vector<std::string> content);
 void	fill_info(Server& Serv, std::string info);
 void	fill_content(std::ifstream& file, std::vector<std::string>& content);
-std::string	find_string_tab(std::string name, std::string *tab, int size);
 
 //PARSE ELEMS
 void	ft_split(std::string str, v_str& v, std::string delim);
@@ -48,7 +47,6 @@ bool	set_port(v_str& args, Server& serv);
 bool	set_ip(v_str& args, Server& serv);
 bool	set_name(v_str& args, Server& serv);
 bool	set_root(v_str& args, Server& serv);
-bool	add_method(v_str& args, Server& serv);
 bool	set_bodysize(v_str& args, Server& serv);
 bool	add_errorpath(v_str& args, Server& serv);
 bool	set_autoIndex(v_str& args, Server& serv);
@@ -57,5 +55,10 @@ void	display_v_str(std::vector<std::string> str);
 
 //PARSE ROOT ELEMS
 bool	method_set_path(v_str& args, std::string& path);
+
+//PRINT FUNCTIONS
+void	print_separator();
+void	display_v_str(std::vector<std::string> str);
+void	display_servers(std::vector<Server> servers);
 
 #endif

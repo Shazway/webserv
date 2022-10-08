@@ -50,7 +50,10 @@
 		"random": "cpp",
 		"ranges": "cpp",
 		"sstream": "cpp",
-		"cstring": "cpp"
+		"cstring": "cpp",
+		"ctime": "cpp",
+		"list": "cpp",
+		"iomanip": "cpp"
 	},
 	"C_Cpp.errorSquiggles": "Disabled"
 }

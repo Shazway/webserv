@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/01 17:39:33 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 16:25:39 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,6 @@ int	main(int ac, char **av)
 		return (1);
 	}
 	else
-		std::vector<Server> servers(setup_config(av[1]));
+		std::vector<Server> servers(parse_config(av[1]));
 	return (0);
 }

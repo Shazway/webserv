@@ -82,12 +82,11 @@ int	main(int ac, char** av)
 {
 	std::vector<Server> servers;
 	
-	// Telli : je ne sais pas si ton setup_config throw des exceptions ou quoi
-	//         reorganise ce bout de main si necessaire
+
 	if (ac == 1)
-		servers = setup_config("config/default.conf");
+		servers = parse_config("config/default.conf");
 	else if (ac == 2)		
-		servers = setup_config(av[1]);
+		servers = parse_config(av[1]);
 	else
 	{
 		std::cout << RED << "ERROR" << END << std::endl;

@@ -12,7 +12,8 @@ SRC_NAME	=	test_main.cpp			\
 				ParsingConfig.cpp		\
 				MethodTree.cpp			\
 				ft_split.cpp			\
-				parse_elems.cpp
+				parse_elems.cpp			\
+				print_functions.cpp
 OBJ_NAME	=	$(SRC_NAME:.cpp=.o)
 
 OBJ	=	$(addprefix $(OBJ_PATH), $(OBJ_NAME))

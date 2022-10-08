@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 16:07:33 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 16:25:23 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,24 +16,6 @@
 #include <iostream>
 #include <fstream>
 
-void	print_separator()
-{
-	std::cout << WHITE << "~~~~~~~~~~~~~~~~~~" << END << std::endl;
-}
-
-std::string	find_string_tab(std::string name, std::string *tab, int size){
-	for (int i = 0; i < size; i++){
-		if (tab[i] == name)
-			return (tab[i]);
-	}
-	return ("");
-}
-void	display_v_str(std::vector<std::string> str)
-{
-	for (std::vector<std::string>::iterator i = str.begin(); i != str.end(); i++)
-		std::cout << "[" <<(*i) << "]" << std::endl;
-}
-
 void	fill_content(std::ifstream& file, std::vector<std::string>& content)
 {
 	std::string	line;
@@ -42,46 +24,6 @@ void	fill_content(std::ifstream& file, std::vector<std::string>& content)
 		content.push_back(line);
 	}
 }
-
-void	add_method(Server& Serv, std::string content, std::string& path)
-{
-	t_allowedMethods	allowed;
-
-	if (content.find("GET"))
-		allowed.get = true;
-	if (content.find("POST"))
-		allowed.post = true;
-	if (content.find("DELETE"))
-		allowed.del = true;
-	Serv.routes.addExecption(path, allowed.get, allowed.post, allowed.del);
-}
-
-void	add_error_code(Server& Serv, std::string content)
-{
-	int	code;
-	std::string	path;
-	std::string	tmp;
-
-	tmp = content.substr(content.find_first_of("0123456789"), content.size());
-	code = atoi(tmp.c_str());
-	path = content.substr(content.find_last_of(' '), content.find_last_not_of(';'));
-	std::cout << RED << path << END << std::endl;
-	Serv.addErrorPath(code, path);
-}
-
-void	display_servers(std::vector<Server> servers)
-{
-	int count = 1;
-	for (std::vector<Server>::iterator i = servers.begin(); i != servers.end(); i++)
-	{
-		print_separator();
-		std::cout << BLUE << "Server number " << count << END << std::endl;
-		std::cout << (*i) << std::endl;
-		print_separator();
-		count++;
-	}
-}
-
 
 bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 {
@@ -115,6 +57,7 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
 	return (true);
 }
+
 //!\\S'OCCUPER DU INDEX.HTML DANS LE CONF
 bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 {
@@ -215,7 +158,7 @@ bool	fill_servers(std::vector<Server>& servers, v_str content)
 	return (true);
 }
 
-std::vector<Server>	setup_config(char* config_path)
+std::vector<Server>	parse_config(char* config_path)
 {
 	std::vector<Server>			servers;
 	std::ifstream				file;
