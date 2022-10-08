@@ -49,6 +49,7 @@ int	running(std::vector<Server> &servers)
 		initFdSet(fdread, NULL, fds);
 		if (select(num, &fdread, &fdwrite, 0, 0) < 1)
 			continue ;
+		//for des sockets
 		for (std::vector<Socket>::iterator it = sockets.begin(); it != sockets.end(); it++)
 		{
 			if (FD_ISSET((*it).getS(), fdread))
@@ -59,6 +60,18 @@ int	running(std::vector<Server> &servers)
 				fds.push_back(socketMaker);
 				if (socketMaker.getS() >= num)
 					num = socketMaker.getS() + 1;
+			}
+		}
+		//for des fds
+		for (std::list<Socket>::iterator it = fds.begin(); it != fds.end(); it++)
+		{
+			if (FD_ISSET((*it).getS(), fdread))
+			{
+
+			}
+			if (FD_ISSET((*it).getS(), fdwrite))
+			{
+				
 			}
 		}
 	}
