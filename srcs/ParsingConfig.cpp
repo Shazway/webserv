@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 15:27:07 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/08 15:50:05 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,14 +113,15 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 	if (method.path.empty())
 		return (false);
 	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
-	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
+	/*std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
 	std::cout << serv << std::endl;
-	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
+	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;*/
 	return (true);
 }
 //!\\S'OCCUPER DU INDEX.HTML DANS LE CONF
 bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 {
+//A RAJOUTER: INDEX.HTML TREE
 	t_method	method;
 	v_str		args;
 
@@ -149,12 +150,12 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 	if (method.path.empty())
 		return (false);
 	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
-	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
+	/*std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
 	std::cout << serv << std::endl;
-	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;
+	std::cout << RED << "~~~~~~~~~~~~~~~~~~~~~~~~~~~" << END << std::endl;*/
 	return (true);
 }
-//A RAJOUTER: INDEX.HTML TREE
+
 
 bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 {
@@ -195,6 +196,7 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 		}
 		it++;
 	}
+	std::cout << serv << std::endl;
 	return (true);
 }
 
@@ -239,6 +241,6 @@ std::vector<Server>	setup_config(char* config_path)
 		std::cerr << RED << "Error while parsing file, see error message above" << END << std::endl;
 		return (servers);
 	}
-	display_servers(servers);
+	//display_servers(servers);
 	return (servers);
 }
