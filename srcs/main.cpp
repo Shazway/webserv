@@ -13,6 +13,9 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <fcntl.h>
+#include "BookMark.hpp"
+
+#define BUFFER_SIZE 4096
 
 //pour start
 
@@ -24,6 +27,45 @@ void	initFdSet(fd_set &fdSet, std::vector<int> *sockets, std::list<int> &fds)
 	//si sockets n'est pas NULL, mettre les sockets dans fdSet en plus des fds
 }
 
+void	answer_get(HttpRequest request, std::map<int, std::string>& answers, std::map<int, BookMark>& bookmarks, int i)
+{
+	char								buf[BUFFER_SIZE];
+	std::map<int, BookMark>::iterator	it;
+	BookMark							tmp;
+
+	it = bookmarks.find(i);
+	if (it == bookmarks.end())
+	{
+		tmp.setFd(open(request.getPath())); // flags a rajouter
+		if (tmp.getFd() == -1)
+			return ; //throw un truc
+	}
+	else
+		tmp.setFd(bookmarks[i].getFd());
+	tmp.setRet(read(fd, buf, BUFFER_SIZE));
+	if (tmp.getRet() == BUFFER_SIZE)
+	{
+		if (it != bookmarks.end())
+			bookmarks.erase(it);
+		bookmarks[i] = tmp;
+	}
+	
+}
+
+void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, BookMark>& bookmarks)
+{
+	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
+	{
+		if ((*it).second.getMethod() == "GET")
+			answer_get((*it), answers, bookmarks, (*it).first);
+		if ((*it).second.getMethod() == "POST")
+			answer_post((*it), answers);
+		if ((*it).second.getMethod() == "DELETE")
+			answer_delete((*it), answers);
+	}
+	requests.clear();
+}
+
 int	running(std::vector<Server> &servers)
 {
 	int					num = 0; //plus grand fd en utilisation + 1;
@@ -33,8 +75,10 @@ int	running(std::vector<Server> &servers)
 	fd_set				fdread;
 	fd_set				fdwrite;
 	HttpRequest		tmp_request;
-	std::map<int, HttpRequest> requests;
-	std::string			buffer;
+	std::map<int, HttpRequest>	requests;
+	std::map<int, std::string>	answers;
+	std::map<int, BookMark>		bookmarks;
+	std::string					buffer;
 
 	int opt; //ne sert a rien, mais calme le proto de setsockopt
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
@@ -91,10 +135,11 @@ int	running(std::vector<Server> &servers)
 				}
 			}
 			if (FD_ISSET((*it).getS(), fdwrite))
-			{
-				
-			}
+				if (!answers.empty())
+					send((*it).getS(), answers[(*it).getS()], answers[(*it).getS()].size(), 0);
 		}
+		answers_gen(requests, answers, bookmarks);
+		//ici, générer des reponses
 	}
 	return 0;
 }
