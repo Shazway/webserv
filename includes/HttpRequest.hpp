@@ -10,7 +10,7 @@
 # define CODE_NO_QUERY 3
 # define CODE_NO_HTTP_VERSION 4
 # define CODE_UNSUPPORTED_HTTP_VERSION 5
-
+class Server;
 
 typedef struct s_fdserv
 {

@@ -6,16 +6,18 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 15:57:53 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/09 22:12:00 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSING_HPP
 # define PARSING_HPP
-#include "Server.hpp"
+# include "Server.hpp"
+# include "HttpRequest.hpp"
 
 #define METHOD method.allowed
 class Server;
+class HttpRequest;
 //Vector string//
 typedef std::vector<std::string> v_str;
 //Vector string iterator//
@@ -25,6 +27,7 @@ typedef std::vector<std::string>::iterator v_str_it;
 typedef bool	(*parse_elem)(std::vector<std::string>& , Server&);
 //Duplicate checkers function
 typedef bool		(*check_dup)(std::vector<Server>&);
+
 
 typedef struct s_dup
 {
@@ -75,5 +78,9 @@ bool	check_duplicates(std::vector<Server> servers);
 bool	check_port(std::vector<Server>& servers);
 bool	check_name(std::vector<Server>& servers);
 
-
+//PARSING REQUEST
+int	parsingHeader(HttpRequest &request, std::string bufferString);
+int	parsingRequestLine(HttpRequest &request, std::string bufferString);
+int	parsingHeader(HttpRequest &request, std::string bufferString);
+int parsingRequest(HttpRequest &request, std::string bufferString);
 #endif

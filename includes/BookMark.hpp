@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 17:12:43 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 21:01:57 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/09 22:33:54 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ class BookMark
 private:
 	int			ret;
 	int			fd;
-	HttpRequest	request;
+	HttpRequest request;
 public:
-	BookMark();
+	BookMark(Server const& serv);
 	BookMark(BookMark& copy);
 	~BookMark();
 	int		getFd() const;

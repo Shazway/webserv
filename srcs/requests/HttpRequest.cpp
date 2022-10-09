@@ -9,9 +9,10 @@
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-HttpRequest::HttpRequest(Server &serv) : _partiallyCompleted(false), _method(""), _path(""), _queryString(""), _httpVersion(""), _host(""), _connection(""), _contentType(""), _contentLength(0), _body(""), _serv(serv)
+HttpRequest::HttpRequest(Server &serv) : _serv(serv), _partiallyCompleted(false), _method(""), _path(""), _queryString(""), _httpVersion(""), _host(""), _connection(""), _contentType(""), _contentLength(0), _body("")
 {
 }
+
 
 /*HttpRequest::HttpRequest( const HttpRequest & src )
 {
@@ -31,12 +32,21 @@ HttpRequest::~HttpRequest()
 ** --------------------------------- OVERLOAD ---------------------------------
 */
 
-HttpRequest &				HttpRequest::operator=( HttpRequest const & rhs )
+HttpRequest &				HttpRequest::operator=( HttpRequest const &rhs )
 {
-	//if ( this != &rhs )
-	//{
-		//this->_value = rhs.getValue();
-	//}
+	if ( this != &rhs )
+	{
+		_partiallyCompleted = rhs._partiallyCompleted;
+		_method = rhs._method;
+		_path = rhs._queryString;
+		_queryString = rhs._queryString;
+		_httpVersion = rhs._httpVersion;
+		_host = rhs._host;
+		_connection = rhs._connection;
+		_contentType = rhs._contentType;
+		_contentLength = rhs._contentLength;
+		_body = rhs._body;
+	}
 	return *this;
 }
 
@@ -98,7 +108,7 @@ std::string	HttpRequest::getPath() const
 
 void		HttpRequest::setPath(std::string path)
 {
-	int root = path.find("/");
+	size_t root = path.find("/");
 	if (root == std::string::npos)
 		throw (UnexpectedValueException()); //erreur de pas un chemin valide
 	if (root == 0)
@@ -171,7 +181,7 @@ unsigned int	HttpRequest::getContentLength() const
 
 void		HttpRequest::setContentLength(std::string ContentLength)
 {
-	unsigned int	nb = std::stoul(ContentLength);
+	unsigned int	nb = atol(ContentLength.c_str());
 	if (nb > _serv.getBody())
 		throw (LongBodyException());//erreur de body trop long pour notre config
 	_contentLength = nb;

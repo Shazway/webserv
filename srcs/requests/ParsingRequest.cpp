@@ -79,9 +79,8 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 
 int	parsingHeader(HttpRequest &request, std::string bufferString)
 {
-	int	pos;
+	size_t	pos;
 	std::string	current;
-	int error = 0;
 
 	while (!bufferString.empty())
 	{
@@ -123,7 +122,7 @@ int parsingRequest(HttpRequest &request, std::string bufferString)
 			return (error);
 	// getline de header
 
-		int	n = bufferString.find("\n");
+		size_t	n = bufferString.find("\n");
 		bufferString = bufferString.substr(n + 1, std::string::npos);
 		n = bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? bufferString.find("\n\n") : bufferString.find("\r\n\r\n");
 		error = parsingHeader(request, bufferString.substr(0, n));

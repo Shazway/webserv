@@ -6,13 +6,13 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 17:21:04 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 17:34:40 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/09 22:33:30 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BookMark.hpp"
 
-BookMark::BookMark(): fd(0), ret(0), request(){
+BookMark::BookMark(Server const& serv): request(serv){
 	return ;
 }
 
@@ -21,7 +21,7 @@ BookMark::~BookMark(){
 }
 
 BookMark::BookMark(BookMark const& copy){
-		copy = *this;
+	*this = copy;
 	return ;
 }
 
