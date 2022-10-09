@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 18:14:18 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/09 15:57:53 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,22 @@
 #include "Server.hpp"
 
 #define METHOD method.allowed
-
 class Server;
 //Vector string//
 typedef std::vector<std::string> v_str;
 //Vector string iterator//
 typedef std::vector<std::string>::iterator v_str_it;
 
+//Parsing function
 typedef bool	(*parse_elem)(std::vector<std::string>& , Server&);
+//Duplicate checkers function
+typedef bool		(*check_dup)(std::vector<Server>&);
+
+typedef struct s_dup
+{
+	std::string	error_msg;
+	check_dup	ft;
+}	t_dup;
 
 typedef struct s_parser
 {
@@ -61,5 +69,11 @@ bool	method_set_path(v_str& args, std::string& path);
 void	print_separator();
 void	display_v_str(std::vector<std::string> str);
 void	display_servers(std::vector<Server> servers);
+
+//DUPLICATE CHECKS FOR SERVERS
+bool	check_duplicates(std::vector<Server> servers);
+bool	check_port(std::vector<Server>& servers);
+bool	check_name(std::vector<Server>& servers);
+
 
 #endif

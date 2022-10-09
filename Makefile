@@ -7,14 +7,15 @@ SRC_PATH	=	srcs/
 OBJ_PATH	=	obj/
 INC	=	-Iincludes
 
-SRC_NAME	=	test_main.cpp			\
-				MethodTree.cpp			\
-				IndexTree.cpp			\
-				Server.cpp				\
-				ParsingConfig.cpp		\
-				ft_split.cpp			\
-				parse_elems.cpp			\
-				print_functions.cpp
+SRC_NAME	=	test_main.cpp					\
+				MethodTree.cpp					\
+				IndexTree.cpp					\
+				Server.cpp						\
+				print_functions.cpp				\
+				parsing/ParsingConfig.cpp		\
+				parsing/ft_split.cpp			\
+				parsing/parse_elems.cpp			\
+				parsing/check_duplicates.cpp
 OBJ_NAME	=	$(SRC_NAME:.cpp=.o)
 
 OBJ	=	$(addprefix $(OBJ_PATH), $(OBJ_NAME))

@@ -82,13 +82,9 @@ int	running(std::vector<Server> &servers)
 					do
 					{
 						try
-						{
 							ParsingRequest(tmp_request, buffer);
-						}
 						catch(const std::exception& e)
-						{
 							std::cerr << RED << e.what()<< END << std::endl;
-						}
 					}
 					while (tmp_request.getPartiallyCompleted());
 					requests[(*it).getS()] = tmp_request;
