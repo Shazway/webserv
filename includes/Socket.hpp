@@ -5,6 +5,7 @@
 # include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 
 class Socket
 {
@@ -18,11 +19,11 @@ class Socket
 		Socket &		operator=( Socket const & rhs );
 		int	getS();
 		void	setS(int s);
-		struct sockaddr *getAddr();
+		struct sockaddr_in *getAddr();
 
 	private:
 		int	_s;
-		struct sockaddr	_addr;tocker les httpRequest dans un map
+		struct sockaddr_in	_addr; //stocker les httpRequest dans un map
 
 };
 

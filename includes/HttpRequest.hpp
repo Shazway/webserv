@@ -90,8 +90,9 @@ class DoubleHostException : virtual public std::exception
 {
 	virtual const char* what() const throw()
 	{
-		return ("The host is defined twice.");
+		return ("Bad request");
 	}
+	//int code = 400;
 };
 
 class UnexpectedValueException : virtual public std::exception

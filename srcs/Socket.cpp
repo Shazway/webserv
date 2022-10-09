@@ -60,7 +60,7 @@ void	Socket::setS(int s)
 	_s = s;
 }
 
-struct sockaddr *Socket::getAddr()
+struct sockaddr_in *Socket::getAddr()
 {
 	return (&_addr);
 }

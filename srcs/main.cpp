@@ -14,17 +14,30 @@
 #include <sys/select.h>
 #include <fcntl.h>
 #include "BookMark.hpp"
-
+#include <netinet/in.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/stat.h>
 #define BUFFER_SIZE 4096
 
 //pour start
 
 //extraire les donnees pertinentes de Server pour les mettre dans sockaddr
-void	init_addr(struct sockaddr *addr, Server serveur);
+void	init_addr(struct sockaddr_in& addr, Server server)
+{
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(server.getPort());
+	inet_aton(server.getIp().c_str(), &(addr.sin_addr));
+}
 
 void	initFdSet(fd_set &fdSet, std::vector<int> *sockets, std::list<int> &fds)
 {
-	//si sockets n'est pas NULL, mettre les sockets dans fdSet en plus des fds
+	FD_ZERO(&fdSet);
+	if (sockets)
+		for (std::vector<int>::iterator it = sockets->begin(); it != sockets->end(); it++)
+			FD_SET((*it), &fdSet);
+	for (std::list<int>::iterator it = fds.begin(); it != fds.end(); it++)
+		FD_SET((*it), &fdSet);
 }
 
 void	answer_get(HttpRequest request, std::map<int, std::string>& answers, std::map<int, BookMark>& bookmarks, int i)
@@ -32,24 +45,33 @@ void	answer_get(HttpRequest request, std::map<int, std::string>& answers, std::m
 	char								buf[BUFFER_SIZE];
 	std::map<int, BookMark>::iterator	it;
 	BookMark							tmp;
+	std::ifstream						file;
 
 	it = bookmarks.find(i);
 	if (it == bookmarks.end())
 	{
-		tmp.setFd(open(request.getPath())); // flags a rajouter
+		file.open(request.getPath().c_str(), std::iostream::in);
+		tmp.setFd(); // flags a rajouter
 		if (tmp.getFd() == -1)
 			return ; //throw un truc
 	}
 	else
 		tmp.setFd(bookmarks[i].getFd());
-	tmp.setRet(read(fd, buf, BUFFER_SIZE));
+	tmp.setRet(read(tmp.getFd(), buf, BUFFER_SIZE));
 	if (tmp.getRet() == BUFFER_SIZE)
 	{
 		if (it != bookmarks.end())
 			bookmarks.erase(it);
 		bookmarks[i] = tmp;
 	}
-	
+	answers[i] = "HTTP 1.1";
+	answers[i] += "200 OK\n";
+	answers[i] += "Content-Length: ";
+	answers[i] += tmp.getRet();
+	answers[i] += "\n\n";
+	answers[i] += buf;
+	if (tmp.getRet() < BUFFER_SIZE)
+		close(tmp.getFd());
 }
 
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, BookMark>& bookmarks)
@@ -57,11 +79,12 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
 		if ((*it).second.getMethod() == "GET")
-			answer_get((*it), answers, bookmarks, (*it).first);
-		if ((*it).second.getMethod() == "POST")
-			answer_post((*it), answers);
-		if ((*it).second.getMethod() == "DELETE")
-			answer_delete((*it), answers);
+			std::cout << "GET" << std::endl;
+			//answer_get((*it), answers, bookmarks, (*it).first);
+//		if ((*it).second.getMethod() == "POST")
+			//answer_post((*it), answers);
+//		if ((*it).second.getMethod() == "DELETE")
+			//answer_delete((*it), answers);
 	}
 	requests.clear();
 }
@@ -85,7 +108,7 @@ int	running(std::vector<Server> &servers)
 	{
 		init_addr(socketMaker.getAddr(), *it);
 		socketMaker.setS(socket(/*a remplir*/));
-		bind(socketMaker.getS(), addr);
+		bind(socketMaker.getS(), (struct sockaddr)addr);
 		listen(socketMaker.getS(), 32);
 		setsockopt(socketMaker.getS(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 		sockets.push_back(socketMaker);
@@ -103,7 +126,7 @@ int	running(std::vector<Server> &servers)
 		{
 			if (FD_ISSET((*it).getS(), fdread))
 			{
-				socketMaker.setS(accept((*it).getS(), (*it).getAddr(), sizeof(struct sockaddr)));
+				socketMaker.setS(accept((*it).getS(), (*it).getAddr(), sizeof(struct sockaddr_in)));
 				fcntl(socketMaker.getS(), O_NONBLOCK);
 				//faire un truc avec socketMaker._addr
 				fds.push_back(socketMaker);
@@ -128,7 +151,7 @@ int	running(std::vector<Server> &servers)
 						try
 							ParsingRequest(tmp_request, buffer);
 						catch(const std::exception& e)
-							std::cerr << RED << e.what()<< END << std::endl;
+							std::cerr << RED << e.code() << " " << e.what() << END << std::endl;
 					}
 					while (tmp_request.getPartiallyCompleted());
 					requests[(*it).getS()] = tmp_request;
