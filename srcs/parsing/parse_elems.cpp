@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 16:30:50 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/09 16:35:30 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ bool	parse_ip(std::string ip)
 	std::vector<std::string>	split_ip;
 
 	ft_split(ip, split_ip, ".");
-	if (split_ip.size() < 4)
+	if (split_ip.size() != 4)
 		return (false);
 	for (v_str_it it = split_ip.begin(); it != split_ip.end(); it++)
 	{
