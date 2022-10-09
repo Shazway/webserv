@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 17:12:43 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 17:30:31 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/09 21:01:57 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,11 @@ public:
 	BookMark(BookMark& copy);
 	~BookMark();
 	int		getFd() const;
-	void	setFd();
+	void	setFd(int fd);
 	int		getRet() const;
-	void	setRet();
+	void	setRet(int ret);
 	HttpRequest&	getRequest() const;
-	void		setRequest();
+	void		setRequest(HttpRequest const& HttpRequest);
 	BookMark& operator=(BookMark const& assign);
 };
 

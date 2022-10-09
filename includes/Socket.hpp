@@ -17,12 +17,15 @@ class Socket
 		~Socket();
 
 		Socket &		operator=( Socket const & rhs );
-		int	getS();
-		void	setS(int s);
-		struct sockaddr_in *getAddr();
+		int	getFd();
+		Server& getServ() const;
+		void	setServ(Server const& serv);
+		void	setFd(int s);
+		struct sockaddr_in& getAddr();
 
 	private:
-		int	_s;
+		int	_fd;
+		Server* serv;
 		struct sockaddr_in	_addr; //stocker les httpRequest dans un map
 
 };

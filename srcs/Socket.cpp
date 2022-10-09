@@ -50,17 +50,26 @@ std::ostream &			operator<<( std::ostream & o, Socket const & i )
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
-int	Socket::getS()
+int	Socket::getFd()
 {
-	return (_s);
+	return (_fd);
 }
 
-void	Socket::setS(int s)
+void	Socket::setFd(int fd)
 {
-	_s = s;
+	_fd = fd;
 }
 
-struct sockaddr_in *Socket::getAddr()
+void	Socket::setServ(Server const& server)
+{
+	serv = &server;
+}
+Server&	Socket::getServ() const
+{
+	return (serv);
+}
+
+struct sockaddr_in& Socket::getAddr()
 {
 	return (&_addr);
 }

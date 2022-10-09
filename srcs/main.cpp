@@ -18,6 +18,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #define BUFFER_SIZE 4096
 
 //pour start
@@ -30,14 +31,16 @@ void	init_addr(struct sockaddr_in& addr, Server server)
 	inet_aton(server.getIp().c_str(), &(addr.sin_addr));
 }
 
-void	initFdSet(fd_set &fdSet, std::vector<int> *sockets, std::list<int> &fds)
+void	initFdSet(fd_set &fdSet, std::vector<Socket> *sockets, std::list<Socket> &fds)
 {
 	FD_ZERO(&fdSet);
 	if (sockets)
-		for (std::vector<int>::iterator it = sockets->begin(); it != sockets->end(); it++)
-			FD_SET((*it), &fdSet);
-	for (std::list<int>::iterator it = fds.begin(); it != fds.end(); it++)
-		FD_SET((*it), &fdSet);
+		for (std::vector<Socket>::iterator it = sockets->begin(); it != sockets->end(); it++)
+		{
+			FD_SET((*it).getFd(), &fdSet);
+		}
+	for (std::list<Socket>::iterator it = fds.begin(); it != fds.end(); it++)
+		FD_SET((*it).getFd(), &fdSet);
 }
 
 void	answer_get(HttpRequest request, std::map<int, std::string>& answers, std::map<int, BookMark>& bookmarks, int i)
@@ -50,8 +53,7 @@ void	answer_get(HttpRequest request, std::map<int, std::string>& answers, std::m
 	it = bookmarks.find(i);
 	if (it == bookmarks.end())
 	{
-		file.open(request.getPath().c_str(), std::iostream::in);
-		tmp.setFd(); // flags a rajouter
+		tmp.setFd(open(request.getPath().c_str(), O_RDONLY));
 		if (tmp.getFd() == -1)
 			return ; //throw un truc
 	}
@@ -76,6 +78,8 @@ void	answer_get(HttpRequest request, std::map<int, std::string>& answers, std::m
 
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, BookMark>& bookmarks)
 {
+	(void)answers;
+	(void)bookmarks;
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
 		if ((*it).second.getMethod() == "GET")
@@ -97,7 +101,6 @@ int	running(std::vector<Server> &servers)
 	Socket				socketMaker;
 	fd_set				fdread;
 	fd_set				fdwrite;
-	HttpRequest		tmp_request;
 	std::map<int, HttpRequest>	requests;
 	std::map<int, std::string>	answers;
 	std::map<int, BookMark>		bookmarks;
@@ -106,15 +109,16 @@ int	running(std::vector<Server> &servers)
 	int opt; //ne sert a rien, mais calme le proto de setsockopt
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
 	{
-		init_addr(socketMaker.getAddr(), *it);
-		socketMaker.setS(socket(/*a remplir*/));
-		bind(socketMaker.getS(), (struct sockaddr)addr);
-		listen(socketMaker.getS(), 32);
-		setsockopt(socketMaker.getS(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+		init_addr(socketMaker.getAddr(), (*it));
+		socketMaker.setFd(socket(PF_INET, SOCK_STREAM, 0));
+		if (socketMaker.getFd() >= num)
+			num = socketMaker.getFd() + 1;
+		socketMaker.setServ((*it));
+		bind(socketMaker.getFd(), (const struct sockaddr*)(&(socketMaker.getAddr())), sizeof(socketMaker.getAddr()));
+		listen(socketMaker.getFd(), 32);
+		setsockopt(socketMaker.getFd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 		sockets.push_back(socketMaker);
 	}
-	if (s >= num)
-		num = s + 1;
 	while (true)
 	{
 		initFdSet(fdread, &sockets, fds);
@@ -124,19 +128,23 @@ int	running(std::vector<Server> &servers)
 		//for des sockets
 		for (std::vector<Socket>::iterator it = sockets.begin(); it != sockets.end(); it++)
 		{
-			if (FD_ISSET((*it).getS(), fdread))
+			if (FD_ISSET((*it).getFd(), fdread))
 			{
-				socketMaker.setS(accept((*it).getS(), (*it).getAddr(), sizeof(struct sockaddr_in)));
-				fcntl(socketMaker.getS(), O_NONBLOCK);
+				socketMaker.setFd(accept((*it).getFd(), (*it).getAddr(), sizeof(struct sockaddr_in)));
+				if (socketMaker.getFd() >= num)
+					num = socketMaker.getFd() + 1;
+				socketMaker.setServ((*it).getServ());
+				fcntl(socketMaker.getFd(), O_NONBLOCK);
 				//faire un truc avec socketMaker._addr
 				fds.push_back(socketMaker);
-				if (socketMaker.getS() >= num)
-					num = socketMaker.getS() + 1;
+				if (socketMaker.getFd() >= num)
+					num = socketMaker.getFd() + 1;
 			}
 		}
 		//for des fds
 		for (std::list<Socket>::iterator it = fds.begin(); it != fds.end(); it++)
 		{
+			HttpRequest tmp_request((*it).getServ());
 			if (FD_ISSET((*it).getS(), fdread))
 			{
 				if (recv((*it).getS(), buffer, 2048, 0) <= 0)

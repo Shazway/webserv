@@ -11,6 +11,13 @@
 # define CODE_NO_HTTP_VERSION 4
 # define CODE_UNSUPPORTED_HTTP_VERSION 5
 
+
+typedef struct s_fdserv
+{
+	int 	fd;
+	Server& serv;
+}	t_fdserv;
+
 class HttpRequest
 {
 
