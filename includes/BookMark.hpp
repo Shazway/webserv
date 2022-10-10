@@ -23,14 +23,14 @@ private:
 	int			fd;
 	HttpRequest request;
 public:
-	BookMark(Server const& serv);
-	BookMark(BookMark& copy);
+	BookMark(Server& serv);
+	BookMark(BookMark const& copy);
 	~BookMark();
 	int		getFd() const;
 	void	setFd(int fd);
 	int		getRet() const;
 	void	setRet(int ret);
-	HttpRequest&	getRequest() const;
+	HttpRequest	getRequest() const;
 	void		setRequest(HttpRequest const& HttpRequest);
 	BookMark& operator=(BookMark const& assign);
 };

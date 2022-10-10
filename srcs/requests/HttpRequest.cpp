@@ -9,7 +9,7 @@
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-HttpRequest::HttpRequest(Server &serv) : _serv(serv), _partiallyCompleted(false), _method(""), _path(""), _queryString(""), _httpVersion(""), _host(""), _connection(""), _contentType(""), _contentLength(0), _body("")
+HttpRequest::HttpRequest(Server& serv) : _serv(serv), _partiallyCompleted(false), _method(""), _path(""), _queryString(""), _httpVersion(""), _host(""), _connection(""), _contentType(""), _contentLength(0), _body("")
 {
 }
 

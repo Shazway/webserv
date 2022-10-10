@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include "Server.hpp"
 
 class Socket
 {
@@ -17,11 +18,11 @@ class Socket
 		~Socket();
 
 		Socket &		operator=( Socket const & rhs );
-		int	getFd();
-		Server& getServ() const;
-		void	setServ(Server const& serv);
+		int	getFd() const;
+		Server* getServ() const;
+		void	setServ(Server& serv);
 		void	setFd(int s);
-		struct sockaddr_in& getAddr();
+		const struct sockaddr_in* getAddr() const;
 
 	private:
 		int	_fd;

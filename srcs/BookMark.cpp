@@ -12,7 +12,7 @@
 
 #include "BookMark.hpp"
 
-BookMark::BookMark(Server const& serv): request(serv){
+BookMark::BookMark(Server& serv): request(serv){
 	return ;
 }
 
@@ -20,8 +20,9 @@ BookMark::~BookMark(){
 	return ;
 }
 
-BookMark::BookMark(BookMark const& copy){
-	*this = copy;
+BookMark::BookMark(BookMark const& copy): request(copy.request){
+	ret = copy.ret;
+	fd = copy.fd;
 	return ;
 }
 
@@ -33,7 +34,7 @@ void	BookMark::setRet(int ret){
 	this->ret = ret;
 }
 
-void	BookMark::setRequest(int request){
+void	BookMark::setRequest(HttpRequest const& request){
 	this->request = request;
 }
 
@@ -45,7 +46,7 @@ int	BookMark::getRet() const{
 	return (ret);
 }
 
-HttpRequest& BookMark::getRequest() const{
+HttpRequest BookMark::getRequest() const{
 	return (request);
 }
 

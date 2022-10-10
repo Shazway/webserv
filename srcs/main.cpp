@@ -24,11 +24,11 @@
 //pour start
 
 //extraire les donnees pertinentes de Server pour les mettre dans sockaddr
-void	init_addr(struct sockaddr_in& addr, Server server)
+void	init_addr(struct sockaddr_in* addr, Server server)
 {
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(server.getPort());
-	inet_aton(server.getIp().c_str(), &(addr.sin_addr));
+	addr->sin_family = AF_INET;
+	addr->sin_port = htons(server.getPort());
+	inet_aton(server.getIp().c_str(), &(addr->sin_addr));
 }
 
 void	initFdSet(fd_set &fdSet, std::vector<Socket> *sockets, std::list<Socket> &fds)
@@ -110,12 +110,12 @@ int	running(std::vector<Server> &servers)
 	int opt; //ne sert a rien, mais calme le proto de setsockopt
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
 	{
-		init_addr(socketMaker.getAddr(), (*it));
+		init_addr((struct sockaddr_in*)socketMaker.getAddr(), (*it));
 		socketMaker.setFd(socket(PF_INET, SOCK_STREAM, 0));
 		if (socketMaker.getFd() >= num)
 			num = socketMaker.getFd() + 1;
 		socketMaker.setServ((*it));
-		bind(socketMaker.getFd(), (const struct sockaddr*)(&(socketMaker.getAddr())), sizeof(socketMaker.getAddr()));
+		bind(socketMaker.getFd(), (const struct sockaddr*)(socketMaker.getAddr()), sizeof(socketMaker.getAddr()));
 		listen(socketMaker.getFd(), 32);
 		setsockopt(socketMaker.getFd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 		sockets.push_back(socketMaker);
@@ -132,10 +132,10 @@ int	running(std::vector<Server> &servers)
 			if (FD_ISSET((*it).getFd(), &fdread))
 			{
 				socklen_t	trash;
-				socketMaker.setFd(accept((*it).getFd(), (struct sockaddr*)(&((*it).getAddr())), &trash));
+				socketMaker.setFd(accept((*it).getFd(), (struct sockaddr*)((*it).getAddr()), &trash));
 				if (socketMaker.getFd() >= num)
 					num = socketMaker.getFd() + 1;
-				socketMaker.setServ((*it).getServ());
+				socketMaker.setServ(*(it->getServ()));
 				fcntl(socketMaker.getFd(), O_NONBLOCK);
 				//faire un truc avec socketMaker._addr
 				fds.push_back(socketMaker);
@@ -146,7 +146,7 @@ int	running(std::vector<Server> &servers)
 		//for des fds
 		for (std::list<Socket>::iterator it = fds.begin(); it != fds.end(); it++)
 		{
-			HttpRequest tmp_request((*it).getServ());
+			HttpRequest tmp_request(*(it->getServ()));
 			if (FD_ISSET((*it).getFd(), &fdread))
 			{
 				if (recv((*it).getFd(), buffer, 2048, 0) <= 0)

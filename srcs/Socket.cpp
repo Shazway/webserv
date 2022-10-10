@@ -10,6 +10,7 @@ Socket::Socket()
 
 Socket::Socket( const Socket & src )
 {
+	*this = src;
 }
 
 
@@ -28,16 +29,22 @@ Socket::~Socket()
 
 Socket &				Socket::operator=( Socket const & rhs )
 {
-	//if ( this != &rhs )
-	//{
-		//this->_value = rhs.getValue();
-	//}
+	if ( this != &rhs )
+	{
+		this->_fd = rhs._fd;
+		this->serv = rhs.serv;
+		this->_addr.sin_family = rhs._addr.sin_family;
+		this->_addr.sin_port = rhs._addr.sin_port;
+		this->_addr.sin_addr = rhs._addr.sin_addr;
+	}
 	return *this;
 }
 
 std::ostream &			operator<<( std::ostream & o, Socket const & i )
 {
-	//o << "Value = " << i.getValue();
+	o << "fd = " << i.getFd() << std::endl;
+	o << "serv = " << i.getServ() << std::endl;
+	o << "addr = " << i.getAddr()->sin_addr.s_addr << "::" << i.getAddr()->sin_port << std::endl;
 	return o;
 }
 
@@ -50,7 +57,7 @@ std::ostream &			operator<<( std::ostream & o, Socket const & i )
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
-int	Socket::getFd()
+int	Socket::getFd() const
 {
 	return (_fd);
 }
@@ -60,16 +67,16 @@ void	Socket::setFd(int fd)
 	_fd = fd;
 }
 
-void	Socket::setServ(Server const& server)
+void	Socket::setServ(Server& server)
 {
 	serv = &server;
 }
-Server&	Socket::getServ() const
+Server*	Socket::getServ() const
 {
 	return (serv);
 }
 
-struct sockaddr_in& Socket::getAddr()
+const struct sockaddr_in* Socket::getAddr() const
 {
 	return (&_addr);
 }
