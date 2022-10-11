@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "Server.hpp"
+#include <string.h>
 
 class Socket
 {

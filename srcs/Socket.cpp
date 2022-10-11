@@ -6,6 +6,7 @@
 
 Socket::Socket()
 {
+	memset(&_addr, 0, sizeof(struct sockaddr_in));
 }
 
 Socket::Socket( const Socket & src )

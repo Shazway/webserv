@@ -26,9 +26,14 @@
 //extraire les donnees pertinentes de Server pour les mettre dans sockaddr
 void	init_addr(struct sockaddr_in* addr, Server server)
 {
+	int sockfd;
+
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	addr->sin_family = AF_INET;
 	addr->sin_port = htons(server.getPort());
-	inet_aton(server.getIp().c_str(), &(addr->sin_addr));
+	addr->sin_addr.s_addr = inet_addr(server.getIp().c_str());
+	connect(sockfd, (struct sockaddr*)&addr, sizeof(addr));
+	//inet_aton(server.getIp().c_str(), &(addr->sin_addr));
 }
 
 void	initFdSet(fd_set &fdSet, std::vector<Socket> *sockets, std::list<Socket> &fds)
@@ -124,8 +129,10 @@ int	running(std::vector<Server> &servers)
 	{
 		initFdSet(fdread, &sockets, fds);
 		initFdSet(fdwrite, NULL, fds);
+		std::cout << "Here" << std::endl;
 		if (select(num, &fdread, &fdwrite, 0, 0) < 1)
 			continue ;
+		std::cout << "There" << std::endl;
 		//for des sockets
 		for (std::vector<Socket>::iterator it = sockets.begin(); it != sockets.end(); it++)
 		{
@@ -185,9 +192,8 @@ int	running(std::vector<Server> &servers)
 int	main(int ac, char** av)
 {
 	std::vector<Server> servers;
-	
 
-	if (ac == 2)		
+	if (ac == 2)
 		servers = parse_config(av[1]);
 	else
 	{

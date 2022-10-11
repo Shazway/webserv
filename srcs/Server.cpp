@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 16:59:02 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/11 16:30:00 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ std::ostream&	operator<<(std::ostream& os, Server const& serv)
 	<< BLUE << "Port: " << serv.getPort() << std::endl
 	<< GREEN << "IP: " << serv.getIp() << std::endl
 	<< RED << "Body size: " << serv.getBody() << std::endl
-	<< MAGENTA << "Routes: " << serv.getRootPath() << END << std::endl
+	<< MAGENTA << "Routes: " << serv.getRootPath() << std::endl
 	<< serv.routes << std::endl
 	<< CYAN << "Indexes: " << serv.html << END << std::endl << std::endl;
 	for (std::map<int, std::string>::iterator i = errors.begin(); i != errors.end(); i++)

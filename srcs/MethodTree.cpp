@@ -31,9 +31,7 @@ MethodTree::~MethodTree()
 MethodTree &				MethodTree::operator=( MethodTree const & rhs )
 {
 	if ( this != &rhs )
-	{
 		_subdirectories = rhs._subdirectories;
-	}
 	return *this;
 }
 
@@ -43,11 +41,12 @@ std::ostream &			operator<<( std::ostream & o, MethodTree const & i )
 
 	for (std::map<std::string, t_allowedMethods>::iterator it = tree.begin(); it != tree.end(); it++)
 	{
-		o << GREEN << "Path: " << (*it).first << std::endl;
+		o << "Path: " << (*it).first << std::endl;
 		o << "GET: " << ((*it).second.get ? "enabled" : "disabled") << ", ";
 		o << "POST: " << ((*it).second.post ? "enabled" : "disabled") << ", ";
-		o << "DEL: " << ((*it).second.del ? "enabled" : "disabled") << END << std::endl;
+		o << "DEL: " << ((*it).second.del ? "enabled" : "disabled") << std::endl;
 	}
+	o << END;
 	return (o);
 }
 
