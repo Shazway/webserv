@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 16:49:59 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/11 23:46:47 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,13 @@
 #include <MethodTree.hpp>
 #include <stdlib.h>
 #include "Parsing.hpp"
+#include <fstream>
+#include <sys/epoll.h>
+#include <string>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include "IndexTree.hpp"
 
 //Vector string//
@@ -42,11 +49,14 @@ private:
 	unsigned int				body_size;
 	std::map<int, std::string>	error_paths;
 	bool						auto_index;
+	struct sockaddr_in			addr;
 public:
 	Server();
 	Server(Server const& serv);
 	~Server();
+	int					init_socket();
 	unsigned int		getBody() const;
+	struct sockaddr_in	getAddr() const;
 	bool				getAutoIndex() const;
 	std::string			getRootPath() const;
 	std::string			getConfigPath() const;
@@ -55,16 +65,17 @@ public:
 	std::string			getName() const;
 	std::string			getErrorPath(int code) const;
 	std::map<int, std::string>	getErrorPaths() const;
-	void			setBody(std::string body);
-	void			setRootPath(std::string path);
-	void			setConfigPath(std::string path);
-	void			addErrorPath(int error, std::string path);
-	void			setIp(std::string Ip);
-	void			setPort(std::string port);
-	void			setName(std::string name);
-	void			checkIndex(int index);
-	void			setAutoIndex(std::string autoindex);
-	bool			checkAllowedMethods(std::string method, std::string path);
+	void	setAddr();
+	void	setBody(std::string body);
+	void	setRootPath(std::string path);
+	void	setConfigPath(std::string path);
+	void	addErrorPath(int error, std::string path);
+	void	setIp(std::string Ip);
+	void	setPort(std::string port);
+	void	setName(std::string name);
+	void	checkIndex(int index);
+	void	setAutoIndex(std::string autoindex);
+	bool	checkAllowedMethods(std::string method, std::string path);
 	MethodTree		routes;
 	IndexTree		html;
 	Server&	operator=(Server const& assign);

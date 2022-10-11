@@ -19,7 +19,7 @@ SRC_NAME	=	test_main.cpp					\
 				requests/HttpRequest.cpp		\
 				requests/ParsingRequest.cpp		\
 				BookMark.cpp					\
-				sockets/Sockets.cpp
+				Webserv.cpp
 OBJ_NAME	=	$(SRC_NAME:.cpp=.o)
 
 OBJ	=	$(addprefix $(OBJ_PATH), $(OBJ_NAME))

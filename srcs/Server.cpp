@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/11 16:30:00 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/12 00:05:56 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,14 @@ void	Server::setConfigPath(std::string path){
 void	Server::setIp(std::string Ip){
 	this->ip = Ip;
 }
+void	Server::setAddr(){
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons((unsigned int)port);
+	addr.sin_addr.s_addr = htonl(0);
+}
+struct sockaddr_in	Server::getAddr() const{
+	return(addr);
+}
 
 void	Server::setPort(std::string port){
 	this->port = atoi(port.c_str());
@@ -137,4 +145,23 @@ std::ostream&	operator<<(std::ostream& os, Server const& serv)
 	}
 	os << END;
 	return (os);
+}
+
+
+int	Server::init_socket()
+{
+	int			fd_listen;
+
+	fd_listen = socket(AF_INET, SOCK_STREAM, 0);
+	if (fd_listen == -1)
+		return (-1);
+	bool	trash = false;
+	setsockopt(fd_listen, SOL_SOCKET, SO_REUSEADDR, (char*)&trash, sizeof(&trash));
+	this->setAddr();
+
+	if (bind(fd_listen, (sockaddr*)&addr, sizeof(addr)) != 0)
+		return (-1);
+	if (listen(fd_listen, 5) < 0)
+		return (-1);
+	return (fd_listen);
 }

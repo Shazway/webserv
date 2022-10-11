@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 19:20:00 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/11 19:56:46 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/11 21:42:52 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ class Sockets
 private:
 	int					fd_listen;
 	int					fd_epoll;
-	//struct epoll_event	events[MAX_SIZE];
+	struct epoll_event	events[MAX_SIZE];
 	Server				serv;
-	
+
 private:
 	void	add_event(int fd, int flag);
 
@@ -45,6 +45,7 @@ public:
 	~Sockets();
 
 	bool	init_server();
+	void	start_server();
 };
 
 #endif

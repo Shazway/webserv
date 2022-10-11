@@ -6,12 +6,26 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 20:33:10 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/12 00:04:41 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
 #include "Parsing.hpp"
+#include "Webserv.hpp"
+#include "Server.hpp"
+
+
+void	start(std::vector<Server>& servers)
+{
+	Webserv	webserv;
+	int		fd_listen;
+
+	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
+	{
+		fd_listen = (*it).init_socket();
+		webserv.add_server(fd_listen, (*it));
+	}
+}
 
 int	main(int ac, char **av)
 {
@@ -23,6 +37,9 @@ int	main(int ac, char **av)
 		return (1);
 	}
 	else
+	{
 		std::vector<Server> servers(parse_config(av[1]));
+		start(servers);
+	}
 	return (0);
 }

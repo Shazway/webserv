@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 19:23:32 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/11 19:55:53 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/11 21:31:53 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,32 @@ bool	Sockets::init_server()
 	return (true);
 }
 
-//PRIVATE MANAGEMENT FOR EVENTS
+void	Sockets::start_server()
+{
+	while (true)
+	{
+		int ret = epoll_wait(fd_epoll, events, NB_EVENTS, -1);
+	
+		for (int i = 0; i < ret; i++)
+		{
+			if (events[i].data.fd == fd_epoll)
+			{
+				sockaddr_in	addr;
+				socklen_t	len = sizeof(addr);
+				int client = accept(fd_listen, (sockaddr*)&addr, &len);
+				if (client <= 0)
+				{
+					std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
+					continue ;
+				}
+				// Client accepted here
+				add_event(client, EPOLLIN);
+			}
+		}
+	}
+}
+
+//PRIVATE MANAGEMENT FUNCTIONS FOR EVENTS
 void	Sockets::add_event(int fd, int flag)
 {
 	struct epoll_event event;
