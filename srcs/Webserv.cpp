@@ -41,6 +41,16 @@ void	Webserv::setNbEvents(size_t nb)
 	return ;
 }
 
+void	Webserv::increaseNbEvent()
+{
+	nb_events++;
+}
+
+void	Webserv::decreaseNbEvent()
+{
+	nb_events--;
+}
+
 void	Webserv::setEpollfd(int fd)
 {
 	epollfd = fd;

@@ -24,7 +24,11 @@ void	start(std::vector<Server>& servers)
 	{
 		fd_listen = (*it).init_socket();
 		webserv.add_server(fd_listen, (*it));
+		webserv.add_event(fd_listen, EPOLLIN);
+		webserv.increaseNbEvent();
 	}
+	std::cout << "Notre webserv :" << std::endl;
+	std::cout << webserv << std::endl;
 }
 
 int	main(int ac, char **av)

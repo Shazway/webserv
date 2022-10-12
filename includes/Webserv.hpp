@@ -34,6 +34,8 @@ public:
 	int									getEpollfd() const;
 //set
 	void	setNbEvents(size_t nb);
+	void	increaseNbEvent();
+	void	decreaseNbEvent();
 	void	setEpollfd(int fd);
 //affichage
 	void	printServers(std::ostream& os) const;
