@@ -20,16 +20,16 @@ class Webserv
 {
 private:
 	std::map<int, Server>			servers;
-	std::map<int, struct epoll_event>	events;
 	size_t							nb_events;
 	int								epollfd;
 public:
+	std::vector<struct epoll_event>		events;//garder en vector, ne pas mettre en map (pour epoll_wait)
 	Webserv();
 	~Webserv();
 //getters
 	void								add_event(int fd, int flag);
 	void								add_server(int fd, Server serv);
-	
+
 	size_t								getNbEvents() const;
 	int									getEpollfd() const;
 //set

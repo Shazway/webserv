@@ -19,13 +19,39 @@ void	start(std::vector<Server>& servers)
 {
 	Webserv	webserv;
 	int		fd_listen;
+	int		ret;
+	int		client;
 
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
 	{
 		fd_listen = (*it).init_socket();
 		webserv.add_server(fd_listen, (*it));
-		webserv.add_event(fd_listen, EPOLLIN);
-		webserv.increaseNbEvent();
+	}
+	while (true)
+	{
+		ret = epoll_wait(webserv.getEpollfd(), webserv.events.data(), webserv.getNbEvents(), -1 );
+		for (int i = 0; i < ret; i++)
+		{
+			for () //tester toutes les sockets en faisant un iterator sur les servers
+			{
+				if (webserv.events[i].data.fd ==)
+				{
+					//accept
+				}
+			}
+			else
+			{
+				client = webserv.events[i].data.fd;
+				if (webserv.events[i].events & EPOLLIN)
+				{
+					//clients dont on doit recv un truc
+				}
+				else if (webserv.events[i].events & EPOLLOUT)
+				{
+					//clients a qui on doit send un truc
+				}
+			}
+		}
 	}
 	std::cout << "Notre webserv :" << std::endl;
 	std::cout << webserv << std::endl;

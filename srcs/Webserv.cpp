@@ -14,7 +14,7 @@
 #include "Sockets.hpp"
 #include <map>
 
-Webserv::Webserv(): servers(), events(), nb_events(0), epollfd(epoll_create(1000))
+Webserv::Webserv(): servers(), nb_events(0), epollfd(epoll_create(1000)), events()
 {
 	return ;
 }
@@ -24,7 +24,6 @@ Webserv::~Webserv(){
 		close(epollfd);
 	return ;
 }
-
 
 size_t	Webserv::getNbEvents() const
 {
@@ -64,7 +63,8 @@ void	Webserv::add_event(int fd, int flag)
 	event.data.fd = fd;
 	event.events = flag;
 	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &event);
-	events.insert(std::pair<int, struct epoll_event> (fd, event));
+	increaseNbEvent();
+	events.push_back(event);
 }
 
 void	Webserv::add_server(int fd, Server serv)
@@ -83,10 +83,10 @@ void	Webserv::printServers(std::ostream& os) const
 
 void	Webserv::printEvents(std::ostream& os) const
 {
-	for (std::map<int, struct epoll_event>::const_iterator it = events.begin(); it != events.end(); it++)
+	for (std::vector<struct epoll_event>::const_iterator it = events.begin(); it != events.end(); it++)
 	{
-		os << WHITE << "Fd: " << (*it).second.data.fd<< std::endl;
-		os << "FLAG: " <<(*it).second.events << std::endl;
+		os << WHITE << "Fd: " << (*it).data.fd<< std::endl;
+		os << "FLAG: " <<(*it).events << std::endl;
 	}
 }
 
