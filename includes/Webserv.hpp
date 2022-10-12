@@ -35,6 +35,9 @@ public:
 //set
 	void	setNbEvents(size_t nb);
 	void	setEpollfd(int fd);
+//affichage
+	void	printServers(std::ostream& os) const;
+	void	printEvents(std::ostream& os) const;
 };
 
 std::ostream&	operator<<(std::ostream& os, Webserv const& webserv);
