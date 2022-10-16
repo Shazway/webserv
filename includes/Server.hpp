@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/11 23:46:47 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/16 23:10:22 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ private:
 	std::map<int, std::string>	error_paths;
 	bool						auto_index;
 	struct sockaddr_in			addr;
+	int							socket;
 public:
 	Server();
 	Server(Server const& serv);
@@ -63,8 +64,10 @@ public:
 	std::string			getIp() const;
 	int					getPort() const;
 	std::string			getName() const;
+	int					getSocket() const;
 	std::string			getErrorPath(int code) const;
 	std::map<int, std::string>	getErrorPaths() const;
+	void	setSocket(int socket);
 	void	setAddr();
 	void	setBody(std::string body);
 	void	setRootPath(std::string path);

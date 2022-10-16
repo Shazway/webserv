@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/12 00:05:56 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/16 23:10:25 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,11 @@ std::string Server::getIp() const{
 int Server::getPort() const{
 	return (this->port);
 }
+
+int Server::getSocket() const{
+	return (this->socket);
+}
+
 std::string Server::getName() const{
 	return (this->name);
 }
@@ -75,6 +80,9 @@ void	Server::setConfigPath(std::string path){
 }
 void	Server::setIp(std::string Ip){
 	this->ip = Ip;
+}
+void	Server::setSocket(int socket){
+	this->socket = socket;
 }
 void	Server::setAddr(){
 	addr.sin_family = AF_INET;
@@ -152,7 +160,7 @@ int	Server::init_socket()
 {
 	int			fd_listen;
 
-	fd_listen = socket(AF_INET, SOCK_STREAM, 0);
+	fd_listen = ::socket(AF_INET, SOCK_STREAM, 0);
 	if (fd_listen == -1)
 		return (-1);
 	bool	trash = false;
