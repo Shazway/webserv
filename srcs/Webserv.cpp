@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 22:04:43 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/16 23:23:28 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/18 19:50:06 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ void	Webserv::setServer(int index, Server const& server)
 {
 	if (index < 0 || index > nb_servers)
 		throw(WrongIndexForServers());
-	
 	servers[index] = server;
 }
 

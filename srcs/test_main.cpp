@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/16 23:09:35 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/18 21:55:06 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@
 
 bool	complete_request(std::string str)
 {
-	(void)str;
-	//Vérifier que la string contient une requête http complete//
+	
 	return (true);
 }
 
@@ -27,6 +26,7 @@ void	start(std::vector<Server>& servers)
 	int		fd_listen;
 	int		ret;
 	int		client;
+	int		count = 0;
 	char	buff[BUFFER_SIZE];
 	std::string	buffer_strings[EVENT_SIZE];
 	bool	found = false;
@@ -35,8 +35,14 @@ void	start(std::vector<Server>& servers)
 	{
 		fd_listen = (*it).init_socket();
 		(*it).setSocket(fd_listen);
-		webserv.setServer(fd_listen, (*it));
+		//std::cout << "FD LISTEN: " << (*it).getSocket() << std::endl;
+		try
+			{webserv.setServer(count, (*it));}
+		catch(const std::exception& e)
+			{std::cerr<< RED << " " << fd_listen << e.what() << END << '\n';}
 		webserv.add_event(fd_listen, EPOLLIN);
+		std::cout << "Count: " << count << std::endl;
+		count++;
 	}
 	while (true)
 	{
@@ -49,9 +55,7 @@ void	start(std::vector<Server>& servers)
 				if (webserv.getEvent(i).data.fd == webserv.getServer(j).getSocket())
 				{
 					found = true;
-					sockaddr_in	addr;
-					socklen_t	len = sizeof(addr);
-					int client = accept(fd_listen, (sockaddr*)&addr, &len);
+					int client = accept(webserv.getServer(j).getSocket(), NULL, NULL);
 					if (client <= 0)
 					{
 						std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
@@ -79,13 +83,13 @@ void	start(std::vector<Server>& servers)
 			}
 		}
 		//stocker un fd max, pour opti et pas passer sur les 1000 fd
-		for (int i = 0; i < EVENT_SIZE; i++)
+		/*for (int i = 0; i < EVENT_SIZE; i++)
 		{
 			if (complete_request(buffer_strings[client]) || buffer_strings[client].empty())
 			{
 				//créeer les truc fin une réponse et tout plus tard += compliqué
 			}
-		}
+		}*/
 	}
 	std::cout << "Notre webserv :" << std::endl;
 	std::cout << webserv << std::endl;

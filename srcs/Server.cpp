@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/16 23:10:25 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/18 21:47:30 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ const	char*	WrongIndexForRootVectorException::what() const throw(){
 }
 
 Server::Server(): name(), ip(), port(), body_size(), error_paths(), routes(){
+	socket = -1;
 	return ;
 }
 Server::Server(Server const& serv)
@@ -116,15 +117,18 @@ void	Server::setAutoIndex(std::string autoindex)
 
 Server& Server::operator=(Server const& assign)
 {
+	config_path = assign.config_path;
+	root_path = assign.root_path;
 	name = assign.name;
 	ip = assign.ip;
+	method = assign.method;
 	port = assign.port;
 	body_size = assign.body_size;
 	error_paths = assign.error_paths;
-	routes = assign.routes;
-	config_path = assign.config_path;
-	method = assign.method;
 	auto_index = assign.auto_index;
+	addr = assign.addr;
+	socket = assign.socket;
+	routes = assign.routes;
 	html = assign.html;
 	return (*this);
 }
@@ -145,7 +149,8 @@ std::ostream&	operator<<(std::ostream& os, Server const& serv)
 	<< RED << "Body size: " << serv.getBody() << std::endl
 	<< MAGENTA << "Routes: " << serv.getRootPath() << std::endl
 	<< serv.routes << std::endl
-	<< CYAN << "Indexes: " << serv.html << END << std::endl << std::endl;
+	<< CYAN << "Indexes: " << serv.html << END << std::endl
+	<< "Listen fd: " << serv.getSocket() << std::endl;
 	for (std::map<int, std::string>::iterator i = errors.begin(); i != errors.end(); i++)
 	{
 		os << YELLOW << (*i).first << " ";
@@ -166,7 +171,7 @@ int	Server::init_socket()
 	bool	trash = false;
 	setsockopt(fd_listen, SOL_SOCKET, SO_REUSEADDR, (char*)&trash, sizeof(&trash));
 	this->setAddr();
-
+	fcntl(fd_listen, O_NONBLOCK);
 	if (bind(fd_listen, (sockaddr*)&addr, sizeof(addr)) != 0)
 		return (-1);
 	if (listen(fd_listen, 5) < 0)

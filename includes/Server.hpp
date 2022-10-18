@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/16 23:10:22 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/18 20:13:11 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <fcntl.h>
 #include "IndexTree.hpp"
 
 //Vector string//
