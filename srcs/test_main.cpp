@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/18 21:55:06 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/18 22:38:23 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,26 @@
 #include "Webserv.hpp"
 #include "Server.hpp"
 
+
+/***************************************************************************/
+/*
+
+SYNTAXE HTTP REQUEST : https://devstory.net/11631/comment-afficher-les-en-tetes-http-dans-google-chrome
+
+GET /home/index.php HTTP/1.1
+Host: www.eclipse.org
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9
+Cookie: un bordel pas possible*/
+/***************************************************************************/
+
 bool	complete_request(std::string str)
 {
-	
 	return (true);
 }
 
