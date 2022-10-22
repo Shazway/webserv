@@ -34,6 +34,32 @@ Cookie: un bordel pas possible*/
 
 bool	complete_request(std::string str)
 {
+	std::vector<std::string>	v;
+	size_t						bodySize = 0;
+	std::string					tmp;
+
+	ft_split(str, v, "\n");
+	std::vector<std::string>::iterator	it = v.begin();
+	bodySize = (*it).find("Content-Length: ");
+	while (it != v.end() && !(*it).empty() && bodySize == std::string::npos)
+	{
+		it++;
+		bodySize = (*it).find("Content-Length: ");
+	}
+	if (bodySize != std::string::npos)
+	{
+		tmp = (*it).substr(17, std::string::npos);
+		bodySize=atoi(tmp.c_str());
+	}
+	while (it != v.end() && !(*it).empty())
+		it++;
+	while (it != v.end() && bodySize > (*it).size())
+	{
+		bodySize -= (*it).size();
+		it++;
+	}
+	if (it == v.end())
+		return (false);
 	return (true);
 }
 
