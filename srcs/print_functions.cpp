@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/08 16:21:31 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/08 16:28:10 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/22 17:52:15 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	print_separator()
 void	display_v_str(std::vector<std::string> str)
 {
 	for (std::vector<std::string>::iterator i = str.begin(); i != str.end(); i++)
-		std::cout << "[" <<(*i) << "]" << std::endl;
+		std::cout << "[" << (*i) << "]" << std::endl;
 }
 
 void	display_servers(std::vector<Server> servers)

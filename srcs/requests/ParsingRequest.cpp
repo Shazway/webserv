@@ -9,6 +9,7 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 {
 	int	 i = 0, j = 0;
 	std::string::iterator it = bufferString.begin();
+	std::cout << GREEN <<"Buffer string line before: \n"<< bufferString << END << std::endl;
 	while (*it >= 'A' && *it <= 'Z')
 	{
 		it++;
@@ -51,6 +52,7 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 		j++;
 	}
 	bufferString = bufferString.substr(j, bufferString.find("\n") - j);
+	std::cout << GREEN <<"Buffer string line after: ["<< bufferString << "]" << END << std::endl;
 	if (bufferString == "HTTP 1.0" || bufferString == "HTTP/1.0")
 		request.setHttpVersion("1.0");
 	else if (bufferString == "HTTP 1.1" || bufferString == "HTTP/1.1")
@@ -109,6 +111,7 @@ int	parsingHeader(HttpRequest &request, std::string bufferString)
 int parsingRequest(HttpRequest &request, std::string bufferString)
 {
 	std::string requestLine;
+	std::cout << BLUE << "Parsing request recieved: \n" << bufferString << END << std::endl;
 	if (bufferString.empty())
 		return (0);
 	//normalement le buffer est assez grand pour avoir tout le header

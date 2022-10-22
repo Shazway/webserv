@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/18 22:38:23 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/22 20:25:10 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,19 +36,22 @@ bool	complete_request(std::string str)
 {
 	std::vector<std::string>	v;
 	size_t						bodySize = 0;
+	size_t						i = 0;
 	std::string					tmp;
 
 	ft_split(str, v, "\n");
 	std::vector<std::string>::iterator	it = v.begin();
-	bodySize = (*it).find("Content-Length: ");
-	while (it != v.end() && !(*it).empty() && bodySize == std::string::npos)
+	i = (*it).find("Content-Length: ");
+	while (it != v.end() && !(*it).empty() && i == std::string::npos)
 	{
 		it++;
-		bodySize = (*it).find("Content-Length: ");
+		if (it == v.end())
+			return (0);
+		i = (*it).find("Content-Length: ");
 	}
-	if (bodySize != std::string::npos)
+	if (i != std::string::npos)
 	{
-		tmp = (*it).substr(17, std::string::npos);
+		tmp = (*it).substr(16, std::string::npos);
 		bodySize=atoi(tmp.c_str());
 	}
 	while (it != v.end() && !(*it).empty())
@@ -71,8 +74,10 @@ void	start(std::vector<Server>& servers)
 	int		client;
 	int		count = 0;
 	char	buff[BUFFER_SIZE];
+	std::map<int, HttpRequest>	requests;
 	std::string	buffer_strings[EVENT_SIZE];
 	bool	found = false;
+	std::map<int, Server>		client_serv;
 
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
 	{
@@ -104,6 +109,7 @@ void	start(std::vector<Server>& servers)
 						std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
 						continue ;
 					}
+					client_serv[client] = webserv.getServer(j);
 					webserv.add_event(client, EPOLLIN);
 				}
 			}
@@ -126,16 +132,26 @@ void	start(std::vector<Server>& servers)
 			}
 		}
 		//stocker un fd max, pour opti et pas passer sur les 1000 fd
-		/*for (int i = 0; i < EVENT_SIZE; i++)
+		for (int i = 0; i < EVENT_SIZE; i++)
 		{
 			if (complete_request(buffer_strings[client]) || buffer_strings[client].empty())
 			{
-				//créeer les truc fin une réponse et tout plus tard += compliqué
+				HttpRequest	tmp_request(client_serv[client]);
+				try
+				{
+					parsingRequest(tmp_request, buffer_strings[client]);
+				}
+				catch(const std::exception& e)
+				{
+					std::cerr << e.what() << '\n';
+				}
+				std::cout << RED << tmp_request << END << std::endl;
+				requests.insert(std::pair<int, HttpRequest>(client, tmp_request));
 			}
-		}*/
+		}
 	}
-	std::cout << "Notre webserv :" << std::endl;
-	std::cout << webserv << std::endl;
+	/*std::cout << "Notre webserv :" << std::endl;
+	std::cout << webserv << std::endl;*/
 }
 
 int	main(int ac, char **av)

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 22:12:00 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/22 17:47:34 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ bool	set_bodysize(v_str& args, Server& serv);
 bool	add_errorpath(v_str& args, Server& serv);
 bool	set_autoIndex(v_str& args, Server& serv);
 bool	add_methods(v_str& args, t_allowedMethods& allowed);
-void	display_v_str(std::vector<std::string> str);
 bool	add_index(v_str& args, std::string &index);
 
 //PARSE ROOT ELEMS

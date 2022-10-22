@@ -24,7 +24,7 @@ class HttpRequest
 	public:
 
 		HttpRequest(Server &serv);
-		//HttpRequest( HttpRequest const & src );
+		HttpRequest( HttpRequest const & src );
 		~HttpRequest();
 
 		HttpRequest &		operator=( HttpRequest const & rhs );

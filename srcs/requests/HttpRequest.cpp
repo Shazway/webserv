@@ -14,9 +14,10 @@ HttpRequest::HttpRequest(Server& serv) : _serv(serv), _partiallyCompleted(false)
 }
 
 
-/*HttpRequest::HttpRequest( const HttpRequest & src )
+HttpRequest::HttpRequest( const HttpRequest & src ): _serv(src._serv)
 {
-}*/
+	*this = src;
+}
 
 
 /*
