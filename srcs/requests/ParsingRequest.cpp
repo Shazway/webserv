@@ -8,8 +8,9 @@
 int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 {
 	int	 i = 0, j = 0;
+
 	std::string::iterator it = bufferString.begin();
-	std::cout << GREEN <<"Buffer string line before: \n"<< bufferString << END << std::endl;
+	std::cout << GREEN << "Buffer string line before: " << bufferString << END << std::endl;
 	while (*it >= 'A' && *it <= 'Z')
 	{
 		it++;
@@ -51,13 +52,14 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 		it++;
 		j++;
 	}
-	bufferString = bufferString.substr(j, bufferString.find("\n") - j);
-	std::cout << GREEN <<"Buffer string line after: ["<< bufferString << "]" << END << std::endl;
+	bufferString = bufferString.substr(j, bufferString.find("\r\n") - j);
+	std::cout << GREEN << "Buffer string line after: " << bufferString << END << std::endl;
 	if (bufferString == "HTTP 1.0" || bufferString == "HTTP/1.0")
 		request.setHttpVersion("1.0");
 	else if (bufferString == "HTTP 1.1" || bufferString == "HTTP/1.1")
 		request.setHttpVersion("1.1");
-
+	else
+		std::cout << "None" << std::endl;
 	//else
 	//	return (CODE_NO_HTTP_VERSION);
 
