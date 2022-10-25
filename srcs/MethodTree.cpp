@@ -84,7 +84,7 @@ void	MethodTree::addExecption(std::string path, bool get, bool post, bool del)
 
 std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::string path) const
 {
-	std::map<std::string, t_allowedMethods>::iterator pin = _subdirectories.begin();
+	std::map<std::string, t_allowedMethods>::const_iterator pin = _subdirectories.begin();
 	std::vector<std::string>	v_path;
 	std::vector<std::string>	v_test;
 	int							res;

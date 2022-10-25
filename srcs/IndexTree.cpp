@@ -1,5 +1,5 @@
 #include "IndexTree.hpp"
-
+#include "utilsTree.hpp"
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
@@ -60,7 +60,7 @@ std::ostream &			operator<<( std::ostream & o, IndexTree const & i )
 
 std::pair<std::string, std::string>	IndexTree::getClosestDirectory(std::string path) const
 {
-	std::map<std::string, std::string>::iterator pin = _subdirectories.begin();
+	std::map<std::string, std::string>::const_iterator pin = _subdirectories.begin();
 	std::vector<std::string>	v_path;
 	std::vector<std::string>	v_test;
 	int							res;
