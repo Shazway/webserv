@@ -91,7 +91,19 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 			std::cout << "GET" << std::endl;
 			//answer_get((*it), answers, bookmarks, (*it).first);
 //		if ((*it).second.getMethod() == "POST")
+			//answer_post((*it), a	(void)answers;
+	(void)bookmarks;
+	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
+	{
+		if ((*it).second.getMethod() == "GET")
+			std::cout << "GET" << std::endl;
+			//answer_get((*it), answers, bookmarks, (*it).first);
+//		if ((*it).second.getMethod() == "POST")
 			//answer_post((*it), answers);
+//		if ((*it).second.getMethod() == "DELETE")
+			//answer_delete((*it), answers);
+	}
+	requests.clear();nswers);
 //		if ((*it).second.getMethod() == "DELETE")
 			//answer_delete((*it), answers);
 	}

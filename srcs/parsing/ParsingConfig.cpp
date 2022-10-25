@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 15:26:23 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/25 21:28:17 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 			args.erase(args.begin());
 			if (!method_set_path(args, method.path))
 				return (false);
+			set_root(args, serv);
 			args.clear();
 		}
 		if ((*it).find("r_method") != std::string::npos)

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 16:35:30 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/25 21:56:39 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ bool	set_root(v_str & args, Server& serv)
 {
 	if (args.size() != 1)
 		return (false);
-	serv.setName(args[0]);
+	serv.setRootPath(args[0]);
 	return (true);
 }
 

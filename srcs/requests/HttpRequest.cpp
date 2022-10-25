@@ -39,7 +39,7 @@ HttpRequest &				HttpRequest::operator=( HttpRequest const &rhs )
 	{
 		_partiallyCompleted = rhs._partiallyCompleted;
 		_method = rhs._method;
-		_path = rhs._queryString;
+		_path = rhs._path;
 		_queryString = rhs._queryString;
 		_httpVersion = rhs._httpVersion;
 		_host = rhs._host;
@@ -109,9 +109,10 @@ std::string	HttpRequest::getPath() const
 
 void		HttpRequest::setPath(std::string path)
 {
-	size_t root = path.find("/");
-	if (root == std::string::npos)
-		throw (UnexpectedValueException()); //erreur de pas un chemin valide
+	//size_t root = path.find("/");
+	/*if (root == std::string::npos)
+		throw (UnexpectedValueException()); //erreur de pas un chemin valide*/
+	/*std::cout << path << std::endl;
 	if (root == 0)
 		_path = path;
 	else
@@ -119,6 +120,10 @@ void		HttpRequest::setPath(std::string path)
 		_host = path.substr(0, root - 1);
 		_path = path.substr(root, std::string::npos);
 	}
+	_path.insert(0, _serv.getRootPath());*/
+	std::cout << BLUE << path << END <<std::endl;
+	_path = _serv.getRootPath();
+	std::cout << BLUE << _path << END <<std::endl;
 }
 
 std::string	HttpRequest::getQueryString() const
