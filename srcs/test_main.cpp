@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/25 22:12:24 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/25 23:35:34 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,11 +82,24 @@ void	send_answers(std::map<int, std::string>& answers)
 		std::cout << (*it).second << std::endl;
 	}
 }
+
+void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file)
+{
+	std::string content;
+	std::string	line;
+
+	answers[fd] = "HTTP/1.1 200 OK\n";
+	content.clear();
+	while (std::getline(file, line))
+		content += line;
+	answers[fd] += "Content length: ";
+	answers[fd] += itoa((long)content.length());
+	answers[fd] += "\n\n";
+	answers[fd] += content;
+}
+
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers)
 {
-	std::string	line;
-	std::string content;
-
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
 		if ((*it).second.getMethod() == "GET")
@@ -94,22 +107,22 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 			if ((*it).second._serv.checkAllowedMethods("GET", (*it).second.getPath()))
 			{
 				std::ifstream file;
-			
-				file.open((*it).second.getPath().c_str());
+				std::string abs_path = (*it).second._serv.getRootPath() + (*it).second.getPath();
+
+				file.open(abs_path.c_str());
 				//std::cout << YELLOW << "[" << (*it).second << "]" << END << std::endl;
 				if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
-					answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
-				else
 				{
-					answers[(*it).first] = "HTTP/1.1 200 OK\n";
-					content.clear();
-					while (std::getline(file, line))
-						content += line;
-					answers[(*it).first] += "Content length: ";
-					answers[(*it).first] += itoa((long)content.length());
-					answers[(*it).first] += "\n\n";
-					answers[(*it).first] += content;
+					abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
+					file.open(abs_path.c_str());
+					if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
+						answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
+					else
+						generate_ok((*it).first, answers, file);
 				}
+				else
+					generate_ok((*it).first, answers, file);
+				file.close();
 			}
 			else
 				answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";

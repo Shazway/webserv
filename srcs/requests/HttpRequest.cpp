@@ -122,7 +122,7 @@ void		HttpRequest::setPath(std::string path)
 	}
 	_path.insert(0, _serv.getRootPath());*/
 	std::cout << BLUE << path << END <<std::endl;
-	_path = _serv.getRootPath();
+	_path = path;
 	std::cout << BLUE << _path << END <<std::endl;
 }
 

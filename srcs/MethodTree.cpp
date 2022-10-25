@@ -79,6 +79,13 @@ void	MethodTree::addExecption(std::string path, bool get, bool post, bool del)
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
+/*
+std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::string path) const
+{
+	return ()
+}*/
+
+
 std::map<std::string, t_allowedMethods> MethodTree::getTree() const
 {
 	return (this->_subdirectories);

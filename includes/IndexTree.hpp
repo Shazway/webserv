@@ -17,6 +17,7 @@ class IndexTree
 
 		void	addExecption(std::string path, std::string index);
 		std::map<std::string, std::string>	getTree() const;
+		std::pair<std::string, std::string>	getClosestDirectory(std::string path) const;
 
 	private:
 		std::map<std::string, std::string>	_subdirectories;

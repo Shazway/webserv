@@ -57,6 +57,12 @@ std::ostream &			operator<<( std::ostream & o, IndexTree const & i )
 ** --------------------------------- ACCESSOR ---------------------------------
 */
 
+/*
+std::pair<std::string, std::string>	IndexTree::getClosestDirectory(std::string path) const
+{
+	return ()
+}*/
+
 void	IndexTree::addExecption(std::string path, std::string index)
 {
 	_subdirectories[path] = index;

@@ -127,7 +127,7 @@ int parsingRequest(HttpRequest &request, std::string bufferString)
 			return (error);
 	// getline de header
 		std::cout << YELLOW << "[" << request.getPath() << "]" << END << std::endl;
-	
+
 		size_t	n = bufferString.find("\n");
 		bufferString = bufferString.substr(n + 1, std::string::npos);
 		n = bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? bufferString.find("\n\n") : bufferString.find("\r\n\r\n");
