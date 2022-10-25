@@ -1,5 +1,7 @@
 #include "MethodTree.hpp"
 #include "Colors.hpp"
+#include "Parsing.hpp"
+#include "utilsTree.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -79,11 +81,27 @@ void	MethodTree::addExecption(std::string path, bool get, bool post, bool del)
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
-/*
+
 std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::string path) const
 {
-	return ()
-}*/
+	std::map<std::string, t_allowedMethods>::iterator pin = _subdirectories.begin();
+	std::vector<std::string>	v_path;
+	std::vector<std::string>	v_test;
+	int							res;
+
+
+	ft_split(path, v_path, "/");
+	for (std::map<std::string, t_allowedMethods>::const_iterator it = _subdirectories.begin(); it != _subdirectories.end(); it++)
+	{
+		ft_split((*it).first, v_test, "/");
+		res = cmp_vector(v_test, v_path);
+		if (res <= 0)
+			pin = it;
+		if (!res)
+			break;
+	}
+	return (*pin);
+}
 
 
 std::map<std::string, t_allowedMethods> MethodTree::getTree() const

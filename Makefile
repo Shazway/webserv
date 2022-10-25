@@ -10,6 +10,7 @@ INC	=	-Iincludes
 SRC_NAME	=	test_main.cpp					\
 				MethodTree.cpp					\
 				IndexTree.cpp					\
+				utilsTree.cpp					\
 				Server.cpp						\
 				print_functions.cpp				\
 				parsing/ParsingConfig.cpp		\

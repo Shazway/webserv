@@ -57,11 +57,27 @@ std::ostream &			operator<<( std::ostream & o, IndexTree const & i )
 ** --------------------------------- ACCESSOR ---------------------------------
 */
 
-/*
+
 std::pair<std::string, std::string>	IndexTree::getClosestDirectory(std::string path) const
 {
-	return ()
-}*/
+	std::map<std::string, std::string>::iterator pin = _subdirectories.begin();
+	std::vector<std::string>	v_path;
+	std::vector<std::string>	v_test;
+	int							res;
+
+
+	ft_split(path, v_path, "/");
+	for (std::map<std::string, std::string>::const_iterator it = _subdirectories.begin(); it != _subdirectories.end(); it++)
+	{
+		ft_split((*it).first, v_test, "/");
+		res = cmp_vector(v_test, v_path);
+		if (res <= 0)
+			pin = it;
+		if (!res)
+			break;
+	}
+	return (*pin);
+}
 
 void	IndexTree::addExecption(std::string path, std::string index)
 {
