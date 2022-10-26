@@ -149,3 +149,6 @@ Codes supportés par notre magnifique webserv
 Telli : config
 
 Marina : requetes http, les erreurs de requetes
+
+
+choper le SIGINT necessite une variable globale, parce qu'on ne peut pas envoyer de parametres a la fonction
