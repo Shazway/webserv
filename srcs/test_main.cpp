@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/29 17:06:32 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/29 19:05:21 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,7 +228,10 @@ void	start(std::vector<Server>& servers)
 		}
 		answers_gen(requests, answers);
 		send_answers(answers);
+		answers.clear();
+		requests.clear();
 	}
+
 	/*std::cout << "Notre webserv :" << std::endl;
 	std::cout << webserv << std::endl;*/
 }
