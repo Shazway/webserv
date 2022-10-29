@@ -114,7 +114,7 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 
 				std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
 				file.open(abs_path.c_str());
-				if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
+				if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
 				{
 					file.close();
 					abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
@@ -125,10 +125,14 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 					else
 						generate_ok((*it).first, answers, file);
 				}
-				else
+				else if (file.is_open())
 					generate_ok((*it).first, answers, file);
+				else
+					answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
 				file.close();
 			}
+			else if ((*it).second.getMethod() == "POST")
+				std::cout << "c'est  un Post !" << std::endl;
 			else
 				answers[(*it).first] = "HTTP/1.1 405 Method not allowed 2\n\n";
 			//Header à rajouter plus tard \n \n
@@ -186,10 +190,10 @@ void	start(std::vector<Server>& servers)
 			}
 			if (!found)
 			{
-				std::cout << "here" << std::endl;
 				client = webserv.getEvent(i).data.fd;
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
+				std::cout << "here" << std::endl;
 					if (!complete_request(buffer_strings[client]) || buffer_strings[client].empty())
 					{
 						recv(client, buff, BUFFER_SIZE, 0);//errors to check
@@ -230,6 +234,8 @@ void	start(std::vector<Server>& servers)
 		send_answers(answers);
 		answers.clear();
 		requests.clear();
+		//for (int i = 0; i < EVENT_SIZE; i++)
+		//	buffer_strings[i].clear();
 	}
 
 	/*std::cout << "Notre webserv :" << std::endl;
