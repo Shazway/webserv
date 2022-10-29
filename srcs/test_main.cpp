@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/25 23:35:34 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/29 17:06:32 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,10 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 	answers[fd] = "HTTP/1.1 200 OK\n";
 	content.clear();
 	while (std::getline(file, line))
+	{
 		content += line;
+		content += "\n";
+	}
 	answers[fd] += "Content length: ";
 	answers[fd] += itoa((long)content.length());
 	answers[fd] += "\n\n";
@@ -109,14 +112,16 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 				std::ifstream file;
 				std::string abs_path = (*it).second._serv.getRootPath() + (*it).second.getPath();
 
+				std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
 				file.open(abs_path.c_str());
-				//std::cout << YELLOW << "[" << (*it).second << "]" << END << std::endl;
 				if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
 				{
+					file.close();
 					abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
+					std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
 					file.open(abs_path.c_str());
 					if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
-						answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
+						answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
 					else
 						generate_ok((*it).first, answers, file);
 				}
@@ -125,7 +130,7 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 				file.close();
 			}
 			else
-				answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
+				answers[(*it).first] = "HTTP/1.1 405 Method not allowed 2\n\n";
 			//Header à rajouter plus tard \n \n
 		}
 	}

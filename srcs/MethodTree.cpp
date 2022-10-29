@@ -59,14 +59,14 @@ std::ostream &			operator<<( std::ostream & o, MethodTree const & i )
 
 bool	MethodTree::isAllowed(std::string method, std::string path)
 {
-	std::map<std::string, t_allowedMethods>::iterator it;
-	it = _subdirectories.lower_bound(path);
+	std::pair<std::string, t_allowedMethods> it;
+	it = this->getClosestDirectory(path);
 	if (!method.compare("GET"))
-		return ((*it).second.get);
+		return (it.second.get);
 	if (!method.compare("POST"))
-		return ((*it).second.post);
+		return (it.second.post);
 	if (!method.compare("DELETE"))
-		return ((*it).second.del);
+		return (it.second.del);
 	return (false);
 }
 
@@ -90,6 +90,7 @@ std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::st
 	int							res;
 
 
+	std::cout << "Path for closest: " << path << std::endl;
 	ft_split(path, v_path, "/");
 	for (std::map<std::string, t_allowedMethods>::const_iterator it = _subdirectories.begin(); it != _subdirectories.end(); it++)
 	{
@@ -100,6 +101,7 @@ std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::st
 		if (!res)
 			break;
 	}
+	std::cout << "Pin string: " << (*pin).first << std::endl;
 	return (*pin);
 }
 

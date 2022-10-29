@@ -152,3 +152,6 @@ Marina : requetes http, les erreurs de requetes
 
 
 choper le SIGINT necessite une variable globale, parce qu'on ne peut pas envoyer de parametres a la fonction
+
+Comment choper son IP
+ifconfig -a, le 2ème paragraphe, la ligne avec inet
