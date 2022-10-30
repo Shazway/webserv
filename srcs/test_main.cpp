@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/29 19:05:21 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/30 20:09:17 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,81 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 	answers[fd] += content;
 }
 
+void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+{
+	//GET peut avoir des variables dans la query
+	if ((*it).second._serv.checkAllowedMethods("GET", (*it).second.getPath()))
+	{
+		std::ifstream file;
+		std::string abs_path = (*it).second._serv.getRootPath() + (*it).second.getPath();
+
+		//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
+		file.open(abs_path.c_str());
+		if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
+		{
+			file.close();
+			abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
+			//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
+			file.open(abs_path.c_str());
+			if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
+				answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
+			else
+				generate_ok((*it).first, answers, file);
+		}
+		else if (file.is_open())
+			generate_ok((*it).first, answers, file);
+		else
+			answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
+		file.close();
+	}
+	else
+		answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
+	//Header à rajouter plus tard \n \n
+}
+
+void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+{
+	(void)answers;
+	v_str	stock_var;
+	
+	if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)
+		std::cout << "Hello file" << std::endl;
+	
+	if ((*it).second._serv.checkAllowedMethods("POST", (*it).second.getPath()))
+	{
+		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
+		{
+			std::ifstream	file;
+			std::string abs_path = (*it).second.getPath();
+
+			
+			//	ft_split((*it).second.getBody(), stock_var, "&");
+			std::cout << "Hello form" << std::endl;
+			//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
+			file.open(abs_path.c_str());
+			if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
+			{
+				file.close();
+				abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
+				//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
+				file.open(abs_path.c_str());
+				if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
+					answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
+				else
+					create_temp((*it).first, answers, file);
+			}
+			else if (file.is_open())
+				generate_ok((*it).first, answers, file);
+			else
+				answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
+			file.close();
+		}
+	}
+	else
+		answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
+
+}
+
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers)
 {
 	std::cout << YELLOW << requests.size() << std::endl;
@@ -113,38 +188,9 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 	{
 		std::cout << (*it).second << std::endl;
 		if ((*it).second.getMethod() == "GET")
-		{
-			//GET peut avoir des variables dans la query
-			if ((*it).second._serv.checkAllowedMethods("GET", (*it).second.getPath()))
-			{
-				std::ifstream file;
-				std::string abs_path = (*it).second._serv.getRootPath() + (*it).second.getPath();
-
-				//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
-				file.open(abs_path.c_str());
-				if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
-				{
-					file.close();
-					abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
-					//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
-					file.open(abs_path.c_str());
-					if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
-						answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
-					else
-						generate_ok((*it).first, answers, file);
-				}
-				else if (file.is_open())
-					generate_ok((*it).first, answers, file);
-				else
-					answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
-				file.close();
-			}
-			else
-				answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
-			//Header à rajouter plus tard \n \n
-		}
+			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
-			std::cout << "c'est  un Post !" << RED << (*it).second.getBody() << END << std::endl;
+			gen_post(it, answers);
 	}
 }
 
