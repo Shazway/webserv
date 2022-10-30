@@ -113,41 +113,31 @@ int	parsingHeader(HttpRequest &request, std::string bufferString)
 int parsingRequest(HttpRequest &request, std::string bufferString)
 {
 	std::string requestLine;
-	std::cout << BLUE << "Parsing request recieved: \n" << bufferString << END << std::endl;
+	/*std::cout << BLUE << "Parsing request recieved: \n" << bufferString << END << std::endl;*/
 	if (bufferString.empty())
 		return (0);
-	//normalement le buffer est assez grand pour avoir tout le header
-	//si !partiallyCompleted
-	if (!request.getPartiallyCompleted())
-	{
 	// getline de request line
-		request.setPartiallyCompleted(true);
-		int error = parsingRequestLine(request, bufferString);
-		if (error)
-			return (error);
-	// getline de header
-		std::cout << YELLOW << "[" << request.getPath() << "]" << END << std::endl;
+	int error = parsingRequestLine(request, bufferString);
+	if (error)
+		return (error);
+// getline de header
+	std::cout << YELLOW << "[" << request.getPath() << "]" << END << std::endl;
 
-		size_t	n = bufferString.find("\n");
-		bufferString = bufferString.substr(n + 1, std::string::npos);
-		n = bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? bufferString.find("\n\n") : bufferString.find("\r\n\r\n");
-		error = parsingHeader(request, bufferString.substr(0, n));
-		if (error)
-			return (error);
-		if (n == std::string::npos)
-			bufferString = "";
-		else
-			bufferString = bufferString.substr(n + (bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? 2 : 4), std::string::npos);
-	}
+	size_t	n = bufferString.find("\n");
+	bufferString = bufferString.substr(n + 1, std::string::npos);
+	n = bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? bufferString.find("\n\n") : bufferString.find("\r\n\r\n");
+	error = parsingHeader(request, bufferString.substr(0, n));
+	if (error)
+		return (error);
+	if (n == std::string::npos)
+		bufferString = "";
+	else
+		bufferString = bufferString.substr(n + (bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? 2 : 4), std::string::npos);
 	//recuperation du body
 	//si on a recupere tout le body, mettre partiallyCompleted a 0, sinon 1
 
 	//return le code d'erreur si souci, sinon 0
 	if (request.getContentLength())
-	{
 		request.setBody(bufferString);
-		if (request.getBody().length() >= request.getContentLength())
-			request.setPartiallyCompleted(false);
-	}
 	return (0);
 }

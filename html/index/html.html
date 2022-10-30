@@ -1,10 +1,27 @@
 <html>
 <body>
 <h1>Hello, World!</h1>
-<form action="/inox/inox.html" method="POST">
+<h2>Test with GET</h2>
+<form action="/inox/inox.html" method="get">
+	<input type="text" name="inox">
+	<input type="submit" value="Submit">
+</form>
+<br>
+<h2>Tests with POST</h2>
+<form action="/inox/inox.html" method="post">
 	<input type="text" name="login">
 	<input type="password" name="password">
 	<input type="submit" value="Submit">
 </form>
+<br>
+<form method="post" action="/index/validation.html" enctype="multipart/form-data">
+	<div>
+	  <label for="file">Choisir un fichier</label>
+	  <input type="file" id="file" name="myFile">
+	</div>
+	<div>
+	  <button>Send</button>
+	</div>
+  </form>
 </body>
 </html>

@@ -88,6 +88,7 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 	std::string content;
 	std::string	line;
 
+	//ici, check allowedmethod et faire une erreur adaptee
 	answers[fd] = "HTTP/1.1 200 OK\n";
 	content.clear();
 	while (std::getline(file, line))
@@ -105,6 +106,7 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 {
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
+		std::cout << (*it).second << std::endl;
 		if ((*it).second.getMethod() == "GET")
 		{
 			if ((*it).second._serv.checkAllowedMethods("GET", (*it).second.getPath()))
@@ -146,6 +148,7 @@ void	start(std::vector<Server>& servers)
 	int		fd_listen;
 	int		ret;
 	int		client;
+	int		read_char;
 	int		count = 0;
 	char	buff[BUFFER_SIZE];
 	std::map<int, HttpRequest>	requests;
@@ -193,22 +196,29 @@ void	start(std::vector<Server>& servers)
 				client = webserv.getEvent(i).data.fd;
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
-				std::cout << "here" << std::endl;
+				//std::cout << "here" << std::endl;
 					if (!complete_request(buffer_strings[client]) || buffer_strings[client].empty())
 					{
-						recv(client, buff, BUFFER_SIZE, 0);//errors to check
+						memset(buff, 0, BUFFER_SIZE);
+						read_char = recv(client, buff, BUFFER_SIZE, 0);//errors to check
 						//if return 0 close la connection
+						if (read_char <= 0)
+						{
+							close(client);
+							requests.erase(client);
+						}
 						buffer_strings[client] += buff;
+						std::cout << "On viend de lire <" << buffer_strings[client] << ">" << std::endl;
 					}
 				}
 				else if (webserv.getEvent(i).events & EPOLLOUT)
 				{
 					//clients a qui on doit send un truc
-					/*if (!answers.empty())
-					{
-						// if return <= 0 close la co*/
-					send(client, answers[client].c_str(), answers[client].size(), MSG_NOSIGNAL);
-					
+					if (!answers.empty())
+						close(client);
+					else
+						send(client, answers[client].c_str(), answers[client].size(), MSG_NOSIGNAL);
+					answers.erase(client);
 				}
 			}
 		}
@@ -221,12 +231,13 @@ void	start(std::vector<Server>& servers)
 				try
 				{
 					parsingRequest(tmp_request, buffer_strings[client]);
+					buffer_strings[client].clear();
 				}
 				catch(const std::exception& e)
 				{
 					std::cerr << e.what() << '\n';
 				}
-				std::cout << RED << tmp_request << END << std::endl;
+				//std::cout << RED << tmp_request << END << std::endl;
 				requests.insert(std::pair<int, HttpRequest>(client, tmp_request));
 			}
 		}
