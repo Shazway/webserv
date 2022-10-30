@@ -21,7 +21,7 @@ void	print_separator()
 void	display_v_str(std::vector<std::string> str)
 {
 	for (std::vector<std::string>::iterator i = str.begin(); i != str.end(); i++)
-		std::cout << "[" << (*i) << "]" << std::endl;
+		std::cout << RED << "[" << (*i) << "]" << END << std::endl;
 }
 
 void	display_servers(std::vector<Server> servers)

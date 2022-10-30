@@ -49,7 +49,7 @@ bool	complete_request(std::string str, size_t maxBodySize)
 	size_t						i = 0;
 	std::string					tmp;
 
-	ft_split(str, v, "\n");
+	ft_split(str, v, "\r\n");
 	std::vector<std::string>::iterator	it = v.begin();
 	i = (*it).find("Content-Length: ");
 	while (it != v.end() && !(*it).empty() && i == std::string::npos)
@@ -74,10 +74,7 @@ bool	complete_request(std::string str, size_t maxBodySize)
 		it++;
 	}
 	if (it == v.end())
-	{
-		std::cout << MAGENTA << "a atteint la fin" << bodySize << END << std::endl;
 		return (false);
-	}
 	return (true);
 }
 
