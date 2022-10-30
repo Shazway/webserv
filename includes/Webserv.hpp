@@ -45,7 +45,7 @@ private:
 	Server					*servers;
 	epoll_event				*events;
 public:
-	Webserv(int size);
+	Webserv();
 	~Webserv();
 //getters
 	Server								getServer(int index) const;
@@ -55,7 +55,9 @@ public:
 	int									getEpollfd() const;
 
 //set
+	void		allocating(int size);
 	void		add_event(int fd, int flag);
+	void		remove_event(int fd);
 	void		setNbEvents(size_t nb);
 	void		setServer(int index, Server const& Server);
 	void		setEvent(int index, epoll_event const& event);

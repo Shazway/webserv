@@ -30,7 +30,7 @@ Server::~Server(){
 	return ;
 }
 
-unsigned int Server::getBody() const{
+size_t Server::getBody() const{
 	return (this->body_size);
 }
 std::string Server::getErrorPath(int code) const{

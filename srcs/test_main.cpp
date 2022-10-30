@@ -32,6 +32,8 @@ Accept-Language: en-US,en;q=0.9
 Cookie: un bordel pas possible*/
 /***************************************************************************/
 
+Webserv	webserv;
+
 std::string	itoa(long nb)
 {
 	std::stringstream	ss;
@@ -40,7 +42,7 @@ std::string	itoa(long nb)
 	return (ss.str());
 }
 
-bool	complete_request(std::string str)
+bool	complete_request(std::string str, size_t maxBodySize)
 {
 	std::vector<std::string>	v;
 	size_t						bodySize = 0;
@@ -61,16 +63,21 @@ bool	complete_request(std::string str)
 	{
 		tmp = (*it).substr(16, std::string::npos);
 		bodySize=atoi(tmp.c_str());
+		if (bodySize > maxBodySize) //si bodySize est plus grand que la limite, true pour code d'erreur apres
+			return (true);
 	}
 	while (it != v.end() && !(*it).empty())
 		it++;
 	while (it != v.end() && bodySize > (*it).size())
 	{
-		bodySize -= (*it).size();
+		bodySize -= (*it).size() + 1;
 		it++;
 	}
 	if (it == v.end())
+	{
+		std::cout << MAGENTA << "a atteint la fin" << bodySize << END << std::endl;
 		return (false);
+	}
 	return (true);
 }
 
@@ -104,23 +111,25 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers)
 {
+	std::cout << YELLOW << requests.size() << std::endl;
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
 		std::cout << (*it).second << std::endl;
 		if ((*it).second.getMethod() == "GET")
 		{
+			//GET peut avoir des variables dans la query
 			if ((*it).second._serv.checkAllowedMethods("GET", (*it).second.getPath()))
 			{
 				std::ifstream file;
 				std::string abs_path = (*it).second._serv.getRootPath() + (*it).second.getPath();
 
-				std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
+				//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
 				file.open(abs_path.c_str());
 				if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
 				{
 					file.close();
 					abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
-					std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
+					//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
 					file.open(abs_path.c_str());
 					if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
 						answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
@@ -130,37 +139,46 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 				else if (file.is_open())
 					generate_ok((*it).first, answers, file);
 				else
-					answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
+					answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
 				file.close();
 			}
-			else if ((*it).second.getMethod() == "POST")
-				std::cout << "c'est  un Post !" << std::endl;
 			else
-				answers[(*it).first] = "HTTP/1.1 405 Method not allowed 2\n\n";
+				answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
 			//Header à rajouter plus tard \n \n
 		}
+		else if ((*it).second.getMethod() == "POST")
+			std::cout << "c'est  un Post !" << RED << (*it).second.getBody() << END << std::endl;
 	}
+}
+
+void	closeFd(int fd)
+{
+	close(fd);
+	webserv.remove_event(fd);
 }
 
 void	start(std::vector<Server>& servers)
 {
-	Webserv	webserv(servers.size());
 	int		fd_listen;
+	int		fdMax;
 	int		ret;
 	int		client;
 	int		read_char;
 	int		count = 0;
-	char	buff[BUFFER_SIZE];
+	char	buff[BUFFER_SIZE + 1];
 	std::map<int, HttpRequest>	requests;
 	std::map<int, std::string> answers;
 	std::string	buffer_strings[EVENT_SIZE];
 	bool	found = false;
 	std::map<int, Server>		client_serv;
 
+	webserv.allocating(servers.size());
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
 	{
 		fd_listen = (*it).init_socket();
 		(*it).setSocket(fd_listen);
+		if (fd_listen > fdMax)
+			fdMax = fd_listen;
 		//std::cout << "FD LISTEN: " << (*it).getSocket() << std::endl;
 		try
 			{webserv.setServer(count, (*it));}
@@ -187,6 +205,8 @@ void	start(std::vector<Server>& servers)
 						std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
 						continue ;
 					}
+					if (client > fdMax)
+						fdMax = client;
 					client_serv[client] = webserv.getServer(j);
 					webserv.add_event(client, EPOLLIN);
 				}
@@ -197,14 +217,14 @@ void	start(std::vector<Server>& servers)
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
 				//std::cout << "here" << std::endl;
-					if (!complete_request(buffer_strings[client]) || buffer_strings[client].empty())
+					if (!complete_request(buffer_strings[client], client_serv[client].getBody()) || buffer_strings[client].empty())
 					{
-						memset(buff, 0, BUFFER_SIZE);
+						memset(buff, 0, BUFFER_SIZE + 1);
 						read_char = recv(client, buff, BUFFER_SIZE, 0);//errors to check
 						//if return 0 close la connection
 						if (read_char <= 0)
 						{
-							close(client);
+							closeFd(client);
 							requests.erase(client);
 						}
 						buffer_strings[client] += buff;
@@ -214,33 +234,35 @@ void	start(std::vector<Server>& servers)
 				else if (webserv.getEvent(i).events & EPOLLOUT)
 				{
 					//clients a qui on doit send un truc
-					if (!answers.empty())
-						close(client);
-					else
+					if (!answers[client].empty())
 						send(client, answers[client].c_str(), answers[client].size(), MSG_NOSIGNAL);
 					answers.erase(client);
 				}
 			}
 		}
 		//stocker un fd max, pour opti et pas passer sur les 1000 fd
-		for (int i = 0; i < EVENT_SIZE; i++)
+		for (int i = 0; i <= fdMax ; i++)
 		{
-			if (complete_request(buffer_strings[client]) || buffer_strings[client].empty())
+			/*if (!buffer_strings[client].empty())
+				std::cout << GREEN << complete_request(buffer_strings[client]) << buffer_strings[client] << END << std::endl;*/
+			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
+			if (!buffer_strings[i].empty() && complete_request(buffer_strings[i], client_serv[client].getBody()))
 			{
-				HttpRequest	tmp_request(client_serv[client]);
+				HttpRequest	tmp_request(client_serv[i]);
 				try
 				{
-					parsingRequest(tmp_request, buffer_strings[client]);
-					buffer_strings[client].clear();
+					parsingRequest(tmp_request, buffer_strings[i]);
+					buffer_strings[i].clear();
 				}
 				catch(const std::exception& e)
 				{
 					std::cerr << e.what() << '\n';
 				}
 				//std::cout << RED << tmp_request << END << std::endl;
-				requests.insert(std::pair<int, HttpRequest>(client, tmp_request));
+				requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
 			}
 		}
+		std::cout << BLUE << "juste avant d generer les reponses" << END << std::endl;
 		answers_gen(requests, answers);
 		send_answers(answers);
 		answers.clear();

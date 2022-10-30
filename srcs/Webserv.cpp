@@ -14,12 +14,18 @@
 #include "Sockets.hpp"
 #include <map>
 
-Webserv::Webserv(int size): nb_servers(size), nb_events(EVENT_SIZE), epollfd(epoll_create(1000))
+Webserv::Webserv(): nb_events(EVENT_SIZE), epollfd(epoll_create(1000))
 {
-	servers = new Server[size];
-	events = new epoll_event[nb_events];
 	return ;
 }
+
+void	Webserv::allocating(int size)
+{
+	nb_servers = size;
+	servers = new Server[size];
+	events = new epoll_event[nb_events];
+}
+
 
 Webserv::~Webserv(){
 	if (epollfd != -1)
@@ -98,6 +104,7 @@ void	Webserv::printServers(std::ostream& os) const
 		os << BLUE << "Serv info: " << END << servers[i] << END << std::endl;
 	}
 }
+
 void	Webserv::add_event(int fd, int flag)
 {
 	struct epoll_event event;
@@ -108,6 +115,18 @@ void	Webserv::add_event(int fd, int flag)
 	increaseNbEvent();
 	events[fd] = event;
 }
+
+void	Webserv::remove_event(int fd)
+{
+	struct epoll_event event;
+
+	event.data.fd = fd;
+	event.events = 0;
+	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &event);
+	decreaseNbEvent();
+	events[fd] = event;
+}
+
 void	Webserv::printEvents(std::ostream& os) const
 {
 	for (size_t i = 0; i < nb_events; i++)

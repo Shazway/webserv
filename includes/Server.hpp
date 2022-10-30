@@ -47,7 +47,7 @@ private:
 	std::string					ip;
 	std::string					method;
 	int							port;
-	unsigned int				body_size;
+	size_t				body_size;
 	std::map<int, std::string>	error_paths;
 	bool						auto_index;
 	struct sockaddr_in			addr;
@@ -57,7 +57,7 @@ public:
 	Server(Server const& serv);
 	~Server();
 	int					init_socket();
-	unsigned int		getBody() const;
+	size_t				getBody() const;
 	struct sockaddr_in	getAddr() const;
 	bool				getAutoIndex() const;
 	std::string			getRootPath() const;
