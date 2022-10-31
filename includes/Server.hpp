@@ -31,6 +31,7 @@
 #include <netinet/in.h>
 #include <fcntl.h>
 #include "IndexTree.hpp"
+#include "RedirectTree.hpp"
 
 //Vector string//
 typedef std::vector<std::string> v_str;
@@ -82,6 +83,7 @@ public:
 	bool	checkAllowedMethods(std::string method, std::string path);
 	MethodTree		routes;
 	IndexTree		html;
+	RedirectTree	redirect;
 	Server&	operator=(Server const& assign);
 };
 
