@@ -90,7 +90,6 @@ std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::st
 	int							res;
 
 
-	std::cout << "Path for closest: " << path << std::endl;
 	ft_split(path, v_path, "/");
 	for (std::map<std::string, t_allowedMethods>::const_iterator it = _subdirectories.begin(); it != _subdirectories.end(); it++)
 	{
@@ -101,7 +100,6 @@ std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::st
 		if (!res)
 			break;
 	}
-	std::cout << "Pin string: " << (*pin).first << std::endl;
 	return (*pin);
 }
 

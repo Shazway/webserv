@@ -67,7 +67,6 @@ std::pair<std::string, std::string>	IndexTree::getClosestDirectory(std::string p
 
 
 	ft_split(path, v_path, "/");
-	std::cout << "Path for closest: " << path << std::endl;
 	for (std::map<std::string, std::string>::const_iterator it = _subdirectories.begin(); it != _subdirectories.end(); it++)
 	{
 		ft_split((*it).first, v_test, "/");
@@ -77,7 +76,6 @@ std::pair<std::string, std::string>	IndexTree::getClosestDirectory(std::string p
 		if (!res)
 			break;
 	}
-	std::cout << "Pin string 1: " << (*pin).first << " Pin string 2: " << (*pin).second << std::endl;
 	return (*pin);
 }
 

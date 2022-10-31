@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/30 20:09:17 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/10/31 18:27:54 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,10 +81,7 @@ bool	complete_request(std::string str, size_t maxBodySize)
 void	send_answers(std::map<int, std::string>& answers)
 {
 	for (std::map<int, std::string>::iterator it = answers.begin(); it != answers.end(); it++)
-	{
 		send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
-		std::cout << (*it).second << std::endl;
-	}
 }
 
 void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file)
@@ -138,7 +135,7 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 	//Header à rajouter plus tard \n \n
 }
 
-void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+/*void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
 	(void)answers;
 	v_str	stock_var;
@@ -178,19 +175,17 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 	}
 	else
 		answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
-
-}
+}*/
 
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers)
 {
-	std::cout << YELLOW << requests.size() << std::endl;
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
-		std::cout << (*it).second << std::endl;
 		if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
-			gen_post(it, answers);
+			std::cout << BLUE << "Body: " << ((*it).second.getBody()) << END << std::endl;
+		//gen_post(it, answers);
 	}
 }
 
@@ -228,7 +223,6 @@ void	start(std::vector<Server>& servers)
 		catch(const std::exception& e)
 			{std::cerr<< RED << " " << fd_listen << e.what() << END << '\n';}
 		webserv.add_event(fd_listen, EPOLLIN);
-		std::cout << "Count: " << count << std::endl;
 		count++;
 	}
 	while (true)
@@ -271,7 +265,6 @@ void	start(std::vector<Server>& servers)
 							requests.erase(client);
 						}
 						buffer_strings[client] += buff;
-						std::cout << "On viend de lire <" << buffer_strings[client] << ">" << std::endl;
 					}
 				}
 				else if (webserv.getEvent(i).events & EPOLLOUT)
@@ -305,7 +298,6 @@ void	start(std::vector<Server>& servers)
 				requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
 			}
 		}
-		std::cout << BLUE << "juste avant d generer les reponses" << END << std::endl;
 		answers_gen(requests, answers);
 		send_answers(answers);
 		answers.clear();
