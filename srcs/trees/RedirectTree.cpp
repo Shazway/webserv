@@ -38,6 +38,11 @@ RedirectTree &				RedirectTree::operator=( RedirectTree const & rhs )
 
 std::ostream &			operator<<( std::ostream & o, RedirectTree const & i )
 {
+	if (i.getTree().empty())
+	{
+		std::cout << "Empty redirections" << std::endl;
+		return (o);
+	}
 	for (std::map< int, std::map<std::string, std::string> >::iterator it = i.getTree().begin(); it != i.getTree().end(); it++)
 	{
 		o << "Error " << (*it).first << " :" << std::endl;
@@ -83,10 +88,15 @@ std::string	RedirectTree::redirectTo(int error, std::string path)
 void	RedirectTree::addRedirect(int error, std::string path, std::string destination)
 {
 	std::pair<std::string, std::string> tmp;
+	std::pair<int, std::map<std::string, std::string> > tmp2;
 
+	std::cout << "Error: " << error << " Redir: " << destination << " Method path: " << path << std::endl;
 	tmp.first = path;
 	tmp.second = destination;
-	_errorcodes[error].insert(tmp);
+	tmp2.first = error;
+	tmp2.second.insert(tmp);
+	std::cout << tmp.first << std::endl;
+	_errorcodes.insert(tmp2);
 }
 
 std::map< int, std::map<std::string, std::string> >	RedirectTree::getTree(void) const
