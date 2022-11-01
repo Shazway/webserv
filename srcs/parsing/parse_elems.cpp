@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/25 21:56:39 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/01 19:51:44 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,15 @@ bool	add_errorpath(v_str & args, Server& serv)
 	const char* tmp = string.c_str();
 	int error = atoi(tmp);
 	serv.addErrorPath(error, args[1]);
+	return (true);
+}
+bool	add_redir(v_str & args, std::string& path, int& error)
+{
+	if (args.size() != 2)
+		return (false);
+	const char* tmp = args.front().c_str();
+	error = atoi(tmp);
+	path = args[1];
 	return (true);
 }
 

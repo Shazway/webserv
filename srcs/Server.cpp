@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/18 21:47:30 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/01 19:50:41 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,7 @@ std::ostream&	operator<<(std::ostream& os, Server const& serv)
 	<< MAGENTA << "Routes: " << serv.getRootPath() << std::endl
 	<< serv.routes << std::endl
 	<< CYAN << "Indexes: " << serv.html << END << std::endl
+	<< WHITE << serv.redirect << END << std::endl
 	<< "Listen fd: " << serv.getSocket() << std::endl;
 	for (std::map<int, std::string>::iterator i = errors.begin(); i != errors.end(); i++)
 	{

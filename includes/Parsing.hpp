@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/01 17:24:56 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/01 19:52:12 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ bool	add_errorpath(v_str& args, Server& serv);
 bool	set_autoIndex(v_str& args, Server& serv);
 bool	add_methods(v_str& args, t_allowedMethods& allowed);
 bool	add_index(v_str& args, std::string &index);
+bool	add_redir(v_str & args, std::string& path, int& error);
 
 //PARSE ROOT ELEMS
 bool	method_set_path(v_str& args, std::string& path);
@@ -85,7 +86,7 @@ int parsingRequest(HttpRequest &request, std::string bufferString);
 
 //Parse POST
 void	upload(std::string const& content);
-size_t	find_first_line(std::string const& content);
+size_t	find_first_line(std::string const& content, size_t line);
 void	get_filename(std::string line, std::string& filename);
 
 #endif

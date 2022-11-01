@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/01 17:33:41 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/01 19:26:42 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,13 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 	//ici, check allowedmethod et faire une erreur adaptee
 	answers[fd] = "HTTP/1.1 200 OK\n";
 	content.clear();
-	while (std::getline(file, line))
+	if (file.is_open())
 	{
-		content += line;
-		content += "\n";
+		while (std::getline(file, line))
+		{
+			content += line;
+			content += "\n";
+		}
 	}
 	answers[fd] += "Content length: ";
 	answers[fd] += itoa((long)content.length());
@@ -135,19 +138,20 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 	//Header à rajouter plus tard \n \n
 }
 
-/*void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
-	(void)answers;
 	v_str	stock_var;
 	
-	if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)
-		std::cout << "Hello file" << std::endl;
-	
+	/*if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)
+		std::cout << "Hello file" << std::endl;*/
 	if ((*it).second._serv.checkAllowedMethods("POST", (*it).second.getPath()))
 	{
-		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
+		std::ifstream	file;
+		if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)
+			generate_ok((*it).first, answers, file);
+
+		/*if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
 		{
-			std::ifstream	file;
 			std::string abs_path = (*it).second.getPath();
 
 			
@@ -171,11 +175,11 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 			else
 				answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
 			file.close();
-		}
+		}*/
 	}
 	else
 		answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
-}*/
+}
 
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers)
 {
@@ -184,9 +188,12 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 		if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
+		{
 			upload((*it).second.getBody());
+			answers[(*it).first] = "HTTP/1.1 200 OK\n";
+			//gen_post(it, answers);
+		}
 		//std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
-		//gen_post(it, answers);
 	}
 }
 

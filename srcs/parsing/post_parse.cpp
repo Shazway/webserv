@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/01 17:39:07 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/01 19:00:35 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,43 +17,59 @@ void	get_filename(std::string line, std::string& filename)
 	v_str	split_info;
 
 	ft_split(line, split_info, ";");
-
+	std::cout << BLUE << line << END << std::endl;
 	for (v_str_it it = split_info.begin(); it != split_info.end(); it++)
 	{
 		if ((*it).find("filename=") != std::string::npos)
 		{
-			filename = (*it).substr((*it).find_last_of("="), (*it).size() - (*it).find_last_of("="));
+			filename = (*it).substr((*it).find_first_of('"') + 1, (*it).find_last_of('"') - ((*it).find_first_of('"') + 1));
 			break ;
 		}
 	}
 }
 
-size_t	find_first_line(std::string const& content)
+size_t	find_first_line(std::string const& content, size_t line)
 {
 	size_t pos = 0;
 
-	for (int i = 0; i < 4; i++)
+	for (size_t i = 0; i < line; i++)
 	{
-		std::cout << "Pos is: " << pos << std::endl;
-		pos = content.find_last_not_of("\n", pos);
+		pos = content.find("\n", pos);
+		pos++;
 	}
-	std::cout << "Pos is: " << pos << std::endl;
+	return (pos);
+}
+size_t	find_last_line(std::string const& content, size_t line)
+{
+	size_t pos = 0;
+
+	for (size_t i = line; i > 0; i--)
+	{
+		pos = content.find_last_of("\n", pos);
+		pos--;
+	}
 	return (pos);
 }
 
 void	upload(std::string const& content)
 {
+	std::ofstream	new_file;
 	std::string	filename;
 	std::string	delim;
 	std::string	data;
 	v_str		lines;
+	size_t		line;
 
-	std::cout << GREEN << "Start content: \n"<< content << END << std::endl;
 	ft_split(content, lines, "\n");
 	if (lines.size() <= 5)
 		return ;
-	
+	std::cout << YELLOW << "Data first: " << content << END << std::endl;
+	line = find_first_line(content, 1);
+	get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
 	delim = lines.front();
-	data = content.substr(find_first_line(content), content.find(delim));
-	std::cout << YELLOW << "Final data: \n"<< data << END << std::endl;
+	data = content.substr(find_first_line(content, 4), content.size() - content.find(delim));
+	new_file.open(filename.c_str(), std::ios::app);
+	line = find_last_line(data, 3);
+	new_file << data.substr(0, line);
+	new_file.close();
 }
