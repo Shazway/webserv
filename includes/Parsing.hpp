@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/22 17:47:34 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/01 17:24:56 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,4 +82,10 @@ int	parsingHeader(HttpRequest &request, std::string bufferString);
 int	parsingRequestLine(HttpRequest &request, std::string bufferString);
 int	parsingHeader(HttpRequest &request, std::string bufferString);
 int parsingRequest(HttpRequest &request, std::string bufferString);
+
+//Parse POST
+void	upload(std::string const& content);
+size_t	find_first_line(std::string const& content);
+void	get_filename(std::string line, std::string& filename);
+
 #endif

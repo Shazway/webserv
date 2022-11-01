@@ -12,6 +12,7 @@ RedirectTree::RedirectTree()
 
 RedirectTree::RedirectTree( const RedirectTree & src )
 {
+	(void)src;
 }
 
 
@@ -34,11 +35,13 @@ RedirectTree &				RedirectTree::operator=( RedirectTree const & rhs )
 	//{
 		//this->_value = rhs.getValue();
 	//}
+	(void)rhs;
 	return *this;
 }
 
 std::ostream &			operator<<( std::ostream & o, RedirectTree const & i )
 {
+	(void)i;
 	//o << "Value = " << i.getValue();
 	return o;
 }
@@ -51,7 +54,7 @@ std::ostream &			operator<<( std::ostream & o, RedirectTree const & i )
 std::string	RedirectTree::redirectTo(int error, std::string path)
 {
 	std::string	above;
-	std::map<int, std::string>::iterator it;
+	std::map<int, std::map<std::string, std::string> >::iterator it;
 
 	it = _errorcodes.find(error);
 	if (it != _errorcodes.end())
@@ -60,13 +63,13 @@ std::string	RedirectTree::redirectTo(int error, std::string path)
 		if ((*it).second.find(path) != (*it).second.end())
 			return (*it).second[path];
 		//chercher un dossier plus haut
-		if (path.findlastof("/") != 0)
+		if (path.find_last_of("/") != 0)
 		{
-			above = path.substr(0, path.findlastof("/"));
+			above = path.substr(0, path.find_last_of("/"));
 			above = redirectTo(error, above);
 		}
 	}
-	return (deeper);
+	return (above);
 }
 
 
@@ -76,9 +79,10 @@ std::string	RedirectTree::redirectTo(int error, std::string path)
 
 void	RedirectTree::addRedirect(int error, std::string path, std::string destination)
 {
-	std::map<std::string, std::string> tmp;
+	std::pair<std::string, std::string> tmp;
 
-	tmp[path] = destination;
+	tmp.first = path;
+	tmp.second = destination;
 	_errorcodes[error].insert(tmp);
 }
 

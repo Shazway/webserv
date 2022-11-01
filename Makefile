@@ -8,14 +8,15 @@ OBJ_PATH	=	obj/
 INC	=	-Iincludes
 
 SRC_NAME	=	test_main.cpp					\
-				MethodTree.cpp					\
-				IndexTree.cpp					\
-				RedirectTree					\
-				utilsTree.cpp					\
+				trees/MethodTree.cpp			\
+				trees/IndexTree.cpp				\
+				trees/RedirectTree.cpp			\
+				trees/utilsTree.cpp				\
 				Server.cpp						\
 				print_functions.cpp				\
 				parsing/ParsingConfig.cpp		\
 				parsing/ft_split.cpp			\
+				parsing/post_parse.cpp			\
 				parsing/parse_elems.cpp			\
 				parsing/check_duplicates.cpp	\
 				requests/HttpRequest.cpp		\

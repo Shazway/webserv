@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/31 19:22:27 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/01 17:39:07 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	get_filename(std::string line, std::string& filename)
 
 	ft_split(line, split_info, ";");
 
-	for (v_str_it it = split_info.begin(); it != spit_info.end(); it++)
+	for (v_str_it it = split_info.begin(); it != split_info.end(); it++)
 	{
 		if ((*it).find("filename=") != std::string::npos)
 		{
@@ -33,7 +33,11 @@ size_t	find_first_line(std::string const& content)
 	size_t pos = 0;
 
 	for (int i = 0; i < 4; i++)
-		pos = content.find("\n", pos);
+	{
+		std::cout << "Pos is: " << pos << std::endl;
+		pos = content.find_last_not_of("\n", pos);
+	}
+	std::cout << "Pos is: " << pos << std::endl;
 	return (pos);
 }
 
@@ -43,11 +47,13 @@ void	upload(std::string const& content)
 	std::string	delim;
 	std::string	data;
 	v_str		lines;
-	int			count = 0;
 
+	std::cout << GREEN << "Start content: \n"<< content << END << std::endl;
 	ft_split(content, lines, "\n");
 	if (lines.size() <= 5)
 		return ;
+	
 	delim = lines.front();
 	data = content.substr(find_first_line(content), content.find(delim));
+	std::cout << YELLOW << "Final data: \n"<< data << END << std::endl;
 }
