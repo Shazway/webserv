@@ -12,7 +12,7 @@ RedirectTree::RedirectTree()
 
 RedirectTree::RedirectTree( const RedirectTree & src )
 {
-	(void)src;
+	this->_errorcodes = src._errorcodes;
 }
 
 
@@ -31,18 +31,21 @@ RedirectTree::~RedirectTree()
 
 RedirectTree &				RedirectTree::operator=( RedirectTree const & rhs )
 {
-	//if ( this != &rhs )
-	//{
-		//this->_value = rhs.getValue();
-	//}
-	(void)rhs;
+	if ( this != &rhs )
+		this->_errorcodes = rhs._errorcodes;
 	return *this;
 }
 
 std::ostream &			operator<<( std::ostream & o, RedirectTree const & i )
 {
-	(void)i;
-	//o << "Value = " << i.getValue();
+	for (std::map< int, std::map<std::string, std::string> >::iterator it = i.getTree().begin(); it != i.getTree().end(); it++)
+	{
+		o << "Error " << (*it).first << " :" << std::endl;
+		for (std::map<std::string, std::string>::iterator ite = (*it).second.begin(); ite != (*it).second.end(); ite++)
+		{
+			o << "   " << (*ite).first << " redirects to " << (*ite).second << std::endl;
+		}
+	}
 	return o;
 }
 
@@ -84,6 +87,11 @@ void	RedirectTree::addRedirect(int error, std::string path, std::string destinat
 	tmp.first = path;
 	tmp.second = destination;
 	_errorcodes[error].insert(tmp);
+}
+
+std::map< int, std::map<std::string, std::string> >	RedirectTree::getTree(void) const
+{
+	return (_errorcodes);
 }
 
 
