@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/01 19:50:41 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/05 14:29:56 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,7 @@ Server& Server::operator=(Server const& assign)
 	socket = assign.socket;
 	routes = assign.routes;
 	html = assign.html;
+	redirect = assign.redirect;
 	return (*this);
 }
 

@@ -135,7 +135,11 @@ int parsingRequest(HttpRequest &request, std::string bufferString)
 	//si on a recupere tout le body, mettre partiallyCompleted a 0, sinon 1
 
 	//return le code d'erreur si souci, sinon 0
+	size_t ending = bufferString.find("GET");
+	ending = (bufferString.find("POST") < ending) ? bufferString.find("POST") : ending;
+	ending = (bufferString.find("DELETE") < ending) ? bufferString.find("DELETE") : ending;
+	std::cout << ending << std::string::npos << std::endl;
 	if (request.getContentLength())
-		request.setBody(bufferString);
+		request.setBody(bufferString.substr(0, ending));
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/01 19:00:35 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/05 15:07:19 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ size_t	find_first_line(std::string const& content, size_t line)
 	}
 	return (pos);
 }
+
 size_t	find_last_line(std::string const& content, size_t line)
 {
 	size_t pos = 0;
@@ -63,13 +64,12 @@ void	upload(std::string const& content)
 	ft_split(content, lines, "\n");
 	if (lines.size() <= 5)
 		return ;
-	std::cout << YELLOW << "Data first: " << content << END << std::endl;
+	std::cout << RED << "start[" << "Data first: " << content << "]end" << END << std::endl;
 	line = find_first_line(content, 1);
 	get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
 	delim = lines.front();
 	data = content.substr(find_first_line(content, 4), content.size() - content.find(delim));
-	new_file.open(filename.c_str(), std::ios::app);
-	line = find_last_line(data, 3);
+	new_file.open(filename.c_str(), std::ios::out | std::ios::binary | std::ios::ate | std::ios::app);
 	new_file << data.substr(0, line);
 	new_file.close();
 }

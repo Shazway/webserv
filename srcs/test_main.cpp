@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/01 19:26:42 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/05 15:08:25 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,7 +190,7 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 		else if ((*it).second.getMethod() == "POST")
 		{
 			upload((*it).second.getBody());
-			answers[(*it).first] = "HTTP/1.1 200 OK\n";
+			answers[(*it).first] = "HTTP/1.1 100 OK\n";
 			//gen_post(it, answers);
 		}
 		//std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
