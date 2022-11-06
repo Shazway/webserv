@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 17:18:49 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 20:18:50 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 22:40:27 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,20 @@
 class Upload
 {
 private:
-	std::ifstream	_file;
+	std::ofstream	_file;
 	std::string		_path;
+	std::string		_delim;
 	bool			_complete;
 public:
 	Upload();
 	~Upload();
-	std::ifstream	getFile() const;
+	std::ofstream	getFile() const;
 	std::string		getPath() const;
+	std::string		getDelim() const;
 	bool			getComplete() const;
 
-	void			createFile(std::string name);
+	void			openFile(std::string name);
+	void			setDelim(std::string delim);
 	void			setPath(std::string path);
 	bool			checkCompletion();
 	void			addContent(std::string content);

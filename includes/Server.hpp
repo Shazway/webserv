@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/01 19:47:01 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 22:54:17 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ private:
 	std::string					name;
 	std::string					ip;
 	std::string					method;
+	std::string					upload_path;
 	int							port;
 	size_t				body_size;
 	std::map<int, std::string>	error_paths;
@@ -68,11 +69,13 @@ public:
 	std::string			getName() const;
 	int					getSocket() const;
 	std::string			getErrorPath(int code) const;
+	std::string			getUploadPath() const;
 	std::map<int, std::string>	getErrorPaths() const;
 	void	setSocket(int socket);
 	void	setAddr();
 	void	setBody(std::string body);
 	void	setRootPath(std::string path);
+	void	setUploadPath(std::string path);
 	void	setConfigPath(std::string path);
 	void	addErrorPath(int error, std::string path);
 	void	setIp(std::string Ip);

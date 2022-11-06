@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 17:26:28 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 17:48:07 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 22:40:55 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ Upload::~Upload(){
 	return ;
 }
 
-std::ifstream	Upload::getFile() const
+std::ofstream	Upload::getFile() const
 {
 	return (_file);
 }
@@ -32,13 +32,18 @@ std::string		Upload::getPath() const
 	return (_path);
 }
 
+std::string		Upload::getDelim() const
+{
+	return (_delim);
+}
+
 bool			Upload::getComplete() const
 {
 	return (_complete);
 }
 
 
-void	Upload::createFile(std::string name)
+void	Upload::openFile(std::string name)
 {
 	_file.open(name.c_str(), std::ios::out | std::ios::binary | std::ios::ate | std::ios::app);
 	if (!_file.is_open())
@@ -61,7 +66,21 @@ void	Upload::addContent(std::string content)
 	_file << content;
 }
 
-void	Upload::checkCompletion()
+void	Upload::setDelim(std::string delim)
 {
-	
+	_delim = delim;
+}
+
+bool	Upload::checkCompletion(std::string body)
+{
+	std::string	line;
+
+	if (body.empty())
+	{
+		_completed = 0;
+		return (false);
+	}
+	if (body.find(_delim + "--") != std::string::npos)
+		return (true);
+	return (false);
 }

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/05 14:29:56 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 22:57:01 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,14 @@ int Server::getSocket() const{
 std::string Server::getName() const{
 	return (this->name);
 }
+
+std::string Server::getUploadPath() const{
+	return (this->upload_path);
+}
+void Server::setUploadPath(std::string path){
+	upload_path = path;
+}
+
 std::map<int, std::string> Server::getErrorPaths() const{
 	return (this->error_paths);
 }
@@ -131,6 +139,7 @@ Server& Server::operator=(Server const& assign)
 	routes = assign.routes;
 	html = assign.html;
 	redirect = assign.redirect;
+	upload_path = assign.upload_path;
 	return (*this);
 }
 
@@ -148,6 +157,7 @@ std::ostream&	operator<<(std::ostream& os, Server const& serv)
 	<< BLUE << "Port: " << serv.getPort() << std::endl
 	<< GREEN << "IP: " << serv.getIp() << std::endl
 	<< RED << "Body size: " << serv.getBody() << std::endl
+	<< BLUE << "Upload path: " << serv.getUploadPath() << std::endl
 	<< MAGENTA << "Routes: " << serv.getRootPath() << std::endl
 	<< serv.routes << std::endl
 	<< CYAN << "Indexes: " << serv.html << END << std::endl

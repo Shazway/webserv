@@ -6,12 +6,20 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/01 19:51:44 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 22:59:23 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Parsing.hpp"
 #include "Server.hpp"
+
+bool	set_upload(v_str & args, Server& serv)
+{
+	if (args.size() != 1)
+		return (false);
+	serv.setUploadPath(args[0]);
+	return (true);
+}
 
 bool	set_port(v_str & args, Server& serv)
 {

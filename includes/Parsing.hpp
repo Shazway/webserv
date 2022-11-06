@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 20:11:03 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 23:03:34 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ bool	set_autoIndex(v_str& args, Server& serv);
 bool	add_methods(v_str& args, t_allowedMethods& allowed);
 bool	add_index(v_str& args, std::string &index);
 bool	add_redir(v_str & args, std::string& path, int& error);
+bool	set_upload(v_str & args, Server& serv);
 
 //PARSE ROOT ELEMS
 bool	method_set_path(v_str& args, std::string& path);

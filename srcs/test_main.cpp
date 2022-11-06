@@ -6,31 +6,13 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 20:14:19 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 22:52:18 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Parsing.hpp"
-#include "Webserv.hpp"
-#include "Server.hpp"
 #include <stdlib.h>
 #include <sstream>
-/***************************************************************************/
-/*
-
-SYNTAXE HTTP REQUEST : https://devstory.net/11631/comment-afficher-les-en-tetes-http-dans-google-chrome
-
-GET /home/index.php HTTP/1.1
-Host: www.eclipse.org
-Connection: keep-alive
-Cache-Control: max-age=0
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,
-Accept-Encoding: gzip, deflate
-Accept-Language: en-US,en;q=0.9
-Cookie: un bordel pas possible*/
-/***************************************************************************/
+#include "utilsTree.hpp"
 
 Webserv	webserv;
 
@@ -181,16 +163,27 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 		answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
 }
 
-void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers)
+void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads)
 {
+	Upload	up;
+
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
 		if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
 		{
-			std::cout << MAGENTA << (*it).second.getBody().empty() << END << std::endl;
-			std::cout << MAGENTA << (*it).second.getContentLength() << END << std::endl;
+			if (uploads.find((*it).first) != uploads.end())
+				uploads[(*it).first].openFile(uploads[(*it).first].getPath());
+			else
+			{
+				//if il existe déjà
+					//up.setPath(get_file_path((*it).second.getBody())); // Choppe le path + le nom du fichier + (nb) si necessaire
+				//else
+				up.setPath("./uploaded_content" + get_filename())
+				up.openFile(up.getPath());
+
+			}
 			upload((*it).second.getBody()); // Rajouter une condition, si upload renvoie 1, le fichier est complet: 200 OK answer SI NON: 206 Partial content
 			answers[(*it).first] = "HTTP/1.1 200 OK\n";
 			//gen_post(it, answers);
@@ -215,7 +208,8 @@ void	start(std::vector<Server>& servers)
 	int		count = 0;
 	char	buff[BUFFER_SIZE + 1];
 	std::map<int, HttpRequest>	requests;
-	std::map<int, std::string> answers;
+	std::map<int, std::string>	answers;
+	std::map<int, Upload>		uploads;
 	std::string	buffer_strings[EVENT_SIZE];
 	bool	found = false;
 	std::map<int, Server>		client_serv;

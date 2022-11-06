@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/05 14:08:26 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 23:03:38 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,9 +135,10 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 {
 	v_str	args;
-	t_parser	parse[6] = {{"error_path", &add_errorpath}, {"ip", &set_ip},
+	t_parser	parse[7] = {{"error_path", &add_errorpath}, {"ip", &set_ip},
 							{"name", &set_name}, {"body_size", &set_bodysize},
-							{"autoindex", &set_autoIndex}, {"port", &set_port}};
+							{"autoindex", &set_autoIndex}, {"port", &set_port},
+							{"upload_path", &set_upload}};
 
 	if (it != content.end() && (*it).find("server:") != std::string::npos)
 		it++;
@@ -155,7 +156,7 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 				return (false);
 			continue ;
 		}
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 7; i++)
 		{
 			if ((*it).find(parse[i].serv_info) != std::string::npos)
 			{
