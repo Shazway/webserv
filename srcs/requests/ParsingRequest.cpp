@@ -9,6 +9,8 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 {
 	int	 i = 0, j = 0;
 
+	if (bufferString.empty())
+		return (1);
 	std::string::iterator it = bufferString.begin();
 	while (*it >= 'A' && *it <= 'Z')
 	{
@@ -108,7 +110,7 @@ int	parsingHeader(HttpRequest &request, std::string bufferString)
 }
 //appele par la partie avec les sockets, stocker les httpRequest dans un map
 
-int parsingRequest(HttpRequest &request, std::string bufferString)
+size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 {
 	std::string requestLine;
 	/*std::cout << BLUE << "Parsing request recieved: \n" << bufferString << END << std::endl;*/
@@ -122,6 +124,7 @@ int parsingRequest(HttpRequest &request, std::string bufferString)
 	std::cout << YELLOW << "[" << request.getPath() << "]" << END << std::endl;
 
 	size_t	n = bufferString.find("\n");
+	std::cout << RED << "Buffer string before: [" << bufferString << "]" << END << std::endl;
 	bufferString = bufferString.substr(n + 1, std::string::npos);
 	n = bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? bufferString.find("\n\n") : bufferString.find("\r\n\r\n");
 	error = parsingHeader(request, bufferString.substr(0, n));
@@ -135,11 +138,10 @@ int parsingRequest(HttpRequest &request, std::string bufferString)
 	//si on a recupere tout le body, mettre partiallyCompleted a 0, sinon 1
 
 	//return le code d'erreur si souci, sinon 0
-	size_t ending = bufferString.find("GET");
-	ending = (bufferString.find("POST") < ending) ? bufferString.find("POST") : ending;
-	ending = (bufferString.find("DELETE") < ending) ? bufferString.find("DELETE") : ending;
-	std::cout << ending << std::string::npos << std::endl;
+	//std::cout << GREEN << "Buffer string whole: [" << bufferString << "]" << END << std::endl;
 	if (request.getContentLength())
-		request.setBody(bufferString.substr(0, ending));
+		request.setBody(bufferString.substr(0, request.getContentLength()));
+	bufferString = bufferString.substr(request.getContentLength());
+	std::cout << BLUE << "Buffer string sub: " << "["<< request.getBody() << "]" << END << std::endl;
 	return (0);
 }

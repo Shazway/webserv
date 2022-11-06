@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/05 15:07:19 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 19:50:56 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	upload(std::string const& content)
 	ft_split(content, lines, "\n");
 	if (lines.size() <= 5)
 		return ;
-	std::cout << RED << "start[" << "Data first: " << content << "]end" << END << std::endl;
+	//std::cout << RED << "start[" << "Data first: " << content << "]end" << END << std::endl;
 	line = find_first_line(content, 1);
 	get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
 	delim = lines.front();

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/05 15:08:25 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 20:14:19 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,8 +189,10 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
 		{
-			upload((*it).second.getBody());
-			answers[(*it).first] = "HTTP/1.1 100 OK\n";
+			std::cout << MAGENTA << (*it).second.getBody().empty() << END << std::endl;
+			std::cout << MAGENTA << (*it).second.getContentLength() << END << std::endl;
+			upload((*it).second.getBody()); // Rajouter une condition, si upload renvoie 1, le fichier est complet: 200 OK answer SI NON: 206 Partial content
+			answers[(*it).first] = "HTTP/1.1 200 OK\n";
 			//gen_post(it, answers);
 		}
 		//std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
@@ -206,7 +208,7 @@ void	closeFd(int fd)
 void	start(std::vector<Server>& servers)
 {
 	int		fd_listen;
-	int		fdMax;
+	int		fdMax = 0;
 	int		ret;
 	int		client;
 	int		read_char;
@@ -272,6 +274,8 @@ void	start(std::vector<Server>& servers)
 							closeFd(client);
 							requests.erase(client);
 						}
+						//if (read_char > BUFFER_SIZE)
+						//std::cout << "C'est la merde ? " << read_char << std::endl;
 						buffer_strings[client] += buff;
 					}
 				}
@@ -296,7 +300,7 @@ void	start(std::vector<Server>& servers)
 				try
 				{
 					parsingRequest(tmp_request, buffer_strings[i]);
-					buffer_strings[i].clear();
+					//buffer_strings[i].clear();
 				}
 				catch(const std::exception& e)
 				{

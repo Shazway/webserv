@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/01 19:52:12 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/06 20:11:03 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ bool	check_name(std::vector<Server>& servers);
 int	parsingHeader(HttpRequest &request, std::string bufferString);
 int	parsingRequestLine(HttpRequest &request, std::string bufferString);
 int	parsingHeader(HttpRequest &request, std::string bufferString);
-int parsingRequest(HttpRequest &request, std::string bufferString);
+size_t parsingRequest(HttpRequest &request, std::string &bufferString);
 
 //Parse POST
 void	upload(std::string const& content);

@@ -12,4 +12,5 @@
 #include "Webserv.hpp"
 #include "Sockets.hpp"
 #include "Parsing.hpp"
+#include "Upload.hpp"
 int	cmp_vector(std::vector<std::string> test, std::vector<std::string> comp);
