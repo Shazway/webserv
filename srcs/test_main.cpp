@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/07 23:57:40 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 00:14:58 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,24 +127,29 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 
 	if (request._serv.checkAllowedMethods("POST", request.getPath()))
 	{
-		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
+		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)// Faut download
 		{
-			Upload	up;
+			Upload	up; //Crée une instance de upload pour l'ajouter si il existe pas dans map
 
-			if (uploads.find(fd) == uploads.end())
+			if (uploads.find(fd) == uploads.end()) //Il existe pas
 			{
-				if (upload(up, request.getBody()) == COMPLETE)
-					answers[(*it).first] = "HTTP/1.1 200 OK\n";
+				if (upload(up, request.getBody()) == COMPLETE) //Le body contient le delimiteur de fin alors upload a renvoyé 1
+					answers[(*it).first] = "HTTP/1.1 200 OK\n";// Pas besoin de l'ajouter a la map puisqu'il est entier
 				else
-					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";
-				uploads[fd] = up;
+				{
+					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//Il n'y a pas de delimiteur de fin
+					uploads[fd] = up; //Ajout de up a la map
+				}
 			}
-			else
+			else//Il existe
 			{
-				if (upload(uploads[fd], request.getBody()) == COMPLETE)
+				if (upload(uploads[fd], request.getBody()) == COMPLETE)// On vient de recevoir la fin
+				{
 					answers[(*it).first] = "HTTP/1.1 200 OK\n";
+					uploads.erase(fd);//On l'efface de la map car on a fini de download le fichier
+				}
 				else
-					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";
+					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//upload a renvoyé INCOMPLETE, on demande la suite du body
 			}
 		}
 	}

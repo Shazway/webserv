@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/07 23:38:57 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 00:17:55 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,26 +81,26 @@ void	init_upload(Upload& up, v_str lines, std::string content, std::string& data
 	up.openFile(up.getPath());
 }
 
-int	upload(Upload& up, std::string const& content)
+int	upload(Upload& up, std::string const& content) //J'aurai du l'appeler download T_T
 {
 	std::string	data;
 	v_str		lines;
 	size_t		line;
 
 	ft_split(content, lines, "\n");
-	if (up.getFile().is_opened())
+	if (up.getFile().is_opened()) // Si on a déjà un fichier, alors il est incomplet
 	{
-		if (content.find(up.getDelim() + "--") == std::string::npos)
-			return (add_incomplete_content(content));
+		if (content.find(up.getDelim() + "--") == std::string::npos)// Il s'apprete a être complet ?
+			return (add_incomplete_content(content));//non -> on ajoute au fichier et on return incomplet
 		else
-			return (add_complete_content(up, content));
+			return (add_complete_content(up, content));//oui -> on ajoute au fichier et on return complet
 	}
-	else
+	else // Nouveau upload tout frais
 	{
-		init_upload(up, lines, content, data, line);
-		if (content.find(up.getDelim() + "--"))
-			return (add_complete_content(up, data));
+		init_upload(up, lines, content, data, line); // On choppe, nom de fichier, path, contenu du début, delimiteur
+		if (content.find(up.getDelim() + "--") != std::string::npos) // Il y a déjà le delimiteur ?
+			return (add_complete_content(up, data)); //oui-> On ajoute le contenu entier et on return complet
 		else
-			return (add_incomplete_content(up, data.substr(0, line)));
+			return (add_incomplete_content(up, data.substr(0, line)));//non-> On ajoute le contenu et on return incomplet
 	}
 }
