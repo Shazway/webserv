@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 17:26:28 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 22:40:55 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/07 23:57:01 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,12 @@ bool	Upload::checkCompletion(std::string body)
 	if (body.find(_delim + "--") != std::string::npos)
 		return (true);
 	return (false);
+}
+
+Upload&	Upload::operator=(Upload const& assign)
+{
+	_file = assign._file;
+	_path = assign._path;
+	_delim = assign._delim;
+	_complete = assign._complete;
 }

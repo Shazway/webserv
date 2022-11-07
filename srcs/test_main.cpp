@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 22:52:18 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/07 23:57:40 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,74 +120,45 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 	//Header à rajouter plus tard \n \n
 }
 
-void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, std::map<int, Upload> uploads)
 {
-	v_str	stock_var;
-	
-	/*if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)
-		std::cout << "Hello file" << std::endl;*/
-	if ((*it).second._serv.checkAllowedMethods("POST", (*it).second.getPath()))
+	int	fd = (*it).first;
+	HttpRequest request = (*it).second;
+
+	if (request._serv.checkAllowedMethods("POST", request.getPath()))
 	{
-		std::ifstream	file;
-		if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)
-			generate_ok((*it).first, answers, file);
-
-		/*if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
+		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
 		{
-			std::string abs_path = (*it).second.getPath();
+			Upload	up;
 
-			
-			//	ft_split((*it).second.getBody(), stock_var, "&");
-			std::cout << "Hello form" << std::endl;
-			//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
-			file.open(abs_path.c_str());
-			if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
+			if (uploads.find(fd) == uploads.end())
 			{
-				file.close();
-				abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
-				//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
-				file.open(abs_path.c_str());
-				if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
-					answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
+				if (upload(up, request.getBody()) == COMPLETE)
+					answers[(*it).first] = "HTTP/1.1 200 OK\n";
 				else
-					create_temp((*it).first, answers, file);
+					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";
+				uploads[fd] = up;
 			}
-			else if (file.is_open())
-				generate_ok((*it).first, answers, file);
 			else
-				answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
-			file.close();
-		}*/
+			{
+				if (upload(uploads[fd], request.getBody()) == COMPLETE)
+					answers[(*it).first] = "HTTP/1.1 200 OK\n";
+				else
+					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";
+			}
+		}
 	}
-	else
-		answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
 }
 
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads)
 {
-	Upload	up;
 
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
 		if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
-		{
-			if (uploads.find((*it).first) != uploads.end())
-				uploads[(*it).first].openFile(uploads[(*it).first].getPath());
-			else
-			{
-				//if il existe déjà
-					//up.setPath(get_file_path((*it).second.getBody())); // Choppe le path + le nom du fichier + (nb) si necessaire
-				//else
-				up.setPath("./uploaded_content" + get_filename())
-				up.openFile(up.getPath());
-
-			}
-			upload((*it).second.getBody()); // Rajouter une condition, si upload renvoie 1, le fichier est complet: 200 OK answer SI NON: 206 Partial content
-			answers[(*it).first] = "HTTP/1.1 200 OK\n";
-			//gen_post(it, answers);
-		}
+			gen_post(it, answers, uploads);
 		//std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
 	}
 }
@@ -304,7 +275,7 @@ void	start(std::vector<Server>& servers)
 				requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
 			}
 		}
-		answers_gen(requests, answers);
+		answers_gen(requests, answers, uploads);
 		send_answers(answers);
 		answers.clear();
 		requests.clear();

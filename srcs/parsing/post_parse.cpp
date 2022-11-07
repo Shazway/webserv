@@ -6,11 +6,13 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 23:07:03 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/07 23:38:57 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utilsTree.hpp"
+
+
 
 void	get_filename(std::string line, std::string& filename)
 {
@@ -51,24 +53,54 @@ size_t	find_last_line(std::string const& content, size_t line)
 	return (pos);
 }
 
-void	upload(std::string const& content)
+int	add_incomplete_content(upload& up, std::string content)
 {
-	std::ofstream	new_file;
+	up.addContent(content);
+	return (INCOMPLETE);
+}
+
+int	add_complete_content(Upload& up, std::string content)
+{
+	std::string	line;
+
+	line = find_last_line(content, 3);
+	up.addContent(content.substr(0, line));
+	up.closeFile();
+	return (COMPLETE)
+}
+
+void	init_upload(Upload& up, v_str lines, std::string content, std::string& data, size_t &line)
+{
 	std::string	filename;
-	std::string	delim;
+
+	line = find_first_line(content, 1);
+	filename = get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
+	up.setPath("uploaded_content/" + filename); // Setup du filepath (il faut changer le path brut par ce qu'il y a dans serv)
+	up.setDelim(lines.front())// Setup du delimiteur
+	data = content.substr(find_first_line(content, 4), content.size() - content.find(up.getDelim()));
+	up.openFile(up.getPath());
+}
+
+int	upload(Upload& up, std::string const& content)
+{
 	std::string	data;
 	v_str		lines;
 	size_t		line;
 
-	if (lines.size() <= 5)
-		return ;
-	//std::cout << RED << "start[" << "Data first: " << content << "]end" << END << std::endl;
-	line = find_first_line(content, 1);
 	ft_split(content, lines, "\n");
-	get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
-	delim = lines.front();
-	data = content.substr(find_first_line(content, 4), content.size() - content.find(delim));
-	new_file.open(filename.c_str(), std::ios::out | std::ios::binary | std::ios::ate | std::ios::app);
-	new_file << data.substr(0, line);
-	new_file.close();
+	if (up.getFile().is_opened())
+	{
+		if (content.find(up.getDelim() + "--") == std::string::npos)
+			return (add_incomplete_content(content));
+		else
+			return (add_complete_content(up, content));
+	}
+	else
+	{
+		init_upload(up, lines, content, data, line);
+		if (content.find(up.getDelim() + "--"))
+			return (add_complete_content(up, data));
+		else
+			return (add_incomplete_content(up, data.substr(0, line)));
+	}
 }

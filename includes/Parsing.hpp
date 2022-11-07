@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 23:03:34 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/07 23:53:17 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 # define PARSING_HPP
 # include "Server.hpp"
 # include "HttpRequest.hpp"
-
+#include "utilsTree.hpp"
 #define METHOD method.allowed
 class Server;
 class HttpRequest;
+class Upload;
 //Vector string//
 typedef std::vector<std::string> v_str;
 //Vector string iterator//
@@ -86,7 +87,7 @@ int	parsingHeader(HttpRequest &request, std::string bufferString);
 size_t parsingRequest(HttpRequest &request, std::string &bufferString);
 
 //Parse POST
-void	upload(std::string const& content);
+int	upload(Upload& up, std::string const& content);
 size_t	find_first_line(std::string const& content, size_t line);
 void	get_filename(std::string line, std::string& filename);
 

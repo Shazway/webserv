@@ -6,13 +6,15 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 17:18:49 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 22:40:27 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/07 23:55:37 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UPLOAD_HPP
 #define UPLOAD_HPP
 #include "utilsTree.hpp"
+#define COMPLETE 1
+#define INCOMPLETE 0
 
 class Upload
 {
@@ -35,6 +37,7 @@ public:
 	bool			checkCompletion();
 	void			addContent(std::string content);
 	void			closeFile();
+	Upload& operator=(Upload const& assign);
 };
 
 class FailedToOpenFileException: virtual public std::exception
