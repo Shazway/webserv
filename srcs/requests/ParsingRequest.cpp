@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingRequest.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:02 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/08 16:00:13 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/08 20:01:51 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,8 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 			it++;
 			j++;
 		}
-		if (j - i < 1)
-			return (CODE_NO_QUERY);
-		request.setQueryString(bufferString.substr(i, j));
+		if (j - i >= 1)
+			request.setQueryString(bufferString.substr(i, j));
 	}
 	while (*it == ' ')
 	{
@@ -155,5 +154,7 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 		request.setBody(bufferString.substr(0, request.getContentLength()));
 	bufferString = bufferString.substr(request.getContentLength());
 	std::cout << BLUE << "Buffer string sub: " << "["<< request.getBody() << "]" << END << std::endl;
+	if (bufferString.empty())
+		std::cout << "C'est vide" << std::endl;
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 18:36:49 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 22:03:41 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,41 @@ std::string	itoa(long nb)
 	return (ss.str());
 }
 
+void	separate_lines(v_str &lines, std::string content)
+{
+	while (!content.empty())
+	{
+		lines.push_back(content.substr(0, find_first_line(content, 1) - 1));
+		content = content.substr(find_first_line(content, 1));
+	}
+}
+
+bool	is_empty(std::string str)
+{
+	if (str == "\n" || str == "\r\n")
+		return (true);
+	return (false);
+}
+
 bool	complete_request(std::string str, size_t maxBodySize)
 {
-	std::vector<std::string>	v;
+	v_str						v;
 	size_t						bodySize = 0;
 	size_t						i = 0;
 	std::string					tmp;
 
-	ft_split(str, v, "\r\n");
-	std::vector<std::string>::iterator	it = v.begin();
+	std::cout << "Start[" << RED << str << END << "]end" << std::endl;
+	separate_lines(v, str);
+	display_v_str(v);
+	std::cout << "Size: " << v.size() << std::endl;
+	v_str_it	it = v.begin();
+
+	if (v.empty()) // sinon ça segfault ??
+		return (0);
+	// Probleme avec la size du body ?
+	//Renvoie false alors que c'est complet
 	i = (*it).find("Content-Length: ");
-	while (it != v.end() && !(*it).empty() && i == std::string::npos)
+	while (it != v.end() && !is_empty(*it) && i == std::string::npos)
 	{
 		it++;
 		if (it == v.end())
@@ -48,16 +72,23 @@ bool	complete_request(std::string str, size_t maxBodySize)
 	{
 		tmp = (*it).substr(16, std::string::npos);
 		bodySize=atoi(tmp.c_str());
+		std::cout << GREEN << "ICI bodysize " << bodySize << " maxbodysize" << maxBodySize << std::endl;
+
 		if (bodySize > maxBodySize) //si bodySize est plus grand que la limite, true pour code d'erreur apres
 			return (true);
 	}
-	while (it != v.end() && !(*it).empty())
+	while (it != v.end() && !is_empty((*it)))
 		it++;
+	//std::cout << GREEN << "ICI line " << *(++it) << std::endl;
+	it++;
 	while (it != v.end() && bodySize > (*it).size())
 	{
-		bodySize -= (*it).size() + 1;
+		std::cout << "reste a recuperer " << bodySize << " et actuellement " << (*it).size() << std::endl;
+		std::cout << (*it).size() << std::endl;
+		bodySize -= ((*it).size());
 		it++;
 	}
+	//std::cout << GREEN << "ICI derniere ligne " << *(--it) << std::endl;
 	if (it == v.end())
 		return (false);
 	return (true);
@@ -70,8 +101,8 @@ void	send_answers(std::map<int, std::string>& answers)
 		if (webserv.getEvent((*it).first).events & EPOLLOUT)
 		{
 			send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
-			std::cout << YELLOW << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
-			answers.erase((*it).first);
+			//std::cout << YELLOW << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
+			answers.erase(it);
 		}
 	}
 }
@@ -159,7 +190,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 				if (upload(uploads[fd], request.getBody()) == COMPLETE)// On vient de recevoir la fin
 				{
 					answers[(*it).first] = "HTTP/1.1 200 OK\n";
-					uploads.erase(fd);//On l'efface de la map car on a fini de download le fichier
+					uploads.erase(uploads.find(fd));//On l'efface de la map car on a fini de download le fichier
 				}
 				else
 					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//upload a renvoyé INCOMPLETE, on demande la suite du body
@@ -170,15 +201,16 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads)
 {
-
+	//gerer ici si le body est trop grand
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
+		//std::cout << RED << "here" << END << std::endl;
 		if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
 			gen_post(it, answers, uploads);
 		//std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
-		requests.erase((*it).first);
+		requests.erase(it);
 	}
 }
 
@@ -218,7 +250,6 @@ void	start(std::vector<Server>& servers)
 				{webserv.setServer(count, (*it));}
 			catch(const std::exception& e)
 				{std::cerr<< RED << " " << fd_listen << e.what() << END << '\n';}
-			std::cout << "fd listen = " << fd_listen << std::endl;
 			webserv.add_event(fd_listen, EPOLLIN);
 			count++;
 		}
@@ -257,12 +288,11 @@ void	start(std::vector<Server>& servers)
 				client = webserv.getEvent(i).data.fd;
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
-				//std::cout << "here" << std::endl;
 					if (!complete_request(buffer_strings[client], client_serv[client].getBody()) || buffer_strings[client].empty())
 					{
 						memset(buff, 0, BUFFER_SIZE + 1);
 						read_char = recv(client, buff, BUFFER_SIZE, 0);//errors to check
-						std::cout << BLUE << "FD: " << client << "asks for Content: \n" << buff <<END<< std::endl;
+						//std::cout << BLUE << "FD: " << client << "asks for Content: \n" << buff <<END<< std::endl;
 						//if return 0 close la connection
 						if (read_char <= 0)
 						{
@@ -273,6 +303,8 @@ void	start(std::vector<Server>& servers)
 						//std::cout << "C'est la merde ? " << read_char << std::endl;
 						buffer_strings[client] += buff;
 					}
+					else
+						std::cout << "Requete complete" << std::endl;
 				}
 			}
 		}
@@ -284,11 +316,12 @@ void	start(std::vector<Server>& servers)
 			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
 			if (!buffer_strings[i].empty() && complete_request(buffer_strings[i], client_serv[client].getBody()))
 			{
-				std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
+				//std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
 				HttpRequest	tmp_request(client_serv[i]);
 				try
 				{
 					parsingRequest(tmp_request, buffer_strings[i]);
+					//std::cout << "parsing a rendu " << res << std::endl;
 					//buffer_strings[i].clear();
 				}
 				catch(const std::exception& e)
@@ -302,8 +335,8 @@ void	start(std::vector<Server>& servers)
 		answers_gen(requests, answers, uploads);
 		send_answers(answers);
 		requests.clear();
-		//for (int i = 0; i < EVENT_SIZE; i++)
-		//	buffer_strings[i].clear();
+		/*for (int i = 0; i < EVENT_SIZE; i++)
+			buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!
 	}
 
 	/*std::cout << "Notre webserv :" << std::endl;

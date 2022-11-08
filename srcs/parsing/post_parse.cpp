@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   post_parse.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 15:56:38 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/08 20:09:22 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	init_upload(Upload& up, v_str lines, std::string content, std::string& data
 
 	line = find_first_line(content, 1);
 	get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
-	up.setPath("uploaded_content/" + filename); // Setup du filepath (il faut changer le path brut par ce qu'il y a dans serv)
+	up.setPath(filename); // Setup du filepath (il faut changer le path brut par ce qu'il y a dans serv)
 	up.setDelim(lines.front());// Setup du delimiteur
 	data = content.substr(find_first_line(content, 4), content.size() - content.find(up.getDelim()));
 	up.openFile(up.getPath());
