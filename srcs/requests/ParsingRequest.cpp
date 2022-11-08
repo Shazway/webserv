@@ -1,9 +1,21 @@
-#include "HttpRequest.hpp"
-#include "Server.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ParsingRequest.cpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/08 15:35:02 by mdelwaul          #+#    #+#             */
+/*   Updated: 2022/11/08 16:00:13 by mdelwaul         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <iostream>
 #include <string>
 #include <map>
 
+#include "Colors.hpp"
+#include "HttpRequest.hpp"
 
 int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 {

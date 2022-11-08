@@ -3,36 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 22:54:17 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:41:36 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
-#define SERVER_HPP
-#include <iostream>
-#include <vector>
-#include <map>
-#include "Colors.hpp"
-#include <iterator>
-#include "MethodTree.hpp"
-#include <string.h>
-#include <MethodTree.hpp>
-#include <stdlib.h>
-#include "Parsing.hpp"
-#include <fstream>
-#include <sys/epoll.h>
-#include <string>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <fcntl.h>
-#include "IndexTree.hpp"
-#include "RedirectTree.hpp"
+# define SERVER_HPP
+# include <iostream>
+# include <vector>
+# include <map>
+# include "Colors.hpp"
+# include <iterator>
+# include <string.h>
+# include <stdlib.h>
+# include <fstream>
+# include <sys/epoll.h>
+# include <string>
+# include <unistd.h>
+# include <sys/types.h>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <fcntl.h>
 
+# include "MethodTree.hpp"
+# include "IndexTree.hpp"
+# include "RedirectTree.hpp"
 //Vector string//
 typedef std::vector<std::string> v_str;
 //Vector string iterator//

@@ -3,15 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   print_functions.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/08 16:21:31 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/22 17:52:15 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:52:24 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <vector>
+
 #include "Colors.hpp"
-#include "Parsing.hpp"
+#include "Server.hpp"
+
 
 void	print_separator()
 {

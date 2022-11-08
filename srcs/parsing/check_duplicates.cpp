@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   check_duplicates.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 15:23:15 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/09 16:08:43 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:58:39 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include <vector>
+
 #include "Parsing.hpp"
+#include "Server.hpp"
 
 bool	check_name(std::vector<Server>& servers)
 {

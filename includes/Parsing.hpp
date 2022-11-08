@@ -3,23 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 15:22:13 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:42:10 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSING_HPP
 # define PARSING_HPP
 
-#include "utilsTree.hpp"
+#include "HttpRequest.hpp"
+#include "Server.hpp"
+#include "Upload.hpp"
 
-class Server;
-class HttpRequest;
-class Upload;
-
-#define METHOD method.allowed
+# define METHOD method.allowed
 //Vector string//
 typedef std::vector<std::string> v_str;
 //Vector string iterator//

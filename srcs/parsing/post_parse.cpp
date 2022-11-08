@@ -3,16 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   post_parse.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 14:47:40 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:56:38 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utilsTree.hpp"
+#include <string>
 
-
+#include "Parsing.hpp"
+#include "Server.hpp"
+#include "Upload.hpp"
 
 void	get_filename(std::string line, std::string& filename)
 {

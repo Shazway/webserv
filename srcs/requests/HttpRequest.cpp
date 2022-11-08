@@ -1,9 +1,21 @@
-#include "HttpRequest.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   HttpRequest.cpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/08 15:34:48 by mdelwaul          #+#    #+#             */
+/*   Updated: 2022/11/08 15:59:25 by mdelwaul         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <vector>
 #include <algorithm>
 #include <string>
 
-
+#include "Colors.hpp"
+#include "HttpRequest.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------

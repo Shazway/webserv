@@ -1,19 +1,6 @@
 #pragma once
-#include <vector>
-#include <cstring>
-#include <string.h>
-#include "Server.hpp"
-#include "MethodTree.hpp"
-#include "IndexTree.hpp"
-#include "Colors.hpp"
-#include "HttpRequest.hpp"
-#include "Webserv.hpp"
-#include "Parsing.hpp"
-#include "Upload.hpp"
-class Server;
-class MethodTree;
-class HttpRequest;
-class Webserv;
-class Upload;
-class IndexTree;
+# include <vector>
+# include <cstring>
+# include <string.h>
+
 int	cmp_vector(std::vector<std::string> test, std::vector<std::string> comp);

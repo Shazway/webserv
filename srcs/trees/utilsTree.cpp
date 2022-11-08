@@ -1,4 +1,18 @@
-#include "utilsTree.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utilsTree.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/08 15:36:06 by mdelwaul          #+#    #+#             */
+/*   Updated: 2022/11/08 15:50:56 by mdelwaul         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include <cstring>
+#include <string>
+#include <vector>
 
 int	cmp_vector(std::vector<std::string> test, std::vector<std::string> comp)
 {

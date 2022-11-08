@@ -3,18 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingConfig.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/06 23:03:38 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:54:01 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include "Exceptions.hpp"
-#include "Parsing.hpp"
 #include <iostream>
 #include <fstream>
+#include <vector>
+
+#include "Parsing.hpp" 
+#include "Server.hpp"
 
 void	fill_content(std::ifstream& file, std::vector<std::string>& content)
 {

@@ -3,18 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 14:54:53 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:43:47 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <sstream>
-#include "utilsTree.hpp"
+#include <fstream>
+#include <vector>
+#include "Parsing.hpp"
+#include "Webserv.hpp"
 
-Webserv	webserv;
+Webserv webserv;
 
 std::string	itoa(long nb)
 {

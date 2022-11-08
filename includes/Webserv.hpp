@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 21:43:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 15:01:15 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:38:13 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
-# include "utilsTree.hpp"
 
-#include <map>
-#define BUFFER_SIZE 4096
-#define EVENT_SIZE 1024
+# include <map>
+# include "Server.hpp"
+
+# define BUFFER_SIZE 4096
+# define EVENT_SIZE 1024
 
 typedef struct epoll_event epoll_event;
 

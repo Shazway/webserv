@@ -1,7 +1,20 @@
-#include "MethodTree.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   MethodTree.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/08 15:35:42 by mdelwaul          #+#    #+#             */
+/*   Updated: 2022/11/08 15:46:24 by mdelwaul         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Colors.hpp"
+#include "MethodTree.hpp"
 #include "Parsing.hpp"
 #include "utilsTree.hpp"
+#include <vector>
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------

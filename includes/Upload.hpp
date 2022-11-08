@@ -11,11 +11,10 @@
 /* ************************************************************************** */
 
 #ifndef UPLOAD_HPP
-#define UPLOAD_HPP
-#include "utilsTree.hpp"
-#include <fstream>
-#define COMPLETE 1
-#define INCOMPLETE 0
+# define UPLOAD_HPP
+# include <fstream>
+# define COMPLETE 1
+# define INCOMPLETE 0
 
 class Upload
 {
