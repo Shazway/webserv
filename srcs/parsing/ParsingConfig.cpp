@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingConfig.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 15:54:01 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/08 16:15:09 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 				args.erase(args.begin());
 				if (!parse[i].s(args, serv))
 				{
-					std::cerr << RED << "Encountered problem at line: " << *it
+					std::cerr << RED << "Encountered problem at line: " << *it << std::endl
 					<< parse[i].serv_info << " wrong arguments: " << END;
 					display_v_str(args);
 					return (false);

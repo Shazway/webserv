@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 15:43:47 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/08 18:36:49 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,14 @@ bool	complete_request(std::string str, size_t maxBodySize)
 void	send_answers(std::map<int, std::string>& answers)
 {
 	for (std::map<int, std::string>::iterator it = answers.begin(); it != answers.end(); it++)
-		send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
+	{
+		if (webserv.getEvent((*it).first).events & EPOLLOUT)
+		{
+			send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
+			std::cout << YELLOW << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
+			answers.erase((*it).first);
+		}
+	}
 }
 
 void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file)
@@ -85,6 +92,9 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 			content += "\n";
 		}
 	}
+	//std::cout << "FD: [" << fd << "]" << std::endl;
+	//std::cout << "CONTENT: [" << content << "]" << std::endl;
+	content = content.substr(0, content.size() - 1);
 	answers[fd] += "Content length: ";
 	answers[fd] += itoa((long)content.length());
 	answers[fd] += "\n\n";
@@ -168,6 +178,7 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 		else if ((*it).second.getMethod() == "POST")
 			gen_post(it, answers, uploads);
 		//std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
+		requests.erase((*it).first);
 	}
 }
 
@@ -197,16 +208,25 @@ void	start(std::vector<Server>& servers)
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
 	{
 		fd_listen = (*it).init_socket();
-		(*it).setSocket(fd_listen);
-		if (fd_listen > fdMax)
-			fdMax = fd_listen;
-		//std::cout << "FD LISTEN: " << (*it).getSocket() << std::endl;
-		try
-			{webserv.setServer(count, (*it));}
-		catch(const std::exception& e)
-			{std::cerr<< RED << " " << fd_listen << e.what() << END << '\n';}
-		webserv.add_event(fd_listen, EPOLLIN);
-		count++;
+		if (fd_listen > 0)
+		{
+			(*it).setSocket(fd_listen);
+			if (fd_listen > fdMax)
+				fdMax = fd_listen;
+			//std::cout << "FD LISTEN: " << (*it).getSocket() << std::endl;
+			try
+				{webserv.setServer(count, (*it));}
+			catch(const std::exception& e)
+				{std::cerr<< RED << " " << fd_listen << e.what() << END << '\n';}
+			std::cout << "fd listen = " << fd_listen << std::endl;
+			webserv.add_event(fd_listen, EPOLLIN);
+			count++;
+		}
+		else
+		{
+			std::cout << fd_listen << std::endl;
+			exit(fd_listen);
+		}
 	}
 	while (true)
 	{
@@ -220,6 +240,7 @@ void	start(std::vector<Server>& servers)
 				{
 					found = true;
 					int client = accept(webserv.getServer(j).getSocket(), NULL, NULL);
+					std::cout << RED << "Accepté pour FD: " << client<<END << std::endl;
 					if (client <= 0)
 					{
 						std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
@@ -228,7 +249,7 @@ void	start(std::vector<Server>& servers)
 					if (client > fdMax)
 						fdMax = client;
 					client_serv[client] = webserv.getServer(j);
-					webserv.add_event(client, EPOLLIN);
+					webserv.add_event(client, EPOLLIN | EPOLLOUT);
 				}
 			}
 			if (!found)
@@ -241,6 +262,7 @@ void	start(std::vector<Server>& servers)
 					{
 						memset(buff, 0, BUFFER_SIZE + 1);
 						read_char = recv(client, buff, BUFFER_SIZE, 0);//errors to check
+						std::cout << BLUE << "FD: " << client << "asks for Content: \n" << buff <<END<< std::endl;
 						//if return 0 close la connection
 						if (read_char <= 0)
 						{
@@ -252,13 +274,6 @@ void	start(std::vector<Server>& servers)
 						buffer_strings[client] += buff;
 					}
 				}
-				else if (webserv.getEvent(i).events & EPOLLOUT)
-				{
-					//clients a qui on doit send un truc
-					if (!answers[client].empty())
-						send(client, answers[client].c_str(), answers[client].size(), MSG_NOSIGNAL);
-					answers.erase(client);
-				}
 			}
 		}
 		//stocker un fd max, pour opti et pas passer sur les 1000 fd
@@ -269,6 +284,7 @@ void	start(std::vector<Server>& servers)
 			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
 			if (!buffer_strings[i].empty() && complete_request(buffer_strings[i], client_serv[client].getBody()))
 			{
+				std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
 				HttpRequest	tmp_request(client_serv[i]);
 				try
 				{
@@ -285,7 +301,6 @@ void	start(std::vector<Server>& servers)
 		}
 		answers_gen(requests, answers, uploads);
 		send_answers(answers);
-		answers.clear();
 		requests.clear();
 		//for (int i = 0; i < EVENT_SIZE; i++)
 		//	buffer_strings[i].clear();

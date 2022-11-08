@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 15:51:22 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/08 18:35:12 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,8 +185,8 @@ int	Server::init_socket()
 	this->setAddr();
 	fcntl(fd_listen, O_NONBLOCK);
 	if (bind(fd_listen, (sockaddr*)&addr, sizeof(addr)) != 0)
-		return (-1);
+		return (-2);
 	if (listen(fd_listen, 5) < 0)
-		return (-1);
+		return (-3);
 	return (fd_listen);
 }
