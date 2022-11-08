@@ -7,7 +7,7 @@ SRC_PATH	=	srcs/
 OBJ_PATH	=	obj/
 INC	=	-Iincludes
 
-SRC_NAME	=	test_main.cpp					\
+SRC_NAME	=	main.cpp						\
 				trees/MethodTree.cpp			\
 				trees/IndexTree.cpp				\
 				trees/RedirectTree.cpp			\
@@ -21,7 +21,6 @@ SRC_NAME	=	test_main.cpp					\
 				parsing/check_duplicates.cpp	\
 				requests/HttpRequest.cpp		\
 				requests/ParsingRequest.cpp		\
-				BookMark.cpp					\
 				Webserv.cpp						\
 				Upload.cpp
 OBJ_NAME	=	$(SRC_NAME:.cpp=.o)

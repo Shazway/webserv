@@ -6,27 +6,27 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 17:18:49 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/07 23:55:37 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 14:45:43 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UPLOAD_HPP
 #define UPLOAD_HPP
 #include "utilsTree.hpp"
+#include <fstream>
 #define COMPLETE 1
 #define INCOMPLETE 0
 
 class Upload
 {
 private:
-	std::ofstream	_file;
 	std::string		_path;
 	std::string		_delim;
 	bool			_complete;
 public:
 	Upload();
+	Upload(Upload const& assign);
 	~Upload();
-	std::ofstream	getFile() const;
 	std::string		getPath() const;
 	std::string		getDelim() const;
 	bool			getComplete() const;
@@ -37,6 +37,7 @@ public:
 	bool			checkCompletion();
 	void			addContent(std::string content);
 	void			closeFile();
+	std::ofstream	_file;
 	Upload& operator=(Upload const& assign);
 };
 

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 00:17:55 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 14:47:40 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ size_t	find_last_line(std::string const& content, size_t line)
 	return (pos);
 }
 
-int	add_incomplete_content(upload& up, std::string content)
+int	add_incomplete_content(Upload& up, std::string content)
 {
 	up.addContent(content);
 	return (INCOMPLETE);
@@ -61,12 +61,12 @@ int	add_incomplete_content(upload& up, std::string content)
 
 int	add_complete_content(Upload& up, std::string content)
 {
-	std::string	line;
+	size_t	line;
 
 	line = find_last_line(content, 3);
 	up.addContent(content.substr(0, line));
 	up.closeFile();
-	return (COMPLETE)
+	return (COMPLETE);
 }
 
 void	init_upload(Upload& up, v_str lines, std::string content, std::string& data, size_t &line)
@@ -74,9 +74,9 @@ void	init_upload(Upload& up, v_str lines, std::string content, std::string& data
 	std::string	filename;
 
 	line = find_first_line(content, 1);
-	filename = get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
+	get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
 	up.setPath("uploaded_content/" + filename); // Setup du filepath (il faut changer le path brut par ce qu'il y a dans serv)
-	up.setDelim(lines.front())// Setup du delimiteur
+	up.setDelim(lines.front());// Setup du delimiteur
 	data = content.substr(find_first_line(content, 4), content.size() - content.find(up.getDelim()));
 	up.openFile(up.getPath());
 }
@@ -88,10 +88,10 @@ int	upload(Upload& up, std::string const& content) //J'aurai du l'appeler downlo
 	size_t		line;
 
 	ft_split(content, lines, "\n");
-	if (up.getFile().is_opened()) // Si on a déjà un fichier, alors il est incomplet
+	if (up._file.is_open()) // Si on a déjà un fichier, alors il est incomplet
 	{
 		if (content.find(up.getDelim() + "--") == std::string::npos)// Il s'apprete a être complet ?
-			return (add_incomplete_content(content));//non -> on ajoute au fichier et on return incomplet
+			return (add_incomplete_content(up, content)); //non -> on ajoute au fichier et on return incomplet
 		else
 			return (add_complete_content(up, content));//oui -> on ajoute au fichier et on return complet
 	}

@@ -1,5 +1,6 @@
 #ifndef INDEXTREE_HPP
 # define INDEXTREE_HPP
+# include "utilsTree.hpp"
 
 # include <iostream>
 # include <string>

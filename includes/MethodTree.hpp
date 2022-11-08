@@ -4,6 +4,7 @@
 # include <iostream>
 # include <string>
 # include <map>
+# include "utilsTree.hpp"
 
 typedef	struct s_allowedMethods
 {

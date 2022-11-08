@@ -6,15 +6,14 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 21:43:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/10/31 18:33:17 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:01:15 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
+# include "utilsTree.hpp"
 
-#include "Sockets.hpp"
-#include "Server.hpp"
 #include <map>
 #define BUFFER_SIZE 4096
 #define EVENT_SIZE 1024

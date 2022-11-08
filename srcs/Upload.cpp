@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 17:26:28 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/07 23:57:01 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 14:36:46 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,19 @@ Upload::Upload(): _new_file(), _file(), _file_path(), _complete(0){
 	return ;
 }
 
+Upload::Upload(Upload& assign)
+{
+	if (assign._file.is_open())
+		*this->openFile(assign._path.substr(assign._path.find_last_not_of("/"), assign._path.end() - assign._path.find_last_not_of("/")));
+	_path = assign._path;
+	_delim = assign._delim;
+	_complete = assign._complete;
+}
+
 Upload::~Upload(){
 	if (_file.is_open())
 		_file.close();
 	return ;
-}
-
-std::ofstream	Upload::getFile() const
-{
-	return (_file);
 }
 
 std::string		Upload::getPath() const
@@ -87,7 +91,8 @@ bool	Upload::checkCompletion(std::string body)
 
 Upload&	Upload::operator=(Upload const& assign)
 {
-	_file = assign._file;
+	if (assign._file.is_open())
+		*this->openFile(assign._path.substr(assign._path.find_last_not_of("/"), assign._path.end() - assign._path.find_last_not_of("/")));
 	_path = assign._path;
 	_delim = assign._delim;
 	_complete = assign._complete;

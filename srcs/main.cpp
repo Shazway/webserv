@@ -1,217 +1,310 @@
-#include "Colors.hpp"
-#include "HttpRequest.hpp"
-#include "Parsing.hpp"
-#include "Server.hpp"
-#include "Socket.hpp"
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <list>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/select.h>
-#include <fcntl.h>
-#include "BookMark.hpp"
-#include <netinet/in.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#define BUFFER_SIZE 4096
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
+/*   Updated: 2022/11/08 14:54:53 by tmoragli         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-//pour start
+#include <stdlib.h>
+#include <sstream>
+#include "utilsTree.hpp"
 
-//extraire les donnees pertinentes de Server pour les mettre dans sockaddr
-void	init_addr(struct sockaddr_in* addr, Server server)
+Webserv	webserv;
+
+std::string	itoa(long nb)
 {
-	int sockfd;
+	std::stringstream	ss;
 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	addr->sin_family = AF_INET;
-	addr->sin_port = htons(server.getPort());
-	addr->sin_addr.s_addr = inet_addr(server.getIp().c_str());
-	connect(sockfd, (struct sockaddr*)&addr, sizeof(addr));
-	//inet_aton(server.getIp().c_str(), &(addr->sin_addr));
+	ss << nb;
+	return (ss.str());
 }
 
-void	initFdSet(fd_set &fdSet, std::vector<Socket> *sockets, std::list<Socket> &fds)
+bool	complete_request(std::string str, size_t maxBodySize)
 {
-	FD_ZERO(&fdSet);
-	if (sockets)
-		for (std::vector<Socket>::iterator it = sockets->begin(); it != sockets->end(); it++)
-		{
-			FD_SET((*it).getFd(), &fdSet);
-		}
-	for (std::list<Socket>::iterator it = fds.begin(); it != fds.end(); it++)
-		FD_SET((*it).getFd(), &fdSet);
-}
+	std::vector<std::string>	v;
+	size_t						bodySize = 0;
+	size_t						i = 0;
+	std::string					tmp;
 
-void	answer_get(HttpRequest request, std::map<int, std::string>& answers, std::map<int, BookMark>& bookmarks, int i)
-{
-	char								buf[BUFFER_SIZE];
-	std::map<int, BookMark>::iterator	it;
-	BookMark							tmp(request._serv);
-	std::ifstream						file;
-
-	it = bookmarks.find(i);
-	if (it == bookmarks.end())
+	ft_split(str, v, "\r\n");
+	std::vector<std::string>::iterator	it = v.begin();
+	i = (*it).find("Content-Length: ");
+	while (it != v.end() && !(*it).empty() && i == std::string::npos)
 	{
-		tmp.setFd(open(request.getPath().c_str(), O_RDONLY));
-		if (tmp.getFd() == -1)
-			return ; //throw un truc
+		it++;
+		if (it == v.end())
+			return (0);
+		i = (*it).find("Content-Length: ");
+	}
+	if (i != std::string::npos)
+	{
+		tmp = (*it).substr(16, std::string::npos);
+		bodySize=atoi(tmp.c_str());
+		if (bodySize > maxBodySize) //si bodySize est plus grand que la limite, true pour code d'erreur apres
+			return (true);
+	}
+	while (it != v.end() && !(*it).empty())
+		it++;
+	while (it != v.end() && bodySize > (*it).size())
+	{
+		bodySize -= (*it).size() + 1;
+		it++;
+	}
+	if (it == v.end())
+		return (false);
+	return (true);
+}
+
+void	send_answers(std::map<int, std::string>& answers)
+{
+	for (std::map<int, std::string>::iterator it = answers.begin(); it != answers.end(); it++)
+		send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
+}
+
+void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file)
+{
+	std::string content;
+	std::string	line;
+
+	//ici, check allowedmethod et faire une erreur adaptee
+	answers[fd] = "HTTP/1.1 200 OK\n";
+	content.clear();
+	if (file.is_open())
+	{
+		while (std::getline(file, line))
+		{
+			content += line;
+			content += "\n";
+		}
+	}
+	answers[fd] += "Content length: ";
+	answers[fd] += itoa((long)content.length());
+	answers[fd] += "\n\n";
+	answers[fd] += content;
+}
+
+void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+{
+	//GET peut avoir des variables dans la query
+	if ((*it).second._serv.checkAllowedMethods("GET", (*it).second.getPath()))
+	{
+		std::ifstream file;
+		std::string abs_path = (*it).second._serv.getRootPath() + (*it).second.getPath();
+
+		//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
+		file.open(abs_path.c_str());
+		if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
+		{
+			file.close();
+			abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
+			//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
+			file.open(abs_path.c_str());
+			if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
+				answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
+			else
+				generate_ok((*it).first, answers, file);
+		}
+		else if (file.is_open())
+			generate_ok((*it).first, answers, file);
+		else
+			answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
+		file.close();
 	}
 	else
-		tmp.setFd(bookmarks.at(i).getFd());
-	tmp.setRet(read(tmp.getFd(), buf, BUFFER_SIZE));
-	if (tmp.getRet() == BUFFER_SIZE)
-	{
-		if (it != bookmarks.end())
-			bookmarks.erase(it);
-		bookmarks.at(i) = tmp;
-	}
-	answers[i] = "HTTP 1.1";
-	answers[i] += "200 OK\n";
-	answers[i] += "Content-Length: ";
-	answers[i] += tmp.getRet();
-	answers[i] += "\n\n";
-	answers[i] += buf;
-	if (tmp.getRet() < BUFFER_SIZE)
-		close(tmp.getFd());
+		answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
+	//Header à rajouter plus tard \n \n
 }
 
-void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, BookMark>& bookmarks)
+void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, std::map<int, Upload> uploads)
 {
-	(void)answers;
-	(void)bookmarks;
+	int	fd = (*it).first;
+	HttpRequest request = (*it).second;
+
+	if (request._serv.checkAllowedMethods("POST", request.getPath()))
+	{
+		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)// Faut download
+		{
+			Upload	up; //Crée une instance de upload pour l'ajouter si il existe pas dans map
+
+			if (uploads.find(fd) == uploads.end()) //Il existe pas
+			{
+				if (upload(up, request.getBody()) == COMPLETE) //Le body contient le delimiteur de fin alors upload a renvoyé 1
+					answers[(*it).first] = "HTTP/1.1 200 OK\n";// Pas besoin de l'ajouter a la map puisqu'il est entier
+				else
+				{
+					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//Il n'y a pas de delimiteur de fin
+					uploads[fd] = up; //Ajout de up a la map
+				}
+			}
+			else//Il existe
+			{
+				if (upload(uploads[fd], request.getBody()) == COMPLETE)// On vient de recevoir la fin
+				{
+					answers[(*it).first] = "HTTP/1.1 200 OK\n";
+					uploads.erase(fd);//On l'efface de la map car on a fini de download le fichier
+				}
+				else
+					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//upload a renvoyé INCOMPLETE, on demande la suite du body
+			}
+		}
+	}
+}
+
+void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads)
+{
+
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
 		if ((*it).second.getMethod() == "GET")
-			std::cout << "GET" << std::endl;
-			//answer_get((*it), answers, bookmarks, (*it).first);
-//		if ((*it).second.getMethod() == "POST")
-			//answer_post((*it), a	(void)answers;
-	(void)bookmarks;
-	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
-	{
-		if ((*it).second.getMethod() == "GET")
-			std::cout << "GET" << std::endl;
-			//answer_get((*it), answers, bookmarks, (*it).first);
-//		if ((*it).second.getMethod() == "POST")
-			//answer_post((*it), answers);
-//		if ((*it).second.getMethod() == "DELETE")
-			//answer_delete((*it), answers);
+			gen_get(it, answers);
+		else if ((*it).second.getMethod() == "POST")
+			gen_post(it, answers, uploads);
+		//std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
 	}
-	requests.clear();nswers);
-//		if ((*it).second.getMethod() == "DELETE")
-			//answer_delete((*it), answers);
-	}
-	requests.clear();
 }
 
-int	running(std::vector<Server> &servers)
+void	closeFd(int fd)
 {
-	int					num = 0; //plus grand fd en utilisation + 1;
-	std::vector<Socket>	sockets;
-	std::list<Socket>		fds;
-	Socket				socketMaker;
-	fd_set				fdread;
-	fd_set				fdwrite;
+	close(fd);
+	webserv.remove_event(fd);
+}
+
+void	start(std::vector<Server>& servers)
+{
+	int		fd_listen;
+	int		fdMax = 0;
+	int		ret;
+	int		client;
+	int		read_char;
+	int		count = 0;
+	char	buff[BUFFER_SIZE + 1];
 	std::map<int, HttpRequest>	requests;
 	std::map<int, std::string>	answers;
-	std::map<int, BookMark>		bookmarks;
-	char*					buffer = NULL;
-	std::string				buffer_string;
+	std::map<int, Upload>		uploads;
+	std::string	buffer_strings[EVENT_SIZE];
+	bool	found = false;
+	std::map<int, Server>		client_serv;
 
-	int opt; //ne sert a rien, mais calme le proto de setsockopt
+	webserv.allocating(servers.size());
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
 	{
-		init_addr((struct sockaddr_in*)socketMaker.getAddr(), (*it));
-		socketMaker.setFd(socket(PF_INET, SOCK_STREAM, 0));
-		if (socketMaker.getFd() >= num)
-			num = socketMaker.getFd() + 1;
-		socketMaker.setServ((*it));
-		bind(socketMaker.getFd(), (const struct sockaddr*)(socketMaker.getAddr()), sizeof(socketMaker.getAddr()));
-		listen(socketMaker.getFd(), 32);
-		setsockopt(socketMaker.getFd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-		sockets.push_back(socketMaker);
+		fd_listen = (*it).init_socket();
+		(*it).setSocket(fd_listen);
+		if (fd_listen > fdMax)
+			fdMax = fd_listen;
+		//std::cout << "FD LISTEN: " << (*it).getSocket() << std::endl;
+		try
+			{webserv.setServer(count, (*it));}
+		catch(const std::exception& e)
+			{std::cerr<< RED << " " << fd_listen << e.what() << END << '\n';}
+		webserv.add_event(fd_listen, EPOLLIN);
+		count++;
 	}
 	while (true)
 	{
-		initFdSet(fdread, &sockets, fds);
-		initFdSet(fdwrite, NULL, fds);
-		std::cout << "Here" << std::endl;
-		if (select(num, &fdread, &fdwrite, 0, 0) < 1)
-			continue ;
-		std::cout << "There" << std::endl;
-		//for des sockets
-		for (std::vector<Socket>::iterator it = sockets.begin(); it != sockets.end(); it++)
+		ret = epoll_wait(webserv.getEpollfd(), webserv.getEvents(), webserv.getNbEvents(), -1);
+		for (int i = 0; i < ret; i++)
 		{
-			if (FD_ISSET((*it).getFd(), &fdread))
+			found = false;
+			for (size_t j = 0; j < servers.size(); j++) //tester toutes les sockets en faisant un iterator sur les servers
 			{
-				socklen_t	trash;
-				socketMaker.setFd(accept((*it).getFd(), (struct sockaddr*)((*it).getAddr()), &trash));
-				if (socketMaker.getFd() >= num)
-					num = socketMaker.getFd() + 1;
-				socketMaker.setServ(*(it->getServ()));
-				fcntl(socketMaker.getFd(), O_NONBLOCK);
-				//faire un truc avec socketMaker._addr
-				fds.push_back(socketMaker);
-				if (socketMaker.getFd() >= num)
-					num = socketMaker.getFd() + 1;
-			}
-		}
-		//for des fds
-		for (std::list<Socket>::iterator it = fds.begin(); it != fds.end(); it++)
-		{
-			HttpRequest tmp_request(*(it->getServ()));
-			if (FD_ISSET((*it).getFd(), &fdread))
-			{
-				if (recv((*it).getFd(), buffer, 2048, 0) <= 0)
+				if (webserv.getEvent(i).data.fd == webserv.getServer(j).getSocket())
 				{
-					buffer_string = buffer;
-					close ((*it).getFd());
-					fds.erase(it);
-				}
-				else if (!buffer_string.empty())
-				{
-					do
+					found = true;
+					int client = accept(webserv.getServer(j).getSocket(), NULL, NULL);
+					if (client <= 0)
 					{
-						try
-						{
-							parsingRequest(tmp_request, buffer);
-						}
-						catch(const std::exception& e)
-						{
-							std::cerr << RED << e.what() << " " << e.what() << END << std::endl;
-						}
+						std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
+						continue ;
 					}
-					while (tmp_request.getPartiallyCompleted());
-					requests.at((*it).getFd()) = tmp_request;
+					if (client > fdMax)
+						fdMax = client;
+					client_serv[client] = webserv.getServer(j);
+					webserv.add_event(client, EPOLLIN);
 				}
 			}
-			if (FD_ISSET((*it).getFd(), &fdwrite))
-				if (!answers.empty())
-					send((*it).getFd(), answers[(*it).getFd()].c_str(), answers[(*it).getFd()].size(), 0);
+			if (!found)
+			{
+				client = webserv.getEvent(i).data.fd;
+				if (webserv.getEvent(i).events & EPOLLIN)
+				{
+				//std::cout << "here" << std::endl;
+					if (!complete_request(buffer_strings[client], client_serv[client].getBody()) || buffer_strings[client].empty())
+					{
+						memset(buff, 0, BUFFER_SIZE + 1);
+						read_char = recv(client, buff, BUFFER_SIZE, 0);//errors to check
+						//if return 0 close la connection
+						if (read_char <= 0)
+						{
+							closeFd(client);
+							requests.erase(client);
+						}
+						//if (read_char > BUFFER_SIZE)
+						//std::cout << "C'est la merde ? " << read_char << std::endl;
+						buffer_strings[client] += buff;
+					}
+				}
+				else if (webserv.getEvent(i).events & EPOLLOUT)
+				{
+					//clients a qui on doit send un truc
+					if (!answers[client].empty())
+						send(client, answers[client].c_str(), answers[client].size(), MSG_NOSIGNAL);
+					answers.erase(client);
+				}
+			}
 		}
-		answers_gen(requests, answers, bookmarks);
-		//ici, générer des reponses
+		//stocker un fd max, pour opti et pas passer sur les 1000 fd
+		for (int i = 0; i <= fdMax ; i++)
+		{
+			/*if (!buffer_strings[client].empty())
+				std::cout << GREEN << complete_request(buffer_strings[client]) << buffer_strings[client] << END << std::endl;*/
+			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
+			if (!buffer_strings[i].empty() && complete_request(buffer_strings[i], client_serv[client].getBody()))
+			{
+				HttpRequest	tmp_request(client_serv[i]);
+				try
+				{
+					parsingRequest(tmp_request, buffer_strings[i]);
+					//buffer_strings[i].clear();
+				}
+				catch(const std::exception& e)
+				{
+					std::cerr << e.what() << '\n';
+				}
+				//std::cout << RED << tmp_request << END << std::endl;
+				requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
+			}
+		}
+		answers_gen(requests, answers, uploads);
+		send_answers(answers);
+		answers.clear();
+		requests.clear();
+		//for (int i = 0; i < EVENT_SIZE; i++)
+		//	buffer_strings[i].clear();
 	}
-	return 0;
+
+	/*std::cout << "Notre webserv :" << std::endl;
+	std::cout << webserv << std::endl;*/
 }
 
-int	main(int ac, char** av)
+int	main(int ac, char **av)
 {
-	std::vector<Server> servers;
-
-	if (ac == 2)
-		servers = parse_config(av[1]);
-	else
+	if (ac != 2)
 	{
-		std::cout << RED << "ERROR" << END << std::endl;
-		std::cout << "Too many arguments" << std::endl;
+		std::cerr << RED <<
+		"/!\\ Wrong number of arguments:\nTry ./webserv <path_to_config_file> /!\\"
+		<< END << std::endl;
 		return (1);
 	}
-	return (running(servers));
+	else
+	{
+		std::vector<Server> servers(parse_config(av[1]));
+		start(servers);
+	}
+	return (0);
 }

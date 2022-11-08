@@ -6,19 +6,20 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/07 23:53:17 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/08 15:22:13 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSING_HPP
 # define PARSING_HPP
-# include "Server.hpp"
-# include "HttpRequest.hpp"
+
 #include "utilsTree.hpp"
-#define METHOD method.allowed
+
 class Server;
 class HttpRequest;
 class Upload;
+
+#define METHOD method.allowed
 //Vector string//
 typedef std::vector<std::string> v_str;
 //Vector string iterator//
