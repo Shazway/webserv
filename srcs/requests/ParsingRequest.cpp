@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingRequest.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:02 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/08 20:01:51 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/10 00:18:39 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 	std::cout << YELLOW << "[" << request.getPath() << "]" << END << std::endl;
 
 	size_t	n = bufferString.find("\n");
-	std::cout << RED << "Buffer string before: [" << bufferString << "]" << END << std::endl;
+	//std::cout << RED << "Buffer string before: [" << bufferString << "]" << END << std::endl;
 	bufferString = bufferString.substr(n + 1, std::string::npos);
 	n = bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? bufferString.find("\n\n") : bufferString.find("\r\n\r\n");
 	error = parsingHeader(request, bufferString.substr(0, n));
@@ -153,7 +153,7 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 	if (request.getContentLength())
 		request.setBody(bufferString.substr(0, request.getContentLength()));
 	bufferString = bufferString.substr(request.getContentLength());
-	std::cout << BLUE << "Buffer string sub: " << "["<< request.getBody() << "]" << END << std::endl;
+	//std::cout << BLUE << "Buffer string sub: " << "["<< request.getBody() << "]" << END << std::endl;
 	if (bufferString.empty())
 		std::cout << "C'est vide" << std::endl;
 	return (0);

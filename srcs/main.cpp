@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 23:01:15 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/10 00:51:16 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,52 +27,57 @@ std::string	itoa(long nb)
 	return (ss.str());
 }
 
-void	separate_lines(v_str &lines, std::string content)
+void	separate_lines(std::vector<std::string> &lines, std::string content)
 {
 	while (!content.empty())
 	{
-		lines.push_back(content.substr(0, find_first_line(content, 1) - 1));
+		lines.push_back(content.substr(0, find_first_line(content, 1)));
 		content = content.substr(find_first_line(content, 1));
 	}
 }
 
 bool	is_empty(std::string str)
 {
-	if (str == "\n" || str == "\r\n")
+	if (str == "\n" || str == "\r\n" || str == "\r" || str.empty())
 		return (true);
 	return (false);
 }
 
 bool	complete_request(std::string str, size_t maxBodySize)
 {
-	v_str						v;
+	std::vector<std::string>	v;
 	size_t						bodySize = 0;
 	size_t						i = 0;
 	std::string					tmp;
 
-	std::cout << "Start[" << RED << str << END << "]end" << std::endl;
+	if (str.empty())
+		return (false);
+	//std::cout << "Start[" << RED << str << END << "]end" << std::endl;
 	separate_lines(v, str);
-	display_v_str(v);
-	std::cout << "Size: " << v.size() << std::endl;
+	//display_v_str(v);
+	//std::cout << "Size: " << v.size() << std::endl;
 	v_str_it	it = v.begin();
 
 	if (v.empty()) // sinon ça segfault ??
-		return (0);
+		return (false);
 	// Probleme avec la size du body ?
 	//Renvoie false alors que c'est complet
-	i = (*it).find("Content-Length: ");
+	i = std::string::npos;
 	while (it != v.end() && !is_empty(*it) && i == std::string::npos)
 	{
-		it++;
-		if (it == v.end())
-			return (0);
+		//std::cout << "checking " << (*it) << "!" << std::endl;
 		i = (*it).find("Content-Length: ");
+		if (i == std::string::npos)
+			it++;
+		if (it == v.end())
+			return (false);
 	}
 	if (i != std::string::npos)
 	{
-		tmp = (*it).substr(16, std::string::npos);
+		i = ((*it).find("\n") < (*it).find("\r") ? (*it).find("\n") : (*it).find("\r"));
+		tmp = (*it).substr(16, i);
 		bodySize=atoi(tmp.c_str());
-		std::cout << GREEN << "ICI bodysize " << bodySize << " maxbodysize" << maxBodySize << std::endl;
+		//std::cout << GREEN << "ICI bodysize " << bodySize << "[" << tmp << "]" << std::endl;
 
 		if (bodySize > maxBodySize) //si bodySize est plus grand que la limite, true pour code d'erreur apres
 			return (true);
@@ -80,15 +85,21 @@ bool	complete_request(std::string str, size_t maxBodySize)
 	while (it != v.end() && !is_empty((*it)))
 		it++;
 	//std::cout << GREEN << "ICI line " << *(++it) << std::endl;
+	//std::cout << BLUE << std::endl << "bodysize " << bodySize << "!" << std::endl;
+
+	if (bodySize == 0)
+		return (true);
 	it++;
+	//std::cout << str << std::endl;
 	while (it != v.end() && bodySize > (*it).size())
 	{
-		std::cout << "reste a recuperer " << bodySize << " et actuellement " << (*it).size() << std::endl;
-		std::cout << (*it).size() << std::endl;
+		//std::cout << "reste a recuperer " << bodySize << " et actuellement " << (*it).size() << *it;
+		//std::cout << (*it).size() << std::endl;
 		bodySize -= ((*it).size());
 		it++;
 	}
 	//std::cout << GREEN << "ICI derniere ligne " << *(--it) << std::endl;
+	//std::cout << "return : " << (it == v.end() ? "false" : "true") << std::endl;
 	if (it == v.end())
 		return (false);
 	return (true);
@@ -171,10 +182,11 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 
 	if (request._serv.checkAllowedMethods("POST", request.getPath()))
 	{
-		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)// Faut download
+		if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
 		{
 			Upload	up; //Crée une instance de upload pour l'ajouter si il existe pas dans map
 
+		std::cout << RED << "here" << END << std::endl;
 			if (uploads.find(fd) == uploads.end()) //Il existe pas
 			{
 				if (upload(up, request.getBody()) == COMPLETE) //Le body contient le delimiteur de fin alors upload a renvoyé 1
@@ -187,6 +199,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 			}
 			else//Il existe
 			{
+
 				if (upload(uploads[fd], request.getBody()) == COMPLETE)// On vient de recevoir la fin
 				{
 					answers[(*it).first] = "HTTP/1.1 200 OK\n";
@@ -204,7 +217,6 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 	//gerer ici si le body est trop grand
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
-		//std::cout << RED << "here" << END << std::endl;
 		if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
@@ -271,7 +283,7 @@ void	start(std::vector<Server>& servers)
 				{
 					found = true;
 					int client = accept(webserv.getServer(j).getSocket(), NULL, NULL);
-					std::cout << RED << "Accepté pour FD: " << client<<END << std::endl;
+					//std::cout << RED << "Accepté pour FD: " << client<<END << std::endl;
 					if (client <= 0)
 					{
 						std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
@@ -288,14 +300,16 @@ void	start(std::vector<Server>& servers)
 				client = webserv.getEvent(i).data.fd;
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
-					if (!complete_request(buffer_strings[client], client_serv[client].getBody()) || buffer_strings[client].empty())
+					if (!complete_request(buffer_strings[client], client_serv[client].getBody()))
 					{
+						std::cout << "Requete incomplete ou <" << buffer_strings[client] << "> est vide" << std::endl;
 						memset(buff, 0, BUFFER_SIZE + 1);
 						read_char = recv(client, buff, BUFFER_SIZE, 0);//errors to check
 						//std::cout << BLUE << "FD: " << client << "asks for Content: \n" << buff <<END<< std::endl;
 						//if return 0 close la connection
 						if (read_char <= 0)
 						{
+							std::cout << "Read a foire " << read_char << std::endl;
 							closeFd(client);
 							requests.erase(client);
 						}
@@ -314,9 +328,9 @@ void	start(std::vector<Server>& servers)
 			/*if (!buffer_strings[client].empty())
 				std::cout << GREEN << complete_request(buffer_strings[client]) << buffer_strings[client] << END << std::endl;*/
 			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
-			if (!buffer_strings[i].empty() && complete_request(buffer_strings[i], client_serv[client].getBody()))
+			if (complete_request(buffer_strings[i], client_serv[i].getBody()))
 			{
-				//std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
+				std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
 				HttpRequest	tmp_request(client_serv[i]);
 				try
 				{
