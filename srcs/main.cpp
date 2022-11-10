@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/10 00:51:16 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/10 10:49:04 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,11 @@ void	separate_lines(std::vector<std::string> &lines, std::string content)
 	while (!content.empty())
 	{
 		lines.push_back(content.substr(0, find_first_line(content, 1)));
+		//std::cout << find_first_line(content, 1) << std::endl;
 		content = content.substr(find_first_line(content, 1));
+		std::cout << "while:" << content << "." << std::endl;
 	}
+	std::cout << BLUE << "Sorti du while" << std::endl;
 }
 
 bool	is_empty(std::string str)
@@ -52,10 +55,10 @@ bool	complete_request(std::string str, size_t maxBodySize)
 
 	if (str.empty())
 		return (false);
-	//std::cout << "Start[" << RED << str << END << "]end" << std::endl;
+	std::cout << "Start[" << RED << str << END << "]end" << std::endl;
 	separate_lines(v, str);
 	//display_v_str(v);
-	//std::cout << "Size: " << v.size() << std::endl;
+	std::cout << std::cout << "Size: " << v.size() << std::endl;
 	v_str_it	it = v.begin();
 
 	if (v.empty()) // sinon ça segfault ??
@@ -112,7 +115,7 @@ void	send_answers(std::map<int, std::string>& answers)
 		if (webserv.getEvent((*it).first).events & EPOLLOUT)
 		{
 			send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
-			//std::cout << YELLOW << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
+			std::cout << YELLOW << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
 			answers.erase(it);
 		}
 	}
@@ -142,6 +145,12 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 	answers[fd] += "\n\n";
 	answers[fd] += content;
 }
+
+void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+{
+	answers[(*it).first] = "HTTP/1.1 413 Request Entity Too Large\n\n";
+}
+
 
 void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
@@ -212,12 +221,14 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 	}
 }
 
-void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads)
+void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads, std::map<int, Server> &client_serv)
 {
 	//gerer ici si le body est trop grand
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
-		if ((*it).second.getMethod() == "GET")
+		if ((*it).second.getBody().size() > client_serv[(*it).first].getBody())
+			gen_body_too_long(it, answers);
+		else if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
 			gen_post(it, answers, uploads);
@@ -300,7 +311,8 @@ void	start(std::vector<Server>& servers)
 				client = webserv.getEvent(i).data.fd;
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
-					if (!complete_request(buffer_strings[client], client_serv[client].getBody()))
+					read_char = 1;
+					while (!complete_request(buffer_strings[client], client_serv[client].getBody()) && read_char > 0)
 					{
 						std::cout << "Requete incomplete ou <" << buffer_strings[client] << "> est vide" << std::endl;
 						memset(buff, 0, BUFFER_SIZE + 1);
@@ -317,8 +329,7 @@ void	start(std::vector<Server>& servers)
 						//std::cout << "C'est la merde ? " << read_char << std::endl;
 						buffer_strings[client] += buff;
 					}
-					else
-						std::cout << "Requete complete" << std::endl;
+					std::cout << "Requete complete" << std::endl;
 				}
 			}
 		}
@@ -346,7 +357,7 @@ void	start(std::vector<Server>& servers)
 				requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
 			}
 		}
-		answers_gen(requests, answers, uploads);
+		answers_gen(requests, answers, uploads, client_serv);
 		send_answers(answers);
 		requests.clear();
 		/*for (int i = 0; i < EVENT_SIZE; i++)

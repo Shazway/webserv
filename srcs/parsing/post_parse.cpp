@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/10 08:02:56 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/10 10:48:39 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ size_t	find_first_line(std::string const& content, size_t line)
 	for (size_t i = 0; i < line; i++)
 	{
 		pos = content.find("\n", pos);
-		pos++;
+		if (pos != std::string::npos)
+			pos++;
 	}
 	return (pos);
 }
@@ -50,7 +51,8 @@ size_t	find_last_line(std::string const& content, size_t line)
 	for (size_t i = line; i > 0; i--)
 	{
 		pos = content.find_last_of("\n", pos);
-		pos--;
+		if (pos != 0)
+			pos--;
 	}
 	return (pos);
 }
@@ -92,6 +94,7 @@ int	upload(Upload& up, std::string const& content) //J'aurai du l'appeler downlo
 	v_str		lines;
 	size_t		line;
 
+	std::cout << RED << "on a un fichier" << std::endl;
 	ft_split(content, lines, "\n");
 	if (up._file.is_open()) // Si on a déjà un fichier, alors il est incomplet
 	{
