@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/10 10:48:39 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/10 12:01:20 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int	upload(Upload& up, std::string const& content) //J'aurai du l'appeler downlo
 	v_str		lines;
 	size_t		line;
 
-	std::cout << RED << "on a un fichier" << std::endl;
+	//std::cout << RED << "on a un fichier" << std::endl;
 	ft_split(content, lines, "\n");
 	if (up._file.is_open()) // Si on a déjà un fichier, alors il est incomplet
 	{

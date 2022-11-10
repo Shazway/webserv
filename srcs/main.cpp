@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/10 10:49:04 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/10 12:00:56 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,19 @@ std::string	itoa(long nb)
 
 void	separate_lines(std::vector<std::string> &lines, std::string content)
 {
+	size_t	n;
 	while (!content.empty())
 	{
-		lines.push_back(content.substr(0, find_first_line(content, 1)));
+		n = find_first_line(content, 1);
+		lines.push_back(content.substr(0, n));
 		//std::cout << find_first_line(content, 1) << std::endl;
-		content = content.substr(find_first_line(content, 1));
-		std::cout << "while:" << content << "." << std::endl;
+		if (n != std::string::npos)
+			content = content.substr(n, std::string::npos);
+		else
+			content.clear();
+		//std::cout << "while:" << content << "." << std::endl;
 	}
-	std::cout << BLUE << "Sorti du while" << std::endl;
+	//std::cout << BLUE << "Sorti du while" << std::endl;
 }
 
 bool	is_empty(std::string str)
@@ -55,10 +60,10 @@ bool	complete_request(std::string str, size_t maxBodySize)
 
 	if (str.empty())
 		return (false);
-	std::cout << "Start[" << RED << str << END << "]end" << std::endl;
+	//std::cout << "Start[" << RED << str << END << "]end" << std::endl;
 	separate_lines(v, str);
 	//display_v_str(v);
-	std::cout << std::cout << "Size: " << v.size() << std::endl;
+	//std::cout << std::cout << "Size: " << v.size() << std::endl;
 	v_str_it	it = v.begin();
 
 	if (v.empty()) // sinon ça segfault ??
@@ -115,7 +120,7 @@ void	send_answers(std::map<int, std::string>& answers)
 		if (webserv.getEvent((*it).first).events & EPOLLOUT)
 		{
 			send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
-			std::cout << YELLOW << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
+			//std::cout << YELLOW << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
 			answers.erase(it);
 		}
 	}
@@ -195,7 +200,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 		{
 			Upload	up; //Crée une instance de upload pour l'ajouter si il existe pas dans map
 
-		std::cout << RED << "here" << END << std::endl;
+		//std::cout << RED << "here" << END << std::endl;
 			if (uploads.find(fd) == uploads.end()) //Il existe pas
 			{
 				if (upload(up, request.getBody()) == COMPLETE) //Le body contient le delimiteur de fin alors upload a renvoyé 1
@@ -278,7 +283,7 @@ void	start(std::vector<Server>& servers)
 		}
 		else
 		{
-			std::cout << fd_listen << std::endl;
+			//std::cout << fd_listen << std::endl;
 			exit(fd_listen);
 		}
 	}
@@ -314,14 +319,14 @@ void	start(std::vector<Server>& servers)
 					read_char = 1;
 					while (!complete_request(buffer_strings[client], client_serv[client].getBody()) && read_char > 0)
 					{
-						std::cout << "Requete incomplete ou <" << buffer_strings[client] << "> est vide" << std::endl;
+						//std::cout << "Requete incomplete ou <" << buffer_strings[client] << "> est vide" << std::endl;
 						memset(buff, 0, BUFFER_SIZE + 1);
 						read_char = recv(client, buff, BUFFER_SIZE, 0);//errors to check
 						//std::cout << BLUE << "FD: " << client << "asks for Content: \n" << buff <<END<< std::endl;
 						//if return 0 close la connection
 						if (read_char <= 0)
 						{
-							std::cout << "Read a foire " << read_char << std::endl;
+							//std::cout << "Read a foire " << read_char << std::endl;
 							closeFd(client);
 							requests.erase(client);
 						}
@@ -329,7 +334,7 @@ void	start(std::vector<Server>& servers)
 						//std::cout << "C'est la merde ? " << read_char << std::endl;
 						buffer_strings[client] += buff;
 					}
-					std::cout << "Requete complete" << std::endl;
+					//std::cout << "Requete complete" << std::endl;
 				}
 			}
 		}
@@ -341,7 +346,7 @@ void	start(std::vector<Server>& servers)
 			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
 			if (complete_request(buffer_strings[i], client_serv[i].getBody()))
 			{
-				std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
+				//std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
 				HttpRequest	tmp_request(client_serv[i]);
 				try
 				{
