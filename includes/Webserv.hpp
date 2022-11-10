@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 21:43:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/10 00:29:22 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/10 08:04:52 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <map>
 # include "Server.hpp"
 
-# define BUFFER_SIZE 40960
+# define BUFFER_SIZE 4096
 # define EVENT_SIZE 1024
 
 typedef struct epoll_event epoll_event;
