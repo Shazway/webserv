@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/12 18:59:32 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/12 21:12:23 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void	send_answers(std::map<int, std::string>& answers)
 	}
 }
 
-void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file)
+void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file, std::string type)
 {
 	std::string content;
 	std::string	line;
@@ -133,11 +133,10 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 			content += "\n";
 		}
 	}
-	//std::cout << "FD: [" << fd << "]" << std::endl;
-	//std::cout << "CONTENT: [" << content << "]" << std::endl;
-	content = content.substr(0, content.size() - 1);
+	if (type == "favicon")
+		answers[fd] += "Content-Type: html/favicon.ico\n";
 	answers[fd] += "Content length: ";
-	answers[fd] += itoa((long)content.length());
+	answers[fd] += itoa((long)content.size());
 	answers[fd] += "\n\n";
 	answers[fd] += content;
 }
@@ -168,10 +167,15 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 			if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
 				answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
 			else
-				generate_ok((*it).first, answers, file);
+				generate_ok((*it).first, answers, file, "html");
 		}
 		else if (file.is_open())
-			generate_ok((*it).first, answers, file);
+		{
+			if ((*it).second.getPath().find("favicon") != std::string::npos)
+				generate_ok((*it).first, answers, file, "favicon");
+			else
+				generate_ok((*it).first, answers, file, "html");
+		}
 		else
 			answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
 		file.close();
@@ -312,16 +316,15 @@ void	start(std::vector<Server>& servers)
 					while (!complete_request(buffer_strings[client], client_serv[client].getBody()))
 					{
 						//std::cout << "Requete incomplete ou <" << buffer_strings[client] << "> est vide" << std::endl;
-						//memset(buff, 0, BUFFER_SIZE + 1);
-						memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
+						memset(buff, 0, BUFFER_SIZE + 1);
+						//memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
 						//std::cout << std::endl << "Read char: " << read_char<< std::endl << std::endl;
 						read_char = recv(client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
 						std::cout << std::endl << "Read char: " << read_char<< std::endl << std::endl;
 						//if return 0 close la connection
-						if (read_char < 0)
+						if (read_char <= 0)
 						{
-							std::cout << "Read a foire " << read_char << std::endl;
-							//
+							std::cout << "Read a return: " << read_char << std::endl;
 							closeFd(client);
 							requests.erase(client);
 						}
@@ -329,6 +332,7 @@ void	start(std::vector<Server>& servers)
 							break;
 						buffer_strings[client].append(buff, read_char);
 					}
+					found = true;
 					//std::cout << WHITE <<" Hey there [" << buffer_strings[client] << "]" << END << std::endl;
 				}
 			}
@@ -359,7 +363,6 @@ void	start(std::vector<Server>& servers)
 		}
 		answers_gen(requests, answers, uploads, client_serv);
 		send_answers(answers);
-		requests.clear();
 		/*for (int i = 0; i < EVENT_SIZE; i++)
 			buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!
 	}

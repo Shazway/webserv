@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:02 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/12 15:41:11 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/12 20:29:56 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int	parsingHeader(HttpRequest &request, std::string bufferString)
 size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 {
 	std::string requestLine;
-	//std::cout << BLUE << "Parsing request recieved: \n" << bufferString << END << std::endl;
+	std::cout << BLUE << "Parsing request recieved: \n" << bufferString << END << std::endl;
 	if (bufferString.empty())
 		return (0);
 	// getline de request line
@@ -133,7 +133,6 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 		return (error);
 // getline de header
 	std::cout << YELLOW << "[" << request.getPath() << "]" << END << std::endl;
-
 	size_t	n = bufferString.find("\n");
 	//std::cout << RED << "Buffer string before: [" << bufferString << "]" << END << std::endl;
 	bufferString = bufferString.substr(n + 1, std::string::npos);

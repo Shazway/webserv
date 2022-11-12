@@ -53,7 +53,9 @@
 		"cstring": "cpp",
 		"ctime": "cpp",
 		"list": "cpp",
-		"iomanip": "cpp"
+		"iomanip": "cpp",
+		"complex": "cpp",
+		"cinttypes": "cpp"
 	},
 	"C_Cpp.errorSquiggles": "Disabled"
 }
