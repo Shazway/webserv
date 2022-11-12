@@ -80,7 +80,9 @@ bool	complete_request(std::string str, size_t maxBodySize)
 	if (i != std::string::npos)
 	{
 		i = ((*it).find("\n") < (*it).find("\r") ? (*it).find("\n") : (*it).find("\r"));
+	std::cout << "Start[" << RED << "PASS" << END << "]end" << std::endl;
 		tmp = (*it).substr(16, i);
+	std::cout << "Start[" << RED << "PASSED" << END << "]end" << std::endl;
 		bodySize=atoi(tmp.c_str());
 
 		if (bodySize > maxBodySize) //si bodySize est plus grand que la limite, true pour code d'erreur apres
@@ -205,7 +207,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 					answers[(*it).first] = "HTTP/1.1 200 OK\n";// Pas besoin de l'ajouter a la map puisqu'il est entier
 				else
 				{
-					answers[(*it).first] = "HTTP/1.1 201 Created\n";//Il n'y a pas de delimiteur de fin
+					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//Il n'y a pas de delimiteur de fin
 					uploads[fd] = up; //Ajout de up a la map
 				}
 			}
@@ -218,7 +220,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 					uploads.erase(uploads.find(fd));//On l'efface de la map car on a fini de download le fichier
 				}
 				else
-					answers[(*it).first] = "HTTP/1.1 201 Created\n";//upload a renvoyé INCOMPLETE, on demande la suite du body
+					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//upload a renvoyé INCOMPLETE, on demande la suite du body
 			}
 			answers[(*it).first] += "Content-Length: 0\n\n";
 			//

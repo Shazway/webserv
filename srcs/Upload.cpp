@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
 #include "Upload.hpp"
 
 Upload::Upload(): _path(), _complete(0), _file(){
@@ -51,7 +52,10 @@ void	Upload::openFile(std::string name)
 {
 	_file.open(name.c_str(), std::ios::out | std::ios::binary | std::ios::ate | std::ios::app);
 	if (!_file.is_open())
+	{
+		std::cout << "Crash ici -> " << name << std::endl;
 		throw(FailedToOpenFileException());
+	}
 }
 
 void	Upload::setPath(std::string path)

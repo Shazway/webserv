@@ -141,7 +141,11 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 	if (error)
 		return (error);
 	if (n == std::string::npos)
+	{
 		bufferString = "";
+		request.setContentLength(0);
+	}
+
 	else
 		bufferString = bufferString.substr(n + (bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? 2 : 4), std::string::npos);
 	//recuperation du body
@@ -151,9 +155,10 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 	//std::cout << GREEN << "Buffer string whole: [" << bufferString << "]" << END << std::endl;
 	if (request.getContentLength())
 		request.setBody(bufferString.substr(0, request.getContentLength()));
-	bufferString = bufferString.substr(request.getContentLength());
 	//std::cout << BLUE << "Buffer string sub: " << "["<< request.getBody() << "]" << END << std::endl;
 	if (bufferString.empty())
 		std::cout << "C'est vide" << std::endl;
+	else
+		bufferString = bufferString.substr(request.getContentLength());
 	return (0);
 }
