@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/10 12:00:56 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/12 17:01:26 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,18 +62,15 @@ bool	complete_request(std::string str, size_t maxBodySize)
 		return (false);
 	//std::cout << "Start[" << RED << str << END << "]end" << std::endl;
 	separate_lines(v, str);
-	//display_v_str(v);
-	//std::cout << std::cout << "Size: " << v.size() << std::endl;
 	v_str_it	it = v.begin();
 
-	if (v.empty()) // sinon ça segfault ??
+	if (v.empty())
 		return (false);
 	// Probleme avec la size du body ?
 	//Renvoie false alors que c'est complet
 	i = std::string::npos;
 	while (it != v.end() && !is_empty(*it) && i == std::string::npos)
 	{
-		//std::cout << "checking " << (*it) << "!" << std::endl;
 		i = (*it).find("Content-Length: ");
 		if (i == std::string::npos)
 			it++;
@@ -85,28 +82,22 @@ bool	complete_request(std::string str, size_t maxBodySize)
 		i = ((*it).find("\n") < (*it).find("\r") ? (*it).find("\n") : (*it).find("\r"));
 		tmp = (*it).substr(16, i);
 		bodySize=atoi(tmp.c_str());
-		//std::cout << GREEN << "ICI bodysize " << bodySize << "[" << tmp << "]" << std::endl;
 
 		if (bodySize > maxBodySize) //si bodySize est plus grand que la limite, true pour code d'erreur apres
 			return (true);
 	}
 	while (it != v.end() && !is_empty((*it)))
 		it++;
-	//std::cout << GREEN << "ICI line " << *(++it) << std::endl;
-	//std::cout << BLUE << std::endl << "bodysize " << bodySize << "!" << std::endl;
-
 	if (bodySize == 0)
 		return (true);
 	it++;
 	//std::cout << str << std::endl;
 	while (it != v.end() && bodySize > (*it).size())
 	{
-		//std::cout << "reste a recuperer " << bodySize << " et actuellement " << (*it).size() << *it;
-		//std::cout << (*it).size() << std::endl;
 		bodySize -= ((*it).size());
 		it++;
 	}
-	//std::cout << GREEN << "ICI derniere ligne " << *(--it) << std::endl;
+	//std::cout << "Body size: " << bodySize << std::endl;
 	//std::cout << "return : " << (it == v.end() ? "false" : "true") << std::endl;
 	if (it == v.end())
 		return (false);
@@ -120,7 +111,7 @@ void	send_answers(std::map<int, std::string>& answers)
 		if (webserv.getEvent((*it).first).events & EPOLLOUT)
 		{
 			send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
-			//std::cout << YELLOW << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
+			std::cout << MAGENTA << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
 			answers.erase(it);
 		}
 	}
@@ -153,6 +144,7 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 
 void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
+	std::cout << WHITE << "trop long"<< END << std::endl;
 	answers[(*it).first] = "HTTP/1.1 413 Request Entity Too Large\n\n";
 }
 
@@ -317,24 +309,26 @@ void	start(std::vector<Server>& servers)
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
 					read_char = 1;
-					while (!complete_request(buffer_strings[client], client_serv[client].getBody()) && read_char > 0)
+					while (!complete_request(buffer_strings[client], client_serv[client].getBody()))
 					{
 						//std::cout << "Requete incomplete ou <" << buffer_strings[client] << "> est vide" << std::endl;
 						memset(buff, 0, BUFFER_SIZE + 1);
-						read_char = recv(client, buff, BUFFER_SIZE, 0);//errors to check
-						//std::cout << BLUE << "FD: " << client << "asks for Content: \n" << buff <<END<< std::endl;
+						//std::cout << std::endl << "Read char: " << read_char<< std::endl << std::endl;
+						read_char = recv(client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
+						std::cout << std::endl << "Read char: " << read_char<< std::endl << std::endl;
 						//if return 0 close la connection
 						if (read_char <= 0)
 						{
-							//std::cout << "Read a foire " << read_char << std::endl;
-							closeFd(client);
-							requests.erase(client);
+							std::cout << "Read a foire " << read_char << std::endl;
+							//
+							//closeFd(client);
+							//requests.erase(client);
 						}
-						//if (read_char > BUFFER_SIZE)
-						//std::cout << "C'est la merde ? " << read_char << std::endl;
+						if (read_char == 0)
+							break;
 						buffer_strings[client] += buff;
 					}
-					//std::cout << "Requete complete" << std::endl;
+					//std::cout << WHITE <<" Hey there [" << buffer_strings[client] << "]" << END << std::endl;
 				}
 			}
 		}
