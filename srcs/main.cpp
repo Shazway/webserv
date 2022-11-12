@@ -137,7 +137,7 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 		answers[fd] += "Content-Type: html/favicon.ico\n";
 	else if (type == "html")
 		answers[fd] += "Content-Type: text/html\n";
-	answers[fd] += "Content length: ";
+	answers[fd] += "Content-Length: ";
 	answers[fd] += itoa((long)content.size());
 	answers[fd] += "\n\n";
 	answers[fd] += content;
@@ -220,6 +220,10 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 				else
 					answers[(*it).first] = "HTTP/1.1 201 Created\n";//upload a renvoyé INCOMPLETE, on demande la suite du body
 			}
+			answers[(*it).first] += "Content-Length: 0\n\n";
+			//
+			// METTRE UN VRAI BODY
+			//
 		}
 	}
 }
