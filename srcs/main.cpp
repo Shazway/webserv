@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/12 17:01:26 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/12 18:59:32 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 					answers[(*it).first] = "HTTP/1.1 200 OK\n";// Pas besoin de l'ajouter a la map puisqu'il est entier
 				else
 				{
-					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//Il n'y a pas de delimiteur de fin
+					answers[(*it).first] = "HTTP/1.1 201 Created\n";//Il n'y a pas de delimiteur de fin
 					uploads[fd] = up; //Ajout de up a la map
 				}
 			}
@@ -212,7 +212,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 					uploads.erase(uploads.find(fd));//On l'efface de la map car on a fini de download le fichier
 				}
 				else
-					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//upload a renvoyé INCOMPLETE, on demande la suite du body
+					answers[(*it).first] = "HTTP/1.1 201 Created\n";//upload a renvoyé INCOMPLETE, on demande la suite du body
 			}
 		}
 	}
@@ -312,21 +312,22 @@ void	start(std::vector<Server>& servers)
 					while (!complete_request(buffer_strings[client], client_serv[client].getBody()))
 					{
 						//std::cout << "Requete incomplete ou <" << buffer_strings[client] << "> est vide" << std::endl;
-						memset(buff, 0, BUFFER_SIZE + 1);
+						//memset(buff, 0, BUFFER_SIZE + 1);
+						memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
 						//std::cout << std::endl << "Read char: " << read_char<< std::endl << std::endl;
 						read_char = recv(client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
 						std::cout << std::endl << "Read char: " << read_char<< std::endl << std::endl;
 						//if return 0 close la connection
-						if (read_char <= 0)
+						if (read_char < 0)
 						{
 							std::cout << "Read a foire " << read_char << std::endl;
 							//
-							//closeFd(client);
-							//requests.erase(client);
+							closeFd(client);
+							requests.erase(client);
 						}
-						if (read_char == 0)
+						if (read_char <= 0)
 							break;
-						buffer_strings[client] += buff;
+						buffer_strings[client].append(buff, read_char);
 					}
 					//std::cout << WHITE <<" Hey there [" << buffer_strings[client] << "]" << END << std::endl;
 				}
