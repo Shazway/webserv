@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 20:58:42 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/13 22:35:31 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include "Parsing.hpp"
 #include "Webserv.hpp"
+#include "CgiHandler.hpp"
 #include <map>
 
 std::string	itoa(long nb)
@@ -114,31 +115,40 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 
 void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
+	HttpRequest	request = (*it).second;
+	int 		fd = (*it).first;
+
 	//GET peut avoir des variables dans la query
-	if ((*it).second._serv.checkAllowedMethods("GET", (*it).second.getPath()))
+	if (request._serv.checkAllowedMethods("GET", request.getPath()))
 	{
 		std::ifstream file;
-		std::string abs_path = (*it).second._serv.getRootPath() + (*it).second.getPath();
+		std::string abs_path = request._serv.getRootPath() + request.getPath();
 
+		if (!request.getQueryString().empty())
+		{
+			CgiHandler	handler(request);
+			generate_ok(fd, answers, file, "html");
+			return ;
+		}
 		//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
 		file.open(abs_path.c_str());
 		if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
 		{
 			file.close();
-			abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
+			abs_path = request._serv.getRootPath() + request._serv.html.getClosestDirectory(request.getPath()).second;
 			//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
 			file.open(abs_path.c_str());
 			if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
 				gen_error(it, answers, 404);
 			else
-				generate_ok((*it).first, answers, file, "html");
+				generate_ok(fd, answers, file, "html");
 		}
 		else if (file.is_open())
 		{
-			if ((*it).second.getPath().find("favicon") != std::string::npos)
-				generate_ok((*it).first, answers, file, "favicon");
+			if (request.getPath().find("favicon") != std::string::npos)
+				generate_ok(fd, answers, file, "favicon");
 			else
-				generate_ok((*it).first, answers, file, "html");
+				generate_ok(fd, answers, file, "html");
 		}
 		else
 			gen_error(it, answers, 404);
@@ -192,7 +202,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 		if (request.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
 			download_file(request, answers, uploads, fd);
 		if (request.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
-			std::cout << "YESSSSSSSSS" << std::endl;
+			CgiHandler handler(request);
 			//run_cgi();*/ // Gérer les forms et executer le cgi
 		//
 		// METTRE UN VRAI BODY

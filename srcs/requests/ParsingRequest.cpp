@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:02 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/13 14:51:34 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/13 22:32:21 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 			j++;
 		}
 		if (j - i >= 1)
-			request.setQueryString(bufferString.substr(i, j));
+			request.setQueryString(bufferString.substr(i, j - i));
 	}
 	while (*it == ' ')
 	{
