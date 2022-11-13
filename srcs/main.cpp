@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 14:59:48 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/13 15:18:00 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,10 +121,7 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 	if (file.is_open())
 	{
 		while (std::getline(file, line))
-		{
-			content += line;
-			content += "\n";
-		}
+			content += line + "\n";
 	}
 	if (type == "favicon")
 		answers[fd] += "Content-Type: html/favicon.ico\n";
