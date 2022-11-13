@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 18:40:43 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/13 18:43:00 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,12 +223,11 @@ void	start(std::vector<Server>& servers)
 		/*for (int i = 0; i < EVENT_SIZE; i++)
 			buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!
 	}
-	__environ
 	/*std::cout << "Notre webserv :" << std::endl;
 	std::cout << webserv << std::endl;*/
 }
 
-int	main(int ac, char **av, char **env)
+int	main(int ac, char **av)
 {
 	if (ac != 2)
 	{
@@ -240,7 +239,7 @@ int	main(int ac, char **av, char **env)
 	else
 	{
 		std::vector<Server> servers(parse_config(av[1]));
-		start(servers, env);
+		start(servers);
 	}
 	return (0);
 }
