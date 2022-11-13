@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   post_parse.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/10 12:01:20 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/13 14:47:04 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,7 @@ void	get_filename(std::string line, std::string& filename)
 	{
 		if ((*it).find("filename=") != std::string::npos)
 		{
-			std::cout << "Avant 1" << std::endl;
 			filename = (*it).substr((*it).find_first_of('"') + 1, (*it).find_last_of('"') - ((*it).find_first_of('"') + 1));
-			std::cout << "Apres 1" << std::endl;
 			break ;
 		}
 	}
@@ -72,9 +70,7 @@ int	add_complete_content(Upload& up, std::string content)
 
 	//std::cout << MAGENTA << "str before substr :" << content << "." << std::endl;
 	line = find_last_line(content, 3);
-	std::cout << "Avant 2" << std::endl;
 	up.addContent(content.substr(0, line));
-	std::cout << "Apres 2" << std::endl;
 	//std::cout << CYAN << "substr :" << content.substr(0, line) << "." << std::endl;
 	up.closeFile();
 	return (COMPLETE);
@@ -85,13 +81,9 @@ void	init_upload(Upload& up, v_str lines, std::string content, std::string& data
 	std::string	filename;
 
 	line = find_first_line(content, 1);
-	std::cout << "Avant 3" << std::endl;
 	get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
-	std::cout << "Apres 3" << std::endl;
 	up.setPath(filename); // Setup du filepath (il faut changer le path brut par ce qu'il y a dans serv)
-	std::cout << "Avant 4" << std::endl;
 	up.setDelim(lines.front().substr(0, lines.front().find("\r")));// Setup du delimiteur
-	std::cout << "Apres 4" << std::endl;
 	data = content.substr(find_first_line(content, 4), content.size() - content.find(up.getDelim()));
 	up.openFile(up.getPath());
 }

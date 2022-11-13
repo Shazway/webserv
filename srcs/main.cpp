@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/12 21:23:22 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/13 14:59:48 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,11 @@ void	separate_lines(std::vector<std::string> &lines, std::string content)
 	{
 		n = find_first_line(content, 1);
 		lines.push_back(content.substr(0, n));
-		//std::cout << find_first_line(content, 1) << std::endl;
 		if (n != std::string::npos)
 			content = content.substr(n, std::string::npos);
 		else
 			content.clear();
-		//std::cout << "while:" << content << "." << std::endl;
 	}
-	//std::cout << BLUE << "Sorti du while" << std::endl;
 }
 
 bool	is_empty(std::string str)
@@ -60,7 +57,6 @@ bool	complete_request(std::string str, size_t maxBodySize)
 
 	if (str.empty())
 		return (false);
-	//std::cout << "Start[" << RED << str << END << "]end" << std::endl;
 	separate_lines(v, str);
 	v_str_it	it = v.begin();
 
@@ -80,9 +76,7 @@ bool	complete_request(std::string str, size_t maxBodySize)
 	if (i != std::string::npos)
 	{
 		i = ((*it).find("\n") < (*it).find("\r") ? (*it).find("\n") : (*it).find("\r"));
-	std::cout << "Start[" << RED << "PASS" << END << "]end" << std::endl;
 		tmp = (*it).substr(16, i);
-	std::cout << "Start[" << RED << "PASSED" << END << "]end" << std::endl;
 		bodySize=atoi(tmp.c_str());
 
 		if (bodySize > maxBodySize) //si bodySize est plus grand que la limite, true pour code d'erreur apres
@@ -93,14 +87,11 @@ bool	complete_request(std::string str, size_t maxBodySize)
 	if (bodySize == 0)
 		return (true);
 	it++;
-	//std::cout << str << std::endl;
 	while (it != v.end() && bodySize > (*it).size())
 	{
 		bodySize -= ((*it).size());
 		it++;
 	}
-	//std::cout << "Body size: " << bodySize << std::endl;
-	//std::cout << "return : " << (it == v.end() ? "false" : "true") << std::endl;
 	if (it == v.end())
 		return (false);
 	return (true);
@@ -147,8 +138,7 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 
 void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
-	std::cout << WHITE << "trop long"<< END << std::endl;
-	answers[(*it).first] = "HTTP/1.1 413 Request Entity Too Large\n\n";
+	answers[(*it).first] = "HTTP/1.1 413 Request Entity Too Large\nContent-Length: 0\n\n";
 }
 
 
@@ -235,7 +225,7 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 	//gerer ici si le body est trop grand
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
-		if ((*it).second.getBody().size() > client_serv[(*it).first].getBody())
+		if ((*it).second.getContentLength() > client_serv[(*it).first].getBody())
 			gen_body_too_long(it, answers);
 		else if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
@@ -323,12 +313,8 @@ void	start(std::vector<Server>& servers)
 					read_char = 1;
 					while (!complete_request(buffer_strings[client], client_serv[client].getBody()))
 					{
-						//std::cout << "Requete incomplete ou <" << buffer_strings[client] << "> est vide" << std::endl;
-						memset(buff, 0, BUFFER_SIZE + 1);
-						//memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
-						//std::cout << std::endl << "Read char: " << read_char<< std::endl << std::endl;
+						memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
 						read_char = recv(client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
-						std::cout << std::endl << "Read char: " << read_char<< std::endl << std::endl;
 						//if return 0 close la connection
 						if (read_char <= 0)
 						{
@@ -341,7 +327,6 @@ void	start(std::vector<Server>& servers)
 						buffer_strings[client].append(buff, read_char);
 					}
 					found = true;
-					//std::cout << WHITE <<" Hey there [" << buffer_strings[client] << "]" << END << std::endl;
 				}
 			}
 		}
