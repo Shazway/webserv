@@ -30,6 +30,7 @@ public:
 private:
 	void	get_handler(HttpRequest request);
 	void	post_handler(HttpRequest request);
+	std::string clean_args(std::string arg);
 };
 
 #endif
