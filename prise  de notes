@@ -136,8 +136,6 @@ Codes supportés par notre magnifique webserv
 	413	Request Entity Too Large	Traitement abandonné dû à une requête trop importante.
 	I'm a teapot	« Je suis une théière » : Ce code est défini dans la RFC 232414 datée du 1er avril 1998,
 	Hyper Text Coffee Pot Control Protocol.
-	431	Request Header Fields Too Large	RFC 658518 : 
-		Les entêtes HTTP émises dépassent la taille maximale admise par le serveur.
 	300 -> redirections A FAIRE
 	200	OK	Requête traitée avec succès. La réponse dépendra de la méthode de requête utilisée.
 	201	Created	Requête traitée avec succès et création d'un document.

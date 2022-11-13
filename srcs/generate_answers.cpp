@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 17:06:19 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/13 20:58:42 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,45 +68,39 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, int code)
 {
 	std::string content;
+	HttpRequest	request = (*it).second;
+	int	fd = (*it).first;
+	int i = 0;
+	t_error_codes	codes[NB_CODES] = {{400, "Bad Request"}, {403, "Forbidden"},
+								{404, "Not found"}, {405, "Method not allowed"},
+								{413, "Request Entity Too Large"}, {500, "Internal Server Error"},
+								{501, "Not Implemented"}, {505, "HTTP Version not supported"}};
 
-	answers[(*it).first] = "HTTP/1.1 " ;
-	answers[(*it).first] += itoa(code);
-	answers[(*it).first] += " ";
-	switch (code)
+	answers[fd] = "HTTP/1.1 " ;
+	answers[fd] += itoa(code);
+	answers[fd] += " ";
+	while (i < NB_CODES)
 	{
-	case 400:
-		answers[(*it).first] += "Bad Request";
-		break;
-	case 404:
-		answers[(*it).first] += "Not found";
-		break;
-	case 405:
-		answers[(*it).first] += "Method not allowed";
-		break;
-	case 413:
-		answers[(*it).first] += "Request Entity Too Large";
-		break;
-	case 500:
-		answers[(*it).first] += "Internal Server Error";
-		break;
-	case 501:
-		answers[(*it).first] += "Not Implemented";
-		break;
-	case 505:
-		answers[(*it).first] += "HTTP Version not supported";
-		break;
-	default:
+		if (codes[i].code == code)
+		{
+			answers[fd] += codes[i].message;
+			break ;
+		}
+		i++;
+	}
+	if (i == NB_CODES + 1)
+	{
 		std::cout << BLINK_RED << "T'AS PAS GERE LE " << code << " CONNARD" << END << std::endl;
 		return ;
 	}
-	answers[(*it).first] += "\n";
-	if ((*it).second._serv.getErrorPath(code).empty())
+	answers[fd] += "\n";
+	if (request._serv.getErrorPath(code).empty())
 	{
-		answers[(*it).first] += "Content-Length: 0\n\n";
+		answers[fd] += "Content-Length: 0\n\n";
 		return ;
 	}
-	content += write_body((*it).second._serv.getRootPath() + (*it).second._serv.getErrorPath(code));
-	answers[(*it).first] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
+	content += write_body(request._serv.getRootPath() + request._serv.getErrorPath(code));
+	answers[fd] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
 }
 
 // void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
