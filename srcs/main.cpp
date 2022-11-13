@@ -184,6 +184,8 @@ void	start(std::vector<Server>& servers)
 						//if return 0 close la connection
 						if (read_char <= 0)
 						{
+							if (read_char < 0)
+								buffer_strings[client].clear();
 							std::cout << "Read a return: " << read_char << std::endl;
 							closeFd(client);
 							requests.erase(client);
@@ -192,6 +194,7 @@ void	start(std::vector<Server>& servers)
 							break;
 						buffer_strings[client].append(buff, read_char);
 					}
+					//std::cout << RED << buffer_strings[client] << END << std::endl;
 					found = true;
 				}
 			}
@@ -204,21 +207,29 @@ void	start(std::vector<Server>& servers)
 			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
 			if (complete_request(buffer_strings[i], client_serv[i].getBody()))
 			{
+				std::cout << "BUFFER = " << buffer_strings[i] << std::endl;
 				//std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
 				HttpRequest	tmp_request(client_serv[i]);
 				try
 				{
-					parsingRequest(tmp_request, buffer_strings[i]);
+					if (parsingRequest(tmp_request, buffer_strings[i]))
+					{
+						buffer_strings[i].clear();
+					}
+					else
+					{
+						std::cout << "J'AI AJOUTE UN TRUC " << tmp_request << std::endl;
+						//std::cout << RED << tmp_request << END << std::endl;
+						requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
+					}
 				}
 				catch(const std::exception& e)
 				{
 					std::cerr << e.what() << '\n';
 				}
-				//std::cout << RED << tmp_request << END << std::endl;
-				requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
 			}
 		}
-		answers_gen(requests, answers, uploads, client_serv, env);
+		answers_gen(requests, answers, uploads, client_serv);
 		send_answers(answers);
 		/*for (int i = 0; i < EVENT_SIZE; i++)
 			buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!

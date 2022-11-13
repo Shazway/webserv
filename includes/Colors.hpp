@@ -22,5 +22,7 @@
 #define MAGENTA "\e[1;35m"
 #define CYAN "\e[1;36m"
 #define WHITE "\e[1;37m"
+#define WHITE "\e[1;37m"
+#define BLINK_RED "\x1B[5;31m"
 #define END "\e[0m"
 #endif

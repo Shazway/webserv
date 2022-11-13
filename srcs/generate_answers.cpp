@@ -27,6 +27,21 @@ std::string	itoa(long nb)
 	return (ss.str());
 }
 
+std::string	write_body(std::string filename)
+{
+	std::ifstream	file;
+	std::string		content;
+	std::string		line;
+
+	file.open(filename.c_str());
+	if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
+		return ("Error while loading page /!\\");
+	if (file.is_open())
+		while (std::getline(file, line))
+			content += line + "\n";
+	return (content);
+}
+
 void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file, std::string type)
 {
 	std::string content;
@@ -50,11 +65,58 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 	answers[fd] += content;
 }
 
-void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, int code)
 {
-	answers[(*it).first] = "HTTP/1.1 413 Request Entity Too Large\nContent-Length: 0\n\n";
+	std::string content;
+
+	answers[(*it).first] = "HTTP/1.1 " ;
+	answers[(*it).first] += itoa(code);
+	answers[(*it).first] += " ";
+	switch (code)
+	{
+	case 400:
+		answers[(*it).first] += "Bad Request";
+		break;
+	case 404:
+		answers[(*it).first] += "Not found";
+		break;
+	case 405:
+		answers[(*it).first] += "Method not allowed";
+		break;
+	case 413:
+		answers[(*it).first] += "Request Entity Too Large";
+		break;
+	case 500:
+		answers[(*it).first] += "Internal Server Error";
+		break;
+	case 501:
+		answers[(*it).first] += "Not Implemented";
+		break;
+	case 505:
+		answers[(*it).first] += "HTTP Version not supported";
+		break;
+	default:
+		std::cout << BLINK_RED << "T'AS PAS GERE LE " << code << " CONNARD" << END << std::endl;
+		return ;
+	}
+	answers[(*it).first] += "\n";
+	if ((*it).second._serv.getErrorPath(code).empty())
+	{
+		answers[(*it).first] += "Content-Length: 0\n\n";
+		return ;
+	}
+	content += write_body((*it).second._serv.getRootPath() + (*it).second._serv.getErrorPath(code));
+	answers[(*it).first] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
 }
 
+// void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+// {
+// 	std::string content;
+
+// 	answers[(*it).first] = "HTTP/1.1 413 Request Entity Too Large\n";
+// 	content = write_body((*it).second._serv.getRootPath() + (*it).second._serv.getErrorPath(413));
+// 	answers[(*it).first] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
+// }
 
 void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
@@ -73,7 +135,7 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 			//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
 			file.open(abs_path.c_str());
 			if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
-				answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
+				gen_error(it, answers, 404);
 			else
 				generate_ok((*it).first, answers, file, "html");
 		}
@@ -85,27 +147,12 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 				generate_ok((*it).first, answers, file, "html");
 		}
 		else
-			answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
+			gen_error(it, answers, 404);
 		file.close();
 	}
 	else
-		answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
+		gen_error(it, answers, 405);
 	//Header à rajouter plus tard \n \n
-}
-
-std::string	write_body(std::string filename)
-{
-	std::ifstream	file;
-	std::string		content;
-	std::string		line;
-
-	file.open(filename.c_str());
-	if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
-		return ("Error while loading page /!\\");
-	if (file.is_open())
-		while (std::getline(file, line))
-			content += line + "\n";
-	return (content);
 }
 
 void	download_file(HttpRequest& request, std::map<int, std::string>& answers,
@@ -150,8 +197,9 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 	{
 		if (request.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
 			download_file(request, answers, uploads, fd);
-		/*if (request.getContentType().find("multipart/form-data") != std::string::npos)
-			run_cgi();*/ // Gérer les forms et executer le cgi
+		if (request.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
+			std::cout << "YESSSSSSSSS" << std::endl;
+			//run_cgi();*/ // Gérer les forms et executer le cgi
 		//
 		// METTRE UN VRAI BODY
 		//
@@ -164,12 +212,14 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
 		if ((*it).second.getContentLength() > client_serv[(*it).first].getBody())
-			gen_body_too_long(it, answers);
+			gen_error(it, answers, 413);
 		else if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
 			gen_post(it, answers, uploads);
-		//std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
-		requests.erase(it);
+		std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
+		//requests.erase(it);
+		
 	}
+	requests.clear();
 }

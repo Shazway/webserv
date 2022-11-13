@@ -16,6 +16,7 @@
 
 #include "Colors.hpp"
 #include "HttpRequest.hpp"
+#include "Server.hpp"
 
 int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 {
@@ -156,7 +157,15 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 	if (request.getContentLength())
 		request.setBody(bufferString.substr(0, request.getContentLength()));
 	//std::cout << BLUE << "Buffer string sub: " << "["<< request.getBody() << "]" << END << std::endl;
+	std::cout << RED << "TEST" << END << std::endl;
 	if (!bufferString.empty())
-		bufferString = bufferString.substr(request.getContentLength());
+	{
+		if (request.getContentLength() > request._serv.getBody())
+			bufferString.clear();
+		else
+			bufferString = bufferString.substr(request.getContentLength());
+	}
+	if (!bufferString.empty())
+		std::cout << RED << "PASS" << END << std::endl;
 	return (0);
 }
