@@ -3,7 +3,8 @@
 
 # include <iostream>
 # include <string>
-
+# include <map>
+# include "Upload.hpp"
 # define CODE_NO_METHOD 1
 # define CODE_NO_PATH 2
 # define CODE_NO_QUERY 3
@@ -11,6 +12,10 @@
 # define CODE_UNSUPPORTED_HTTP_VERSION 5
 
 class Server;
+
+
+
+
 
 typedef struct s_fdserv
 {
@@ -114,5 +119,10 @@ class LongBodyException : virtual public std::exception
 		return ("This body is too long for our configuration.");
 	}
 };
+//Answers gen functions:
+void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads, std::map<int, Server> &client_serv);
+void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, std::map<int, Upload> uploads);
+void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers);
+void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file, std::string type);
 
 #endif /* ***************************************************** HTTPREQUEST_H */

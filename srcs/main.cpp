@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 15:18:00 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/13 18:40:43 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,6 @@
 #include "Webserv.hpp"
 
 Webserv webserv;
-
-std::string	itoa(long nb)
-{
-	std::stringstream	ss;
-
-	ss << nb;
-	return (ss.str());
-}
 
 void	separate_lines(std::vector<std::string> &lines, std::string content)
 {
@@ -107,129 +99,6 @@ void	send_answers(std::map<int, std::string>& answers)
 			std::cout << MAGENTA << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
 			answers.erase(it);
 		}
-	}
-}
-
-void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file, std::string type)
-{
-	std::string content;
-	std::string	line;
-
-	//ici, check allowedmethod et faire une erreur adaptee
-	answers[fd] = "HTTP/1.1 200 OK\n";
-	content.clear();
-	if (file.is_open())
-	{
-		while (std::getline(file, line))
-			content += line + "\n";
-	}
-	if (type == "favicon")
-		answers[fd] += "Content-Type: html/favicon.ico\n";
-	else if (type == "html")
-		answers[fd] += "Content-Type: text/html\n";
-	answers[fd] += "Content-Length: ";
-	answers[fd] += itoa((long)content.size());
-	answers[fd] += "\n\n";
-	answers[fd] += content;
-}
-
-void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
-{
-	answers[(*it).first] = "HTTP/1.1 413 Request Entity Too Large\nContent-Length: 0\n\n";
-}
-
-
-void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
-{
-	//GET peut avoir des variables dans la query
-	if ((*it).second._serv.checkAllowedMethods("GET", (*it).second.getPath()))
-	{
-		std::ifstream file;
-		std::string abs_path = (*it).second._serv.getRootPath() + (*it).second.getPath();
-
-		//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
-		file.open(abs_path.c_str());
-		if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
-		{
-			file.close();
-			abs_path = (*it).second._serv.getRootPath() + (*it).second._serv.html.getClosestDirectory((*it).second.getPath()).second;
-			//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
-			file.open(abs_path.c_str());
-			if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
-				answers[(*it).first] = "HTTP/1.1 404 Not found 1\n\n";
-			else
-				generate_ok((*it).first, answers, file, "html");
-		}
-		else if (file.is_open())
-		{
-			if ((*it).second.getPath().find("favicon") != std::string::npos)
-				generate_ok((*it).first, answers, file, "favicon");
-			else
-				generate_ok((*it).first, answers, file, "html");
-		}
-		else
-			answers[(*it).first] = "HTTP/1.1 404 Not found\n\n";
-		file.close();
-	}
-	else
-		answers[(*it).first] = "HTTP/1.1 405 Method not allowed\n\n";
-	//Header à rajouter plus tard \n \n
-}
-
-void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, std::map<int, Upload> uploads)
-{
-	int	fd = (*it).first;
-	HttpRequest request = (*it).second;
-
-	if (request._serv.checkAllowedMethods("POST", request.getPath()))
-	{
-		if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
-		{
-			Upload	up; //Crée une instance de upload pour l'ajouter si il existe pas dans map
-
-		//std::cout << RED << "here" << END << std::endl;
-			if (uploads.find(fd) == uploads.end()) //Il existe pas
-			{
-				if (upload(up, request.getBody()) == COMPLETE) //Le body contient le delimiteur de fin alors upload a renvoyé 1
-					answers[(*it).first] = "HTTP/1.1 200 OK\n";// Pas besoin de l'ajouter a la map puisqu'il est entier
-				else
-				{
-					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//Il n'y a pas de delimiteur de fin
-					uploads[fd] = up; //Ajout de up a la map
-				}
-			}
-			else//Il existe
-			{
-
-				if (upload(uploads[fd], request.getBody()) == COMPLETE)// On vient de recevoir la fin
-				{
-					answers[(*it).first] = "HTTP/1.1 200 OK\n";
-					uploads.erase(uploads.find(fd));//On l'efface de la map car on a fini de download le fichier
-				}
-				else
-					answers[(*it).first] = "HTTP/1.1 206 Partial Content\n";//upload a renvoyé INCOMPLETE, on demande la suite du body
-			}
-			answers[(*it).first] += "Content-Length: 0\n\n";
-			//
-			// METTRE UN VRAI BODY
-			//
-		}
-	}
-}
-
-void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads, std::map<int, Server> &client_serv)
-{
-	//gerer ici si le body est trop grand
-	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
-	{
-		if ((*it).second.getContentLength() > client_serv[(*it).first].getBody())
-			gen_body_too_long(it, answers);
-		else if ((*it).second.getMethod() == "GET")
-			gen_get(it, answers);
-		else if ((*it).second.getMethod() == "POST")
-			gen_post(it, answers, uploads);
-		//std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
-		requests.erase(it);
 	}
 }
 
@@ -340,8 +209,6 @@ void	start(std::vector<Server>& servers)
 				try
 				{
 					parsingRequest(tmp_request, buffer_strings[i]);
-					//std::cout << "parsing a rendu " << res << std::endl;
-					//buffer_strings[i].clear();
 				}
 				catch(const std::exception& e)
 				{
@@ -351,17 +218,17 @@ void	start(std::vector<Server>& servers)
 				requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
 			}
 		}
-		answers_gen(requests, answers, uploads, client_serv);
+		answers_gen(requests, answers, uploads, client_serv, env);
 		send_answers(answers);
 		/*for (int i = 0; i < EVENT_SIZE; i++)
 			buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!
 	}
-
+	__environ
 	/*std::cout << "Notre webserv :" << std::endl;
 	std::cout << webserv << std::endl;*/
 }
 
-int	main(int ac, char **av)
+int	main(int ac, char **av, char **env)
 {
 	if (ac != 2)
 	{
@@ -373,7 +240,7 @@ int	main(int ac, char **av)
 	else
 	{
 		std::vector<Server> servers(parse_config(av[1]));
-		start(servers);
+		start(servers, env);
 	}
 	return (0);
 }

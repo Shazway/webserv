@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Upload.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 17:26:28 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 16:07:36 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/13 17:33:00 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ bool			Upload::getComplete() const
 
 void	Upload::openFile(std::string name)
 {
+	if (name.empty())
+		return ;
 	_file.open(name.c_str(), std::ios::out | std::ios::binary | std::ios::ate | std::ios::app);
 	if (!_file.is_open())
 	{
