@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 21:43:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/12 16:03:28 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/13 20:44:32 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,5 +70,7 @@ public:
 };
 
 std::ostream&	operator<<(std::ostream& os, Webserv const& webserv);
+
+std::string		itoa(long nb);
 
 #endif

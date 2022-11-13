@@ -23,7 +23,8 @@ SRC_NAME	=	main.cpp						\
 				requests/ParsingRequest.cpp		\
 				Webserv.cpp						\
 				Upload.cpp						\
-				generate_answers.cpp
+				generate_answers.cpp			\
+				naming.cpp
 OBJ_NAME	=	$(SRC_NAME:.cpp=.o)
 
 OBJ	=	$(addprefix $(OBJ_PATH), $(OBJ_NAME))
