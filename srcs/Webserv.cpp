@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 22:04:43 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 18:26:53 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 20:29:18 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,10 @@
 
 #include "Webserv.hpp"
 
-Webserv::Webserv(): nb_events(EVENT_SIZE), epollfd(epoll_create(1000))
+Webserv::Webserv()
 {
+	nb_events = EVENT_SIZE;
+	epollfd = epoll_create(nb_events);
 	return ;
 }
 
@@ -24,6 +26,7 @@ void	Webserv::allocating(int size)
 	nb_servers = size;
 	servers = new Server[size];
 	events = new epoll_event[nb_events];
+	memset(events, 0, sizeof(epoll_event) * size);
 }
 
 
@@ -31,6 +34,14 @@ Webserv::~Webserv(){
 	if (epollfd != -1)
 		close(epollfd);
 	delete[] servers;
+	for (int i = 0; i < max_event; i++)
+	{
+		if (events[i].events)
+		{
+			remove_event(i);
+			close(i);
+		}
+	}
 	delete[] events;
 }
 
@@ -49,19 +60,20 @@ void	Webserv::setNbEvents(size_t nb)
 	return ;
 }
 
-void	Webserv::increaseNbEvent()
+int	Webserv::getMaxEvent() const
 {
-	nb_events++;
-}
-
-void	Webserv::decreaseNbEvent()
-{
-	nb_events--;
+	return (max_event);
 }
 
 void	Webserv::setEpollfd(int fd)
 {
 	epollfd = fd;
+	return ;
+}
+
+void	Webserv::setMaxEvent(int event)
+{
+	max_event = event;
 	return ;
 }
 
@@ -112,7 +124,6 @@ void	Webserv::add_event(int fd, int flag)
 	event.data.fd = fd;
 	event.events = flag;
 	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &event);
-	increaseNbEvent();
 	events[fd] = event;
 }
 
@@ -123,7 +134,6 @@ void	Webserv::remove_event(int fd)
 	event.data.fd = fd;
 	event.events = 0;
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &event);
-	decreaseNbEvent();
 	events[fd] = event;
 }
 

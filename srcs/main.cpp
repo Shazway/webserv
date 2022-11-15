@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 16:51:15 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 20:28:22 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,32 @@
 #include <vector>
 #include "Parsing.hpp"
 #include "Webserv.hpp"
+#include <csignal>
 
 Webserv webserv;
+
+void signalHandler(int signum)
+{
+	if (signum == SIGINT)
+	{
+		for (std::map<int, Upload>::iterator it = webserv.uploads.begin(); it != webserv.uploads.end(); it++)
+			if ((*it).second._file.is_open())
+				(*it).second.closeFile();
+		std::cout << MAGENTA << "Terminating server" << END << std::endl;
+		/*sleep(1);
+		std::cout << MAGENTA << ". " << std::flush;
+		sleep(1);
+		std::cout << ". " << std::flush;
+		sleep(1);
+		std::cout << "." << std::endl;
+		std::cout << "Done !" << END <<std::endl;*/
+		exit(0);
+	}
+	else
+	{
+		std::cout << BLINK_CYAN << "This signal does nothing ! <(^OO^)>" << END << std::endl;
+	}
+}
 
 void	separate_lines(std::vector<std::string> &lines, std::string content)
 {
@@ -117,14 +141,14 @@ void	start(std::vector<Server>& servers)
 	int		read_char;
 	int		count = 0;
 	char	buff[BUFFER_SIZE + 1];
-	std::map<int, HttpRequest>	requests;
-	std::map<int, std::string>	answers;
-	std::map<int, Upload>		uploads;
 	std::string	buffer_strings[EVENT_SIZE];
 	bool	found = false;
 	std::map<int, Server>		client_serv;
 
+
+	std::signal(SIGINT, signalHandler);
 	webserv.allocating(servers.size());
+	webserv.setMaxEvent(0);
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
 	{
 		fd_listen = (*it).init_socket();
@@ -132,7 +156,10 @@ void	start(std::vector<Server>& servers)
 		{
 			(*it).setSocket(fd_listen);
 			if (fd_listen > fdMax)
+			{
 				fdMax = fd_listen;
+				webserv.setMaxEvent(fdMax);
+			}
 			//std::cout << "FD LISTEN: " << (*it).getSocket() << std::endl;
 			try
 				{webserv.setServer(count, (*it));}
@@ -166,7 +193,10 @@ void	start(std::vector<Server>& servers)
 						continue ;
 					}
 					if (client > fdMax)
+					{
 						fdMax = client;
+						webserv.setMaxEvent(fdMax);
+					}
 					client_serv[client] = webserv.getServer(j);
 					webserv.add_event(client, EPOLLIN | EPOLLOUT);
 				}
@@ -188,7 +218,7 @@ void	start(std::vector<Server>& servers)
 								buffer_strings[client].clear();
 							std::cout << "Read a return: " << read_char << std::endl;
 							closeFd(client);
-							requests.erase(client);
+							webserv.requests.erase(client);
 						}
 						if (read_char <= 0)
 							break;
@@ -219,7 +249,7 @@ void	start(std::vector<Server>& servers)
 					else
 					{
 						//std::cout << RED << tmp_request << END << std::endl;
-						requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
+						webserv.requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
 					}
 				}
 				catch(const std::exception& e)
@@ -228,8 +258,8 @@ void	start(std::vector<Server>& servers)
 				}
 			}
 		}
-		answers_gen(requests, answers, uploads, client_serv);
-		send_answers(answers);
+		answers_gen(webserv.requests, webserv.answers, webserv.uploads, client_serv);
+		send_answers(webserv.answers);
 		/*for (int i = 0; i < EVENT_SIZE; i++)
 			buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!
 	}
