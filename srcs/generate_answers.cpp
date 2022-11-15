@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   generate_answers.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 22:54:36 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 14:19:02 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <fstream>
 #include <vector>
 #include <cstdlib>
+#include <cstdio>
 #include "Parsing.hpp"
 #include "Webserv.hpp"
 #include "CgiHandler.hpp"
@@ -43,7 +44,7 @@ std::string	write_body(std::string filename)
 	return (content);
 }
 
-void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file, std::string type)
+void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& file, std::string type = "")
 {
 	std::string content;
 	std::string	line;
@@ -213,6 +214,21 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 		
 }
 
+void	gen_delete(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+{
+	std::ifstream empty;
+
+	if ((*it).second._serv.checkAllowedMethods("DELETE", (*it).second.getPath()))
+	{
+		if (remove((*it).second.getPath().c_str()))
+			gen_error(it, answers, 404);
+		else
+			generate_ok((*it).first, answers, empty);
+	}
+	else
+		gen_error(it, answers, 405);
+}
+
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads, std::map<int, Server> &client_serv)
 {
 	//gerer ici si le body est trop grand
@@ -224,6 +240,8 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 			gen_get(it, answers);
 		else if ((*it).second.getMethod() == "POST")
 			gen_post(it, answers, uploads);
+		else if ((*it).second.getMethod() == "DELETE")
+			gen_delete(it, answers);
 		else
 			gen_error(it, answers, 405);
 		std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
