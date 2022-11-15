@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:42 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/15 17:05:23 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 17:35:19 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@
 
 MethodTree::MethodTree()
 {
+	t_allowedMethods methods;
+	memset(&methods, 0, sizeof(t_allowedMethods));
+	_subdirectories["/"] = methods;
 }
 
 MethodTree::MethodTree( const MethodTree & src )
