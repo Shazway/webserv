@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 22:14:54 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/15 23:10:29 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ void signalHandler(int signum)
 		for (std::map<int, Upload>::iterator it = webserv.uploads.begin(); it != webserv.uploads.end(); it++)
 			if ((*it).second._file.is_open())
 				(*it).second.closeFile();
+		close(webserv.client);
 		std::cout << MAGENTA << "Terminating server" << END << std::endl;
 		/*sleep(1);
 		std::cout << MAGENTA << ". " << std::flush;
@@ -137,7 +138,6 @@ void	start(std::vector<Server>& servers)
 	int		fd_listen;
 	int		fdMax = 0;
 	int		ret;
-	int		client;
 	int		read_char;
 	int		count = 0;
 	char	buff[BUFFER_SIZE + 1];
@@ -183,44 +183,46 @@ void	start(std::vector<Server>& servers)
 				if (webserv.getEvent(i).data.fd == webserv.getServer(j).getSocket())
 				{
 					found = true;
-					int client = accept(webserv.getServer(j).getSocket(), NULL, NULL);
-					//std::cout << RED << "Accepté pour FD: " << client<<END << std::endl;
-					if (client <= 0)
+					webserv.client = accept(webserv.getServer(j).getSocket(), NULL, NULL);
+					//std::cout << RED << "Accepté pour FD: " << webserv.client<<END << std::endl;
+					if (webserv.client <= 0)
 					{
 						std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
 						continue ;
 					}
-					if (client > fdMax)
+					if (webserv.client > fdMax)
 					{
-						fdMax = client;
+						fdMax = webserv.client;
 						webserv.setMaxEvent(fdMax);
 					}
-					webserv.client_serv[client] = webserv.getServer(j);
-					webserv.add_event(client, EPOLLIN | EPOLLOUT);
+					webserv.client_serv[webserv.client] = webserv.getServer(j);
+					webserv.add_event(webserv.client, EPOLLIN | EPOLLOUT);
 				}
 			}
 			if (!found)
 			{
-				client = webserv.getEvent(i).data.fd;
+				/*if (client > 2)
+					close(client);*/
+				webserv.client = webserv.getEvent(i).data.fd;
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
 					read_char = 1;
-					while (!complete_request(webserv.buffer_strings[client], webserv.client_serv[client].getBody()))
+					while (!complete_request(webserv.buffer_strings[webserv.client], webserv.client_serv[webserv.client].getBody()))
 					{
 						memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
-						read_char = recv(client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
+						read_char = recv(webserv.client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
 						//if return 0 close la connection
 						if (read_char <= 0)
 						{
 							if (read_char < 0)
-								webserv.buffer_strings[client].clear();
+								webserv.buffer_strings[webserv.client].clear();
 							std::cout << "Read a return: " << read_char << std::endl;
-							closeFd(client);
-							webserv.requests.erase(client);
+							closeFd(webserv.client);
+							webserv.requests.erase(webserv.client);
 						}
 						if (read_char <= 0)
 							break;
-						webserv.buffer_strings[client].append(buff, read_char);
+						webserv.buffer_strings[webserv.client].append(buff, read_char);
 					}
 					//std::cout << RED << webserv.buffer_strings[client] << END << std::endl;
 					found = true;
