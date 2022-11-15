@@ -55,7 +55,8 @@
 		"list": "cpp",
 		"iomanip": "cpp",
 		"complex": "cpp",
-		"cinttypes": "cpp"
+		"cinttypes": "cpp",
+		"csignal": "cpp"
 	},
 	"C_Cpp.errorSquiggles": "Disabled"
 }

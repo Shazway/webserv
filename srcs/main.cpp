@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 20:28:22 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 21:34:19 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,9 +121,9 @@ void	send_answers(std::map<int, std::string>& answers)
 		{
 			send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
 			std::cout << MAGENTA << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
-			answers.erase(it);
 		}
 	}
+	answers.clear();
 }
 
 void	closeFd(int fd)
@@ -143,7 +143,6 @@ void	start(std::vector<Server>& servers)
 	char	buff[BUFFER_SIZE + 1];
 	std::string	buffer_strings[EVENT_SIZE];
 	bool	found = false;
-	std::map<int, Server>		client_serv;
 
 
 	std::signal(SIGINT, signalHandler);
@@ -197,7 +196,7 @@ void	start(std::vector<Server>& servers)
 						fdMax = client;
 						webserv.setMaxEvent(fdMax);
 					}
-					client_serv[client] = webserv.getServer(j);
+					webserv.client_serv[client] = webserv.getServer(j);
 					webserv.add_event(client, EPOLLIN | EPOLLOUT);
 				}
 			}
@@ -207,7 +206,7 @@ void	start(std::vector<Server>& servers)
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
 					read_char = 1;
-					while (!complete_request(buffer_strings[client], client_serv[client].getBody()))
+					while (!complete_request(buffer_strings[client], webserv.client_serv[client].getBody()))
 					{
 						memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
 						read_char = recv(client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
@@ -235,11 +234,11 @@ void	start(std::vector<Server>& servers)
 			/*if (!buffer_strings[client].empty())
 				std::cout << GREEN << complete_request(buffer_strings[client]) << buffer_strings[client] << END << std::endl;*/
 			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
-			if (complete_request(buffer_strings[i], client_serv[i].getBody()))
+			if (complete_request(buffer_strings[i], webserv.client_serv[i].getBody()))
 			{
 				std::cout << "BUFFER = " << buffer_strings[i] << std::endl;
 				//std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
-				HttpRequest	tmp_request(client_serv[i]);
+				HttpRequest	tmp_request(webserv.client_serv[i]);
 				try
 				{
 					if (parsingRequest(tmp_request, buffer_strings[i]))
@@ -258,8 +257,9 @@ void	start(std::vector<Server>& servers)
 				}
 			}
 		}
-		answers_gen(webserv.requests, webserv.answers, webserv.uploads, client_serv);
-		send_answers(webserv.answers);
+		answers_gen(webserv.requests, webserv.answers, webserv.uploads, webserv.client_serv);
+		if (!webserv.answers.empty())
+			send_answers(webserv.answers);
 		/*for (int i = 0; i < EVENT_SIZE; i++)
 			buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!
 	}
@@ -278,8 +278,8 @@ int	main(int ac, char **av)
 	}
 	else
 	{
-		std::vector<Server> servers(parse_config(av[1]));
-		start(servers);
+		parse_config(av[1], webserv.servs);
+		start(webserv.servs);
 	}
 	return (0);
 }

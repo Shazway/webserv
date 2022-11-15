@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 21:43:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 18:35:51 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 21:33:04 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ public:
 	std::map<int, HttpRequest>	requests;
 	std::map<int, std::string>	answers;
 	std::map<int, Upload>		uploads;
+	std::map<int, Server>		client_serv;
+	std::vector<Server>			servs;
 	Server								getServer(int index) const;
 	epoll_event							getEvent(int index) const;
 	epoll_event*						getEvents() const;

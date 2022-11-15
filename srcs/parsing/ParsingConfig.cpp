@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 17:44:53 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 21:34:30 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,9 +195,8 @@ bool	fill_servers(std::vector<Server>& servers, v_str content)
 }
 
 
-std::vector<Server>	parse_config(char* config_path)
+void	parse_config(char* config_path, std::vector<Server>& servers)
 {
-	std::vector<Server>			servers;
 	std::ifstream				file;
 	v_str						content;
 
@@ -207,15 +206,14 @@ std::vector<Server>	parse_config(char* config_path)
 		std::cerr << RED
 		<< "Failed to open config file from path: "
 		<< config_path << END << std::endl;
-		return (servers);
+		return ;
 	}
 	fill_content(file, content);
 	file.close();
 	if (!fill_servers(servers, content) || !check_duplicates(servers))
 	{
 		std::cerr << RED << "Error while parsing file, see error message above" << END << std::endl;
-		return (servers);
+		return ;
 	}
 	display_servers(servers);
-	return (servers);
 }

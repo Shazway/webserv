@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 15:58:14 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 21:35:12 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ typedef struct s_method
 	t_allowedMethods	allowed;
 } t_method;
 
-std::vector<Server>	parse_config(char* config_path);
+void	parse_config(char* config_path, std::vector<Server>& servers);
 void	fill_serv(Server& Serv, std::vector<std::string> content);
 void	fill_info(Server& Serv, std::string info);
 void	fill_content(std::ifstream& file, std::vector<std::string>& content);

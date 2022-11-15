@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 17:24:47 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 21:25:54 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,7 +254,6 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 		else
 			gen_error(it, answers, 405);
 		std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
-		//requests.erase(it);
 		
 	}
 	requests.clear();

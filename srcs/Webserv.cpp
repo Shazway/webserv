@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 22:04:43 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 20:29:18 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 21:25:38 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	Webserv::allocating(int size)
 	nb_servers = size;
 	servers = new Server[size];
 	events = new epoll_event[nb_events];
-	memset(events, 0, sizeof(epoll_event) * size);
+	memset(events, 0, sizeof(epoll_event) * nb_events);
 }
 
 
