@@ -23,14 +23,13 @@ std::string	namingFiles(Server serv, std::string tmpName)
 	int test = open(name.c_str(), O_RDONLY);
 	//std::cout << (test == -1 ? "echec de l ouverture" : "c est ouvert") << std::endl;
 	if (test == -1)
-	{
-		close(test);
 		return (name);
-	}
 	while (test > 0)
 	{
 		number++;
+		close(test);
 		test = open((name + " (" + itoa(number) + ")").c_str(), O_RDONLY);
 	}
+	close(test);
 	return (name + " (" + itoa(number) + ")");
 }

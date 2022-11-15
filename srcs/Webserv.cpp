@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 22:04:43 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 21:25:38 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 22:41:25 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,17 @@ void	Webserv::allocating(int size)
 Webserv::~Webserv(){
 	if (epollfd != -1)
 		close(epollfd);
+	for (int i = 0; i < nb_servers; i++)
+		if (servers[i].getSocket() > 2)
+			close(servers[i].getSocket());
 	delete[] servers;
 	for (int i = 0; i < max_event; i++)
 	{
 		if (events[i].events)
 		{
 			remove_event(i);
-			close(i);
+			if (i > 2)
+				close(i);
 		}
 	}
 	delete[] events;

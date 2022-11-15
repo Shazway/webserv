@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   post_parse.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 15:31:26 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 22:31:43 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int	add_complete_content(Upload& up, std::string content)
 	up.addContent(content.substr(0, line));
 	//std::cout << CYAN << "substr :" << content.substr(0, line) << "." << std::endl;
 
-
+	up.closeFile();
 	return (COMPLETE);
 }
 

@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 17:32:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 15:41:36 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/15 22:25:23 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ private:
 	std::string					method;
 	std::string					upload_path;
 	int							port;
-	size_t				body_size;
+	size_t						body_size;
 	std::map<int, std::string>	error_paths;
 	bool						auto_index;
 	struct sockaddr_in			addr;

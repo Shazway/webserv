@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 21:43:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 21:33:04 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 22:14:04 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ public:
 	std::map<int, Upload>		uploads;
 	std::map<int, Server>		client_serv;
 	std::vector<Server>			servs;
+	std::string					buffer_strings[EVENT_SIZE];
 	Server								getServer(int index) const;
 	epoll_event							getEvent(int index) const;
 	epoll_event*						getEvents() const;

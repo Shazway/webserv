@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 21:34:19 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 22:14:54 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,6 @@ void	start(std::vector<Server>& servers)
 	int		read_char;
 	int		count = 0;
 	char	buff[BUFFER_SIZE + 1];
-	std::string	buffer_strings[EVENT_SIZE];
 	bool	found = false;
 
 
@@ -206,7 +205,7 @@ void	start(std::vector<Server>& servers)
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
 					read_char = 1;
-					while (!complete_request(buffer_strings[client], webserv.client_serv[client].getBody()))
+					while (!complete_request(webserv.buffer_strings[client], webserv.client_serv[client].getBody()))
 					{
 						memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
 						read_char = recv(client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
@@ -214,16 +213,16 @@ void	start(std::vector<Server>& servers)
 						if (read_char <= 0)
 						{
 							if (read_char < 0)
-								buffer_strings[client].clear();
+								webserv.buffer_strings[client].clear();
 							std::cout << "Read a return: " << read_char << std::endl;
 							closeFd(client);
 							webserv.requests.erase(client);
 						}
 						if (read_char <= 0)
 							break;
-						buffer_strings[client].append(buff, read_char);
+						webserv.buffer_strings[client].append(buff, read_char);
 					}
-					//std::cout << RED << buffer_strings[client] << END << std::endl;
+					//std::cout << RED << webserv.buffer_strings[client] << END << std::endl;
 					found = true;
 				}
 			}
@@ -231,19 +230,19 @@ void	start(std::vector<Server>& servers)
 		//stocker un fd max, pour opti et pas passer sur les 1000 fd
 		for (int i = 0; i <= fdMax ; i++)
 		{
-			/*if (!buffer_strings[client].empty())
-				std::cout << GREEN << complete_request(buffer_strings[client]) << buffer_strings[client] << END << std::endl;*/
+			/*if (!webserv.buffer_strings[client].empty())
+				std::cout << GREEN << complete_request(webserv.buffer_strings[client]) << webserv.buffer_strings[client] << END << std::endl;*/
 			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
-			if (complete_request(buffer_strings[i], webserv.client_serv[i].getBody()))
+			if (complete_request(webserv.buffer_strings[i], webserv.client_serv[i].getBody()))
 			{
-				std::cout << "BUFFER = " << buffer_strings[i] << std::endl;
-				//std::cout << "Buffer " << i << "=" << buffer_strings[i] << "." << std::endl;
+				std::cout << "BUFFER = " << webserv.buffer_strings[i] << std::endl;
+				//std::cout << "Buffer " << i << "=" << webserv.buffer_strings[i] << "." << std::endl;
 				HttpRequest	tmp_request(webserv.client_serv[i]);
 				try
 				{
-					if (parsingRequest(tmp_request, buffer_strings[i]))
+					if (parsingRequest(tmp_request, webserv.buffer_strings[i]))
 					{
-						buffer_strings[i].clear();
+						webserv.buffer_strings[i].clear();
 					}
 					else
 					{
@@ -261,7 +260,7 @@ void	start(std::vector<Server>& servers)
 		if (!webserv.answers.empty())
 			send_answers(webserv.answers);
 		/*for (int i = 0; i < EVENT_SIZE; i++)
-			buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!
+			webserv.buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!
 	}
 	/*std::cout << "Notre webserv :" << std::endl;
 	std::cout << webserv << std::endl;*/
