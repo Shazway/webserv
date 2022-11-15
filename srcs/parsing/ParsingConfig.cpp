@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 16:15:09 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 17:44:53 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,6 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 		{
 			ft_split((*it), args, " ");
 			args.erase(args.begin());
-			if (!method_set_path(args, method.path))
-				return (false);
 			set_root(args, serv);
 			args.clear();
 		}
@@ -63,11 +61,9 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 		}
 		it++;
 	}
-	if (method.path.empty())
-		return (false);
 	if (!index.empty())
-		serv.html.addExecption(method.path, index);
-	serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
+		serv.html.addExecption("/", index);
+	serv.routes.addExecption("/", METHOD.get, METHOD.post, METHOD.del);
 	return (true);
 }
 

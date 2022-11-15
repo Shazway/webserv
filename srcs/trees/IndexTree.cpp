@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IndexTree.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:32 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/08 15:48:05 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/15 17:51:57 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 
 IndexTree::IndexTree()
 {
+	_subdirectories["/"] = "";
 }
 
 IndexTree::IndexTree( const IndexTree & src )
@@ -76,7 +77,7 @@ std::ostream &			operator<<( std::ostream & o, IndexTree const & i )
 
 std::pair<std::string, std::string>	IndexTree::getClosestDirectory(std::string path) const
 {
-	std::map<std::string, std::string>::const_iterator pin = _subdirectories.begin();
+	/*std::map<std::string, std::string>::const_iterator pin = _subdirectories.begin();
 	std::vector<std::string>	v_path;
 	std::vector<std::string>	v_test;
 	int							res;
@@ -92,7 +93,16 @@ std::pair<std::string, std::string>	IndexTree::getClosestDirectory(std::string p
 		if (!res)
 			break;
 	}
-	return (*pin);
+	return (*pin);*/
+	std::map<std::string, std::string>::const_iterator pin;
+	
+	do {
+		pin = _subdirectories.find(path);
+		if (pin != _subdirectories.end())
+			return (*pin);
+		path = path.substr(0, path.find_last_of("/"));
+	} while (path.find("/") != std::string::npos);
+	return (*(_subdirectories.begin()));
 }
 
 void	IndexTree::addExecption(std::string path, std::string index)
