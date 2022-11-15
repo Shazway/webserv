@@ -182,21 +182,22 @@ void	start(std::vector<Server>& servers)
 			{
 				if (webserv.getEvent(i).data.fd == webserv.getServer(j).getSocket())
 				{
+					int new_client;
 					found = true;
-					webserv.client = accept(webserv.getServer(j).getSocket(), NULL, NULL);
-					//std::cout << RED << "Accepté pour FD: " << webserv.client<<END << std::endl;
-					if (webserv.client <= 0)
+					new_client = accept(webserv.getServer(j).getSocket(), NULL, NULL);
+					//std::cout << RED << "Accepté pour FD: " << new_client<<END << std::endl;
+					if (new_client <= 0)
 					{
 						std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
 						continue ;
 					}
-					if (webserv.client > fdMax)
+					if (new_client > fdMax)
 					{
-						fdMax = webserv.client;
+						fdMax = new_client;
 						webserv.setMaxEvent(fdMax);
 					}
-					webserv.client_serv[webserv.client] = webserv.getServer(j);
-					webserv.add_event(webserv.client, EPOLLIN | EPOLLOUT);
+					webserv.client_serv[new_client] = webserv.getServer(j);
+					webserv.add_event(new_client, EPOLLIN | EPOLLOUT);
 				}
 			}
 			if (!found)
