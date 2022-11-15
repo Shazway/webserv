@@ -6,13 +6,15 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 17:18:49 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/08 14:45:43 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 16:10:19 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UPLOAD_HPP
 # define UPLOAD_HPP
 # include <fstream>
+# include "Server.hpp"
+
 # define COMPLETE 1
 # define INCOMPLETE 0
 
@@ -24,6 +26,7 @@ private:
 	bool			_complete;
 public:
 	Upload();
+	Upload(Server& server);
 	Upload(Upload const& assign);
 	~Upload();
 	std::string		getPath() const;
@@ -37,6 +40,7 @@ public:
 	void			addContent(std::string content);
 	void			closeFile();
 	std::ofstream	_file;
+	Server			_serv;
 	Upload& operator=(Upload const& assign);
 };
 
