@@ -43,14 +43,14 @@ CgiHandler::~CgiHandler()
 
 void	CgiHandler::get_handler(HttpRequest request)
 {
-	std::cout << BLINK_RED << request.getQueryString() << END << std::endl;
-	std::cout << BLINK_RED << clean_args(request.getQueryString()) << END << std::endl;
+	std::cout << RED << request.getQueryString() << END << std::endl;
+	std::cout << RED << clean_args(request.getQueryString()) << END << std::endl;
 }
 
 void	CgiHandler::post_handler(HttpRequest request)
 {
-	std::cout << BLINK_CYAN << request.getBody() << END << std::endl;
-	std::cout << BLINK_CYAN << clean_args(request.getBody()) << END << std::endl;
+	std::cout << CYAN << request.getBody() << END << std::endl;
+	std::cout << CYAN << clean_args(request.getBody()) << END << std::endl;
 }
 
 int	atoi_hexa(std::string hex)
@@ -81,7 +81,7 @@ std::string CgiHandler::clean_args(std::string arg)
 		else if (arg[i] == '%')
 		{
 			int hexval = atoi_hexa(arg.substr(i + 1, 2));
-			char c = (char)hexval;
+			unsigned char c = (unsigned char)hexval;
 			new_arg += c;
 			i += 2;
 		}
