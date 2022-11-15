@@ -26,6 +26,36 @@ char	**str_arr_free(char **str)
 	return (NULL);
 }
 
+int	atoi_hexa(std::string hex)
+{
+	int	res;
+
+	res = 0;
+	for (size_t i = 0; i < hex.size(); i++)
+	{
+		res *= 16;
+		if (isalpha(hex[i]))
+			res += hex[i] - 'A' + 10;
+		else
+			res += hex[i] - '0';
+	}
+	return res;
+}
+
+int	count_args(std::string str)
+{
+	int i = 1;
+	long unsigned int pos = 0;
+	const char *str_char = str.c_str();
+	while (pos < str.size())
+	{
+		if (str_char[pos] == '&')
+			i++;
+		pos++;
+	}
+	return i;
+}
+
 CgiHandler::CgiHandler(HttpRequest request): _args(NULL), _request(request)
 {
 	if (request.getMethod() == "GET")
@@ -44,29 +74,15 @@ CgiHandler::~CgiHandler()
 void	CgiHandler::get_handler(HttpRequest request)
 {
 	std::cout << RED << request.getQueryString() << END << std::endl;
+	std::cout << "NB_ARGS = " << count_args(request.getQueryString()) << std::endl;
 	std::cout << RED << clean_args(request.getQueryString()) << END << std::endl;
 }
 
 void	CgiHandler::post_handler(HttpRequest request)
 {
 	std::cout << CYAN << request.getBody() << END << std::endl;
+	std::cout << "NB_ARGS = " << count_args(request.getBody()) << std::endl;
 	std::cout << CYAN << clean_args(request.getBody()) << END << std::endl;
-}
-
-int	atoi_hexa(std::string hex)
-{
-	int	res;
-
-	res = 0;
-	for (size_t i = 0; i < hex.size(); i++)
-	{
-		res *= 16;
-		if (isalpha(hex[i]))
-			res += hex[i] - 'A' + 10;
-		else
-			res += hex[i] - '0';
-	}
-	return res;
 }
 
 std::string CgiHandler::clean_args(std::string arg)
@@ -88,6 +104,3 @@ std::string CgiHandler::clean_args(std::string arg)
 	}
 	return new_arg;
 }
-
-//login=rdyrdrydrdr&password=dzqzzdq
-//inox=hello+world
