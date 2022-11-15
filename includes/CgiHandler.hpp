@@ -15,6 +15,7 @@
 
 #include "HttpRequest.hpp"
 #include <stdlib.h>
+#include <vector>
 #include "Colors.hpp"
 
 class CgiHandler
@@ -30,7 +31,9 @@ public:
 private:
 	void	get_handler(HttpRequest request);
 	void	post_handler(HttpRequest request);
-	std::string clean_args(std::string arg);
+	std::string str_convert(std::string arg);
+	void	separate_args(std::string str);
+	void	str_arr_free();
 };
 
 #endif

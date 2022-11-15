@@ -12,18 +12,17 @@
 
 #include "CgiHandler.hpp"
 
-char	**str_arr_free(char **str)
+void	CgiHandler::str_arr_free()
 {
 	int	i;
 
 	i = 0;
-	while (str && str[i])
+	while (_args && _args[i])
 	{
-		free(str[i]);
+		free(_args[i]);
 		i++;
 	}
-	free(str);
-	return (NULL);
+	delete[] _args;
 }
 
 int	atoi_hexa(std::string hex)
@@ -56,6 +55,41 @@ int	count_args(std::string str)
 	return i;
 }
 
+void CgiHandler::separate_args(std::string str)
+{
+	int	size = count_args(str);
+	long unsigned int old_pos = 0;
+	long unsigned int new_pos = 0;
+	int loop = 0;
+
+	_args = new char*[size + 1];
+	_args[size] = NULL;
+	for (long unsigned int i = 0; i < str.size(); i++)
+	{
+		if (str[new_pos] == '&')
+		{
+			if (new_pos == old_pos)
+			{
+				//_args[loop] = new char[1];
+				_args[loop] = (char*)malloc(sizeof(char) * 1);
+				memset(_args[loop], 0, sizeof(char) * 1);
+			}
+			else
+				_args[loop] = strdup(str_convert(str.substr(old_pos, new_pos - old_pos)).c_str());
+			old_pos = new_pos + 1;
+			loop++;
+		}
+		new_pos++;
+	}
+	if (new_pos == old_pos)
+	{
+		_args[loop] = new char[1];
+		memset(_args[loop], 0, sizeof(char) * 1);
+	}
+	else
+		_args[loop] = strdup(str_convert(str.substr(old_pos, new_pos - old_pos)).c_str());
+}
+
 CgiHandler::CgiHandler(HttpRequest request): _args(NULL), _request(request)
 {
 	if (request.getMethod() == "GET")
@@ -67,25 +101,29 @@ CgiHandler::CgiHandler(HttpRequest request): _args(NULL), _request(request)
 
 CgiHandler::~CgiHandler()
 {
-	str_arr_free(_args);
+	str_arr_free();
 	return ;
 }
 
 void	CgiHandler::get_handler(HttpRequest request)
 {
-	std::cout << RED << request.getQueryString() << END << std::endl;
-	std::cout << "NB_ARGS = " << count_args(request.getQueryString()) << std::endl;
-	std::cout << RED << clean_args(request.getQueryString()) << END << std::endl;
+	separate_args(request.getQueryString());
+	for(int i = 0; _args[i]; i++)
+	{
+		std::cout << BLUE << "-> " << _args[i] << END << std::endl;
+	}
 }
 
 void	CgiHandler::post_handler(HttpRequest request)
 {
-	std::cout << CYAN << request.getBody() << END << std::endl;
-	std::cout << "NB_ARGS = " << count_args(request.getBody()) << std::endl;
-	std::cout << CYAN << clean_args(request.getBody()) << END << std::endl;
+	separate_args(request.getBody());
+	for(int i = 0; _args[i]; i++)
+	{
+		std::cout << BLUE << "-> " << _args[i] << END << std::endl;
+	}
 }
 
-std::string CgiHandler::clean_args(std::string arg)
+std::string CgiHandler::str_convert(std::string arg)
 {
 	std::string	new_arg;
 	for (size_t i = 0; i < arg.size(); i++)
