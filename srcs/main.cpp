@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 18:43:00 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 16:44:42 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,6 @@ void	start(std::vector<Server>& servers)
 					}
 					else
 					{
-						std::cout << "J'AI AJOUTE UN TRUC " << tmp_request << std::endl;
 						//std::cout << RED << tmp_request << END << std::endl;
 						requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
 					}

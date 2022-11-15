@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 14:47:04 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 15:31:26 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,8 @@ int	add_complete_content(Upload& up, std::string content)
 	line = find_last_line(content, 3);
 	up.addContent(content.substr(0, line));
 	//std::cout << CYAN << "substr :" << content.substr(0, line) << "." << std::endl;
-	up.closeFile();
+
+
 	return (COMPLETE);
 }
 

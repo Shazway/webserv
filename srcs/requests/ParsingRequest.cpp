@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:02 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/13 22:32:21 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 16:47:34 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ int	parsingHeader(HttpRequest &request, std::string bufferString)
 size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 {
 	std::string requestLine;
-	//std::cout << BLUE << "Parsing request recieved: \n" << bufferString << END << std::endl;
+	std::cout << BLUE << "Parsing request recieved: \n" << bufferString << END << std::endl;
 	if (bufferString.empty())
 		return (0);
 	// getline de request line
@@ -157,7 +157,6 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 	if (request.getContentLength())
 		request.setBody(bufferString.substr(0, request.getContentLength()));
 	//std::cout << BLUE << "Buffer string sub: " << "["<< request.getBody() << "]" << END << std::endl;
-	std::cout << RED << "TEST" << END << std::endl;
 	if (!bufferString.empty())
 	{
 		if (request.getContentLength() > request._serv.getBody())

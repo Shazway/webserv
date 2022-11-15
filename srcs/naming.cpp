@@ -12,10 +12,10 @@
 #include "Webserv.hpp"
 
 //lui envoyer le nom parse, va faire la fusion avec le chemin
-std::string	namingFiles(HttpRequest request, std::string tmpName)
+std::string	namingFiles(Server serv, std::string tmpName)
 {
-	std::string name = request._serv.getRootPath();
-	name.append(request._serv.getUploadPath());
+	std::string name = serv.getRootPath();
+	name.append(serv.getUploadPath());
 	name.append("/");
 	name.append(tmpName);
 	//std::string nameNb = name;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   generate_answers.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 14:19:02 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/15 16:47:15 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 void	download_file(HttpRequest& request, std::map<int, std::string>& answers,
 					std::map<int, Upload> uploads, int fd)
 {
-	Upload			up;
+	Upload			up(request._serv);
 	std::ifstream	file;
 	std::string		body;
 
@@ -218,6 +218,7 @@ void	gen_delete(std::map<int, HttpRequest>::iterator &it, std::map<int, std::str
 {
 	std::ifstream empty;
 
+	std::cout << GREEN << (*it).second.getPath() << END << std::endl;
 	if ((*it).second._serv.checkAllowedMethods("DELETE", (*it).second.getPath()))
 	{
 		if (remove((*it).second.getPath().c_str()))
