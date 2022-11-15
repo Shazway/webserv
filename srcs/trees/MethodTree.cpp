@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MethodTree.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:42 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/08 15:46:24 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/15 17:05:23 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,12 +97,20 @@ void	MethodTree::addExecption(std::string path, bool get, bool post, bool del)
 
 std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::string path) const
 {
-	std::map<std::string, t_allowedMethods>::const_iterator pin = _subdirectories.begin();
-	std::vector<std::string>	v_path;
-	std::vector<std::string>	v_test;
-	int							res;
+	std::map<std::string, t_allowedMethods>::const_iterator pin/* = _subdirectories.begin()*/;
+	//std::vector<std::string>	v_path;
+	//std::vector<std::string>	v_test;
+	//int							res;
 
 
+	do {
+		pin = _subdirectories.find(path);
+		if (pin != _subdirectories.end())
+			return (*pin);
+		path = path.substr(0, path.find_last_of("/"));
+	} while (path.find("/") != std::string::npos);
+	return (*(_subdirectories.begin()));
+/*
 	ft_split(path, v_path, "/");
 	for (std::map<std::string, t_allowedMethods>::const_iterator it = _subdirectories.begin(); it != _subdirectories.end(); it++)
 	{
@@ -113,7 +121,7 @@ std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::st
 		if (!res)
 			break;
 	}
-	return (*pin);
+	return (*pin);*/
 }
 
 

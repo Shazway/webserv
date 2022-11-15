@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 16:47:15 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/15 17:24:47 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,14 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 		if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
 		{
 			file.close();
-			abs_path = request._serv.getRootPath() + request._serv.html.getClosestDirectory(request.getPath()).second;
+			std::string	closest_directory = request._serv.html.getClosestDirectory(request.getPath()).second;
+
+			if (closest_directory.empty())
+			{
+				gen_error(it, answers, 404);
+				return ;
+			}
+			abs_path = request._serv.getRootPath() + closest_directory;
 			//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
 			file.open(abs_path.c_str());
 			if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
@@ -217,11 +224,12 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 void	gen_delete(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
 	std::ifstream empty;
+	std::string		path =(*it).second._serv.getRootPath() + (*it).second.getPath();
 
 	std::cout << GREEN << (*it).second.getPath() << END << std::endl;
 	if ((*it).second._serv.checkAllowedMethods("DELETE", (*it).second.getPath()))
 	{
-		if (remove((*it).second.getPath().c_str()))
+		if (remove(path.c_str()))
 			gen_error(it, answers, 404);
 		else
 			generate_ok((*it).first, answers, empty);
