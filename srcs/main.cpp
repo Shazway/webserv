@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 23:10:29 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/16 03:36:49 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,20 +28,18 @@ void signalHandler(int signum)
 			if ((*it).second._file.is_open())
 				(*it).second.closeFile();
 		close(webserv.client);
-		std::cout << MAGENTA << "Terminating server" << END << std::endl;
-		/*sleep(1);
-		std::cout << MAGENTA << ". " << std::flush;
-		sleep(1);
-		std::cout << ". " << std::flush;
-		sleep(1);
-		std::cout << "." << std::endl;
-		std::cout << "Done !" << END <<std::endl;*/
+		std::cout << RED << "\rTerminating server" << std::endl;
+		usleep(500000);
+		std::cout << "/" << std::flush;
+		usleep(500000);
+		std::cout << "\r-" << std::flush;
+		usleep(500000);
+		std::cout << "\r\\" << END << std::endl;
+		std::cout << GREEN << "Done ✓" << END <<std::endl;
 		exit(0);
 	}
 	else
-	{
 		std::cout << BLINK_CYAN << "This signal does nothing ! <(^OO^)>" << END << std::endl;
-	}
 }
 
 void	separate_lines(std::vector<std::string> &lines, std::string content)
