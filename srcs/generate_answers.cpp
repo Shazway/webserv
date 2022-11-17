@@ -71,6 +71,11 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 {
 	std::string content;
 	HttpRequest	request = (*it).second;
+	std::string errmsg;
+	std::string errorfile_1 = "<html><head><title>";
+	std::string errorfile_2 = "</title></head><body><h2>";
+	std::string errorfile_3 = "</h2><br><a href=\"/index/index.html\">Go back to index</a></body></html>";
+	int global_size = errorfile_1.size() + errorfile_2.size() + errorfile_3.size();
 	int	fd = (*it).first;
 	int i = 0;
 	t_error_codes	codes[NB_CODES] = {{400, "Bad Request"}, {403, "Forbidden"},
@@ -85,6 +90,8 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 	{
 		if (codes[i].code == code)
 		{
+			global_size += (codes[i].message.size() + 4) * 2;
+			errmsg = codes[i].message;
 			answers[fd] += codes[i].message;
 			break ;
 		}
@@ -96,6 +103,12 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 		return ;
 	}
 	answers[fd] += "\n";
+
+	answers[fd] += "Content-Length: " + itoa(global_size);
+	answers[fd] += "\n\n" + errorfile_1 + itoa(code) + " " + errmsg;
+	answers[fd] += errorfile_2 + itoa(code) + " " + errmsg + errorfile_3;
+
+	/*
 	if (request._serv.getErrorPath(code).empty())
 	{
 		answers[fd] += "Content-Length: 0\n\n";
@@ -103,6 +116,7 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 	}
 	content += write_body(request._serv.getRootPath() + request._serv.getErrorPath(code));
 	answers[fd] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
+	*/
 }
 
 // void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
