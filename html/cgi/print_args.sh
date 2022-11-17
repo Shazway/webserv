@@ -1,4 +1,4 @@
 #!/bin/sh
 for i in $*; do 
-  echo $i 
+  echo "$i <br>" 
 done

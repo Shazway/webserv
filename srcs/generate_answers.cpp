@@ -127,7 +127,7 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 
 		if (!request.getQueryString().empty())
 		{
-			CgiHandler	handler(request);
+			CgiHandler	handler(it, answers);
 			generate_ok(fd, answers, file, "html");
 			return ;
 		}
@@ -210,7 +210,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 		if (request.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
 			download_file(request, answers, uploads, fd);
 		if (request.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
-			CgiHandler handler(request);
+			CgiHandler handler(it, answers);
 			//run_cgi();*/ // Gérer les forms et executer le cgi
 		//
 		// METTRE UN VRAI BODY

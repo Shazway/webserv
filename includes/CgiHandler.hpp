@@ -25,18 +25,20 @@ private:
 	int			_fd[2];
 	int			_stdin;
 	int			_pid;
-	HttpRequest	_request;
 public:
-	CgiHandler(HttpRequest request);
+	CgiHandler(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answer);
 	~CgiHandler();
-	void	get_handler(HttpRequest request);
-	void	post_handler(HttpRequest request);
+	void	get_handler(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answer);
+	void	post_handler(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answer);
 private:
 	void	separate_args(std::string str, HttpRequest request);
-	void	exec_cgi(HttpRequest request);
-	void	exec_child(HttpRequest request);
+	void	exec_cgi(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answer);
+	void	exec_child();
 	void	str_arr_free();
 	std::string str_convert(std::string arg);
+	void	generate_success(int fd, std::map<int, std::string>& answers, std::string str);
 };
+
+void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, int code);
 
 #endif
