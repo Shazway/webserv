@@ -128,7 +128,6 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 		if (!request.getQueryString().empty())
 		{
 			CgiHandler	handler(it, answers);
-			generate_ok(fd, answers, file, "html");
 			return ;
 		}
 		//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;

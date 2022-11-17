@@ -23,7 +23,6 @@ class CgiHandler
 private:
 	char		**_args;
 	int			_fd[2];
-	int			_stdin;
 	int			_pid;
 public:
 	CgiHandler(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answer);
@@ -40,5 +39,6 @@ private:
 };
 
 void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, int code);
+std::string	itoa(long nb);
 
 #endif
