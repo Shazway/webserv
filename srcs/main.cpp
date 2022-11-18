@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 19:55:26 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 20:09:09 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,11 @@ void signalHandler(int signum)
 		close(webserv.client);
 		std::cout << RED << "\rTerminating server" << std::endl;
 		usleep(500000);
-		std::cout << "_  " << std::flush;
+		std::cout << "--" << std::flush;
 		usleep(500000);
-		std::cout << "\r | " << std::flush;
+		std::cout << "\r|" << std::flush;
 		usleep(500000);
-		std::cout << "\r   _" << END << std::endl;
+		std::cout << "\r/" << END << std::endl;
 		std::cout << GREEN << "Done ✓" << END <<std::endl;
 		exit(0);
 	}
@@ -300,7 +300,7 @@ int	main(int ac, char **av)
 {
 	
 	if (ac == 1)
-		parse_config("default.conf", webserv.servs);
+		parse_config("default.conf", webserv.servs);	
 	else if (ac > 2)
 	{
 		std::cerr << RED <<

@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 19:55:04 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 20:01:14 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,7 @@ bool	fill_servers(std::vector<Server>& servers, v_str content)
 }
 
 
-bool	parse_config(char* config_path, std::vector<Server>& servers)
+bool	parse_config(char const* config_path, std::vector<Server>& servers)
 {
 	std::ifstream				file;
 	v_str						content;
@@ -215,5 +215,5 @@ bool	parse_config(char* config_path, std::vector<Server>& servers)
 		return (false);
 	}
 	display_servers(servers);
-	return (false); // A REMPLACER PAR TRUE
+	return (true);
 }
