@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   generate_answers.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 21:25:54 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 17:55:04 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include "Webserv.hpp"
 #include "CgiHandler.hpp"
 #include <map>
+#include <dirent.h>
 
 std::string	itoa(long nb)
 {
@@ -128,6 +129,30 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 // 	answers[(*it).first] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
 // }
 
+void	gen_ls(std::string abs_path, std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+{
+	DIR *rep = NULL;
+	std::string str;
+	struct dirent *file = NULL;
+	
+	rep = opendir(abs_path.c_str());
+	if (!rep)
+		gen_error(it, answers, 404);
+	else
+	{
+		str = "<html><head>" + (*it).second.getPath() + "</head><body>";
+		file = readdir(rep);
+		file = readdir(rep);
+		while (file)
+		{
+			str += "<br><a href=" + (*it).second.getPath() + "/" + file->d_name + "> " + file->d_name + "</a>";
+			file = readdir(rep);
+		}
+		str += "</body>";
+		generate_success((*it).first, answers, str);
+	}
+}
+
 void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
 	HttpRequest	request = (*it).second;
@@ -150,10 +175,12 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 		{
 			file.close();
 			std::string	closest_directory = request._serv.html.getClosestDirectory(request.getPath()).second;
-
 			if (closest_directory.empty())
 			{
-				gen_error(it, answers, 404);
+				if ((*it).second._serv.getAutoIndex())
+					gen_ls(abs_path, it, answers);
+				else
+					gen_error(it, answers, 404);
 				return ;
 			}
 			abs_path = request._serv.getRootPath() + closest_directory;

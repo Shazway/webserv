@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CgiHandler.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 21:52:23 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 22:40:07 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 17:38:48 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	count_args(std::string str)
 	return i;
 }
 
-void	CgiHandler::generate_success(int fd, std::map<int, std::string>& answers, std::string str)
+void	generate_success(int fd, std::map<int, std::string>& answers, std::string str)
 {
 	std::string content;
 	std::string	line;

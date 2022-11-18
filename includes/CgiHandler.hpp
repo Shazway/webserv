@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CgiHandler.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 21:44:21 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 22:28:07 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 17:38:58 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ private:
 	void	exec_child();
 	void	str_arr_free();
 	std::string str_convert(std::string arg);
-	void	generate_success(int fd, std::map<int, std::string>& answers, std::string str);
 };
 
+void	generate_success(int fd, std::map<int, std::string>& answers, std::string str);
 void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, int code);
 std::string	itoa(long nb);
 
