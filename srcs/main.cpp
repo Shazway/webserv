@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 20:09:09 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 20:21:59 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,20 @@ void signalHandler(int signum)
 			if ((*it).second._file.is_open())
 				(*it).second.closeFile();
 		close(webserv.client);
-		std::cout << RED << "\rTerminating server" << std::endl;
-		usleep(500000);
-		std::cout << "--" << std::flush;
+		std::cout << RED << "\rTerminating server" << END << std::endl;
+		/*usleep(500000);
+		std::cout << "-" << std::flush;
 		usleep(500000);
 		std::cout << "\r|" << std::flush;
 		usleep(500000);
-		std::cout << "\r/" << END << std::endl;
+		std::cout << "\r/" << END << std::endl;*/
+		std::cout << "[" << std::flush;
+		for (int i = 0; i < 16; i++)
+		{
+			std::cout << GREEN << "🟩" << std::flush;
+			usleep(50000);
+		}
+		std::cout << END << "]" << std::endl;
 		std::cout << GREEN << "Done ✓" << END <<std::endl;
 		exit(0);
 	}
