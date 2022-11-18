@@ -25,7 +25,8 @@ SRC_NAME	=	main.cpp						\
 				Upload.cpp						\
 				generate_answers.cpp			\
 				naming.cpp						\
-				CgiHandler.cpp
+				CgiHandler.cpp					\
+				graphics.cpp
 OBJ_NAME	=	$(SRC_NAME:.cpp=.o)
 
 OBJ	=	$(addprefix $(OBJ_PATH), $(OBJ_NAME))

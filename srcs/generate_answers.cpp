@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   generate_answers.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 21:25:54 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 17:55:04 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include "Webserv.hpp"
 #include "CgiHandler.hpp"
 #include <map>
+#include <dirent.h>
 
 std::string	itoa(long nb)
 {
@@ -71,6 +72,11 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 {
 	std::string content;
 	HttpRequest	request = (*it).second;
+	std::string errmsg;
+	std::string errorfile_1 = "<html><head><title>";
+	std::string errorfile_2 = "</title></head><body><h2>";
+	std::string errorfile_3 = "</h2><br><a href=\"/index/index.html\">Go back to index</a></body></html>";
+	int global_size = errorfile_1.size() + errorfile_2.size() + errorfile_3.size();
 	int	fd = (*it).first;
 	int i = 0;
 	t_error_codes	codes[NB_CODES] = {{400, "Bad Request"}, {403, "Forbidden"},
@@ -85,6 +91,8 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 	{
 		if (codes[i].code == code)
 		{
+			global_size += (codes[i].message.size() + 4) * 2;
+			errmsg = codes[i].message;
 			answers[fd] += codes[i].message;
 			break ;
 		}
@@ -96,23 +104,41 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 		return ;
 	}
 	answers[fd] += "\n";
+
 	if (request._serv.getErrorPath(code).empty())
 	{
-		answers[fd] += "Content-Length: 0\n\n";
+		answers[fd] += "Content-Length: " + itoa(global_size);
+		answers[fd] += "\n\n" + errorfile_1 + itoa(code) + " " + errmsg;
+		answers[fd] += errorfile_2 + itoa(code) + " " + errmsg + errorfile_3;
 		return ;
 	}
 	content += write_body(request._serv.getRootPath() + request._serv.getErrorPath(code));
 	answers[fd] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
 }
 
-// void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
-// {
-// 	std::string content;
-
-// 	answers[(*it).first] = "HTTP/1.1 413 Request Entity Too Large\n";
-// 	content = write_body((*it).second._serv.getRootPath() + (*it).second._serv.getErrorPath(413));
-// 	answers[(*it).first] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
-// }
+void	gen_ls(std::string abs_path, std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
+{
+	DIR *rep = NULL;
+	std::string str;
+	struct dirent *file = NULL;
+	
+	rep = opendir(abs_path.c_str());
+	if (!rep)
+		gen_error(it, answers, 404);
+	else
+	{
+		str = "<html><head>" + (*it).second.getPath() + "</head><body>";
+		file = readdir(rep);
+		file = readdir(rep);
+		while (file)
+		{
+			str += "<br><a href=" + (*it).second.getPath() + "/" + file->d_name + "> " + file->d_name + "</a>";
+			file = readdir(rep);
+		}
+		str += "</body>";
+		generate_success((*it).first, answers, str);
+	}
+}
 
 void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
@@ -128,7 +154,6 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 		if (!request.getQueryString().empty())
 		{
 			CgiHandler	handler(it, answers);
-			generate_ok(fd, answers, file, "html");
 			return ;
 		}
 		//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
@@ -137,10 +162,12 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 		{
 			file.close();
 			std::string	closest_directory = request._serv.html.getClosestDirectory(request.getPath()).second;
-
 			if (closest_directory.empty())
 			{
-				gen_error(it, answers, 404);
+				if ((*it).second._serv.getAutoIndex())
+					gen_ls(abs_path, it, answers);
+				else
+					gen_error(it, answers, 404);
 				return ;
 			}
 			abs_path = request._serv.getRootPath() + closest_directory;
@@ -203,18 +230,13 @@ void	download_file(HttpRequest& request, std::map<int, std::string>& answers,
 void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, std::map<int, Upload> uploads)
 {
 	int	fd = (*it).first;
-	HttpRequest request = (*it).second;
 
-	if (request._serv.checkAllowedMethods("POST", request.getPath()))
+	if ((*it).second._serv.checkAllowedMethods("POST", (*it).second.getPath()))
 	{
-		if (request.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
-			download_file(request, answers, uploads, fd);
-		if (request.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
+		if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
+			download_file((*it).second, answers, uploads, fd);
+		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
 			CgiHandler handler(it, answers);
-			//run_cgi();*/ // Gérer les forms et executer le cgi
-		//
-		// METTRE UN VRAI BODY
-		//
 	}
 	else
 		gen_error(it, answers, 405);

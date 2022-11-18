@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 18:09:00 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 19:55:26 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,14 @@
 #include "Parsing.hpp"
 #include "Webserv.hpp"
 #include <csignal>
+#include <string>
 
 Webserv webserv;
+
+void close_client()
+{
+	close(webserv.client);
+}
 
 void signalHandler(int signum)
 {
@@ -30,11 +36,11 @@ void signalHandler(int signum)
 		close(webserv.client);
 		std::cout << RED << "\rTerminating server" << std::endl;
 		usleep(500000);
-		std::cout << "/" << std::flush;
+		std::cout << "_  " << std::flush;
 		usleep(500000);
-		std::cout << "\r-" << std::flush;
+		std::cout << "\r | " << std::flush;
 		usleep(500000);
-		std::cout << "\r\\" << END << std::endl;
+		std::cout << "\r   _" << END << std::endl;
 		std::cout << GREEN << "Done ✓" << END <<std::endl;
 		exit(0);
 	}
@@ -141,7 +147,7 @@ void	start(std::vector<Server>& servers)
 	char	buff[BUFFER_SIZE + 1];
 	bool	found = false;
 
-
+	printWebserv();
 	std::signal(SIGINT, signalHandler);
 	webserv.allocating(servers.size());
 	webserv.setMaxEvent(0);
@@ -196,12 +202,11 @@ void	start(std::vector<Server>& servers)
 					}
 					webserv.client_serv[new_client] = webserv.getServer(j);
 					webserv.add_event(new_client, EPOLLIN | EPOLLOUT);
+					std::cout << CYAN << new_client << END << std::endl;
 				}
 			}
 			if (!found)
 			{
-				/*if (client > 2)
-					close(client);*/
 				webserv.client = webserv.getEvent(i).data.fd;
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
@@ -267,9 +272,36 @@ void	start(std::vector<Server>& servers)
 	std::cout << webserv << std::endl;*/
 }
 
+int	checkFile(char* filePath)
+{
+	std::string		str = filePath;
+	int				fd;
+	std::cout << str.find_last_of(".conf") << std::endl;
+	if (str.find_last_of(".conf") != str.length() - 1)
+	{
+		std::cerr << RED <<
+		"/!\\ Wrong file extension:\nTry yourfile.conf /!\\"
+		<< END << std::endl;
+		return (1);
+	}
+	fd = open(filePath, O_RDONLY);
+	if (fd < 3)
+	{
+		std::cerr << RED
+		"/!\\ Unable to open the configuration file:\ncheck the spelling and the permissions of the file/!\\"
+		<< END << std::endl;
+		return (1);
+	}
+	close(fd);
+	return (0);
+}
+
 int	main(int ac, char **av)
 {
-	if (ac != 2)
+	
+	if (ac == 1)
+		parse_config("default.conf", webserv.servs);
+	else if (ac > 2)
 	{
 		std::cerr << RED <<
 		"/!\\ Wrong number of arguments:\nTry ./webserv <path_to_config_file> /!\\"
@@ -282,5 +314,6 @@ int	main(int ac, char **av)
 			return (1);
 		start(webserv.servs);
 	}
+	start(webserv.servs);
 	return (0);
 }
