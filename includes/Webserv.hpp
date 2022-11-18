@@ -81,5 +81,6 @@ public:
 std::ostream&	operator<<(std::ostream& os, Webserv const& webserv);
 
 std::string		itoa(long nb);
+void close_client();
 
 #endif

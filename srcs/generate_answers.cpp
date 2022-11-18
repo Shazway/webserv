@@ -243,18 +243,13 @@ void	download_file(HttpRequest& request, std::map<int, std::string>& answers,
 void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers, std::map<int, Upload> uploads)
 {
 	int	fd = (*it).first;
-	HttpRequest request = (*it).second;
 
-	if (request._serv.checkAllowedMethods("POST", request.getPath()))
+	if ((*it).second._serv.checkAllowedMethods("POST", (*it).second.getPath()))
 	{
-		if (request.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
-			download_file(request, answers, uploads, fd);
-		if (request.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
+		if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
+			download_file((*it).second, answers, uploads, fd);
+		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
 			CgiHandler handler(it, answers);
-			//run_cgi();*/ // Gérer les forms et executer le cgi
-		//
-		// METTRE UN VRAI BODY
-		//
 	}
 	else
 		gen_error(it, answers, 405);

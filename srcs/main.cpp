@@ -21,6 +21,11 @@
 
 Webserv webserv;
 
+void close_client()
+{
+	close(webserv.client);
+}
+
 void signalHandler(int signum)
 {
 	if (signum == SIGINT)
@@ -197,12 +202,11 @@ void	start(std::vector<Server>& servers)
 					}
 					webserv.client_serv[new_client] = webserv.getServer(j);
 					webserv.add_event(new_client, EPOLLIN | EPOLLOUT);
+					std::cout << CYAN << new_client << END << std::endl;
 				}
 			}
 			if (!found)
 			{
-				/*if (client > 2)
-					close(client);*/
 				webserv.client = webserv.getEvent(i).data.fd;
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
