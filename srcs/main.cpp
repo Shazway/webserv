@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 15:17:38 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/18 16:49:24 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ void signalHandler(int signum)
 		close(webserv.client);
 		std::cout << RED << "\rTerminating server" << std::endl;
 		usleep(500000);
-		std::cout << "/" << std::flush;
+		std::cout << "_  " << std::flush;
 		usleep(500000);
-		std::cout << "\r-" << std::flush;
+		std::cout << "\r | " << std::flush;
 		usleep(500000);
-		std::cout << "\r\\" << END << std::endl;
+		std::cout << "\r   _" << END << std::endl;
 		std::cout << GREEN << "Done ✓" << END <<std::endl;
 		exit(0);
 	}
@@ -142,7 +142,7 @@ void	start(std::vector<Server>& servers)
 	char	buff[BUFFER_SIZE + 1];
 	bool	found = false;
 
-
+	printWebserv();
 	std::signal(SIGINT, signalHandler);
 	webserv.allocating(servers.size());
 	webserv.setMaxEvent(0);
@@ -294,7 +294,10 @@ int	checkFile(char* filePath)
 
 int	main(int ac, char **av)
 {
-	if (ac != 2)
+	
+	if (ac == 1)
+		parse_config("default.conf", webserv.servs);
+	else if (ac > 2)
 	{
 		std::cerr << RED <<
 		"/!\\ Wrong number of arguments:\nTry ./webserv <path_to_config_file> /!\\"
@@ -306,7 +309,7 @@ int	main(int ac, char **av)
 		if (checkFile(av[1]))
 			return (2);
 		parse_config(av[1], webserv.servs);
-		start(webserv.servs);
 	}
+	start(webserv.servs);
 	return (0);
 }

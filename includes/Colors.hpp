@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Colors.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 21:05:27 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/13 22:36:48 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 16:48:46 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,4 +26,7 @@
 #define BLINK_BLUE "\x1B[5;34m"
 #define BLINK_CYAN "\x1B[5;36m"
 #define END "\e[0m"
+
+void	printWebserv(void);
+
 #endif

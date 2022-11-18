@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingConfig.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 21:34:30 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 16:30:20 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,7 +195,7 @@ bool	fill_servers(std::vector<Server>& servers, v_str content)
 }
 
 
-void	parse_config(char* config_path, std::vector<Server>& servers)
+void	parse_config(const char* config_path, std::vector<Server>& servers)
 {
 	std::ifstream				file;
 	v_str						content;
