@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Inox's blog</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+body {font-family: "Times New Roman", Georgia, Serif;}
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Playfair Display";
+    letter-spacing: 5px;
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar (sit on top) -->
+<div class="w3-top">
+    <div class="w3-bar w3-white w3-padding w3-card" style="letter-spacing:4px;">
+        <a href="#home" class="w3-bar-item w3-button">Inox</a>
+        <!-- Right-sided navbar links. Hide them on small screens -->
+        <div class="w3-right w3-hide-small">
+            <a href="#about" class="w3-bar-item w3-button">About Inox</a>
+            <a href="#menu" class="w3-bar-item w3-button">Our Cats</a>
+            <a href="#your_Cat" class="w3-bar-item w3-button">Your Cat</a>
+            <a href="/index/login.html" class="w3-bar-item w3-button">Login</a>
+        </div>
+    </div>
+</div>
+
+<!-- Header -->
+<header class="w3-display-container w3-content w3-wide" style="max-width:1600px;min-width:500px" id="home">
+    <img class="w3-image" src="/Ressources/Inox_1.jpg" alt="Hamburger Catering" width="2268" height="4032">
+    <div class="w3-display-bottomleft w3-padding-large w3-opacity">
+        <h1 class="w3-xxlarge">Inox</h1>
+    </div>
+</header>
+
+<!-- Page content -->
+<div class="w3-content" style="max-width:1100px">
+
+    <!-- About Section -->
+    <div class="w3-row w3-padding-64" id="about">
+    <div class="w3-col m6 w3-padding-large w3-hide-small">
+        <img src="/Ressources/Moumoune.jpg" class="w3-round w3-image w3-opacity-min" alt="Table Setting" width="4032" height="2268">
+    </div>
+        <div class="w3-col m6 w3-padding-large">
+            <h1 class="w3-center">About Inox</h1><br>
+            <h5 class="w3-center">Tradition since 1889</h5>
+            <p class="w3-large">According to all known laws of aviation, there is no way that a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyways.</p>
+            <p class="w3-large w3-text-grey w3-hide-medium">Cats are believed to be the only mammals who don't taste sweetness.<br>
+                Cats are nearsighted, but their peripheral vision and night vision are much better than that of humans.<br>
+                Cats are supposed to have 18 toes. <br>
+                A house cat's genome is 95.6 percent tiger, and they share many behaviors with their jungle ancestors. <br>
+                Cats' claws all curve downward, which means that they can't climb down trees head-first. Instead, they have to back down the trunk. <br>
+                Cats have 230 bones, while humans only have 206. <br>
+                Cats have an extra organ that allows them to taste scents on the air, which is why your cat stares at you with her mouth open from time to time. <br>
+                Cats have whiskers on the backs of their front legs, as well. <br>
+                Cats have nearly twice the amount of neurons in their cerebral cortex as dogs. <br>
+                Cats have the largest eyes relative to their head size of any mammal.</p>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Menu Section -->
+    <div class="w3-row w3-padding-64" id="menu">
+        <div class="w3-col l6 w3-padding-large">
+            <h1 class="w3-center">Our Cats</h1><br>
+            <h4>Inox</h4>
+            <p class="w3-text-grey">Assortment of fresh baked cat loaf.</p><br>
+        
+            <h4>Moumoune</h4>
+            <p class="w3-text-grey">Natural wildness of tiger, mixed with raisins, almonds and dates.</p><br>
+        
+            <h4>Nyraak</h4>
+            <p class="w3-text-grey">Vanilla flavored furball with added spice.</p><br>
+        
+            <h4>Tama</h4>
+            <p class="w3-text-grey">Your everyday superhero, desguised as a cat.</p><br>
+        
+            <h4>The surprise cats</h4>
+            <p class="w3-text-grey">Just some random cats we found on the street, extra wild.</p>                
+        </div>
+        
+        <div class="w3-col l6 w3-padding-large">
+            <img src="/Ressources/Nyraak_1.jpg" class="w3-round w3-image w3-opacity-min" alt="Menu" style="width:100%">
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Your Cat Section -->
+    <div class="w3-container w3-padding-64 w3-content" id="your_Cat">
+        <h1>Your cat</h1><br>
+        <form method="post" class="w3-center" action="/index/validation.html" enctype="multipart/form-data">
+            <p class="w3-text-blue-grey w3-large"><b>Give us a photo of your cat !</b></p>
+            <p><label class="w3-light-green w3-padding w3-round" for="fileSelector">Select a cat !</label></p>
+            <p><input style="opacity: 0; position: absolute; z-index: -1;" type="file" id="fileSelector" name="myFile"></p>
+            <hr>
+            <p><button class="w3-button w3-light-grey w3-section" type="submit">SEND CAT</button></p>
+        </form>
+    </div>
+
+<!-- End page content -->
+</div>
+
+<!-- Footer -->
+<footer class="w3-center w3-light-grey w3-padding-32">
+    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a></p>
+</footer>
+
+</body>
+</html>
