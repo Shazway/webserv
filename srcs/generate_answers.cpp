@@ -105,29 +105,16 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 	}
 	answers[fd] += "\n";
 
-	answers[fd] += "Content-Length: " + itoa(global_size);
-	answers[fd] += "\n\n" + errorfile_1 + itoa(code) + " " + errmsg;
-	answers[fd] += errorfile_2 + itoa(code) + " " + errmsg + errorfile_3;
-
-	/*
 	if (request._serv.getErrorPath(code).empty())
 	{
-		answers[fd] += "Content-Length: 0\n\n";
+		answers[fd] += "Content-Length: " + itoa(global_size);
+		answers[fd] += "\n\n" + errorfile_1 + itoa(code) + " " + errmsg;
+		answers[fd] += errorfile_2 + itoa(code) + " " + errmsg + errorfile_3;
 		return ;
 	}
 	content += write_body(request._serv.getRootPath() + request._serv.getErrorPath(code));
 	answers[fd] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
-	*/
 }
-
-// void	gen_body_too_long(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
-// {
-// 	std::string content;
-
-// 	answers[(*it).first] = "HTTP/1.1 413 Request Entity Too Large\n";
-// 	content = write_body((*it).second._serv.getRootPath() + (*it).second._serv.getErrorPath(413));
-// 	answers[(*it).first] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
-// }
 
 void	gen_ls(std::string abs_path, std::map<int, HttpRequest>::iterator &it, std::map<int, std::string>& answers)
 {
