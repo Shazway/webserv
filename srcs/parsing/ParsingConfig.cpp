@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 21:34:30 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 19:52:01 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "Parsing.hpp" 
+#include "ErrorMessages.hpp"
 #include "Server.hpp"
 
 void	fill_content(std::ifstream& file, std::vector<std::string>& content)
@@ -67,10 +68,8 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 	return (true);
 }
 
-//!\\S'OCCUPER DU INDEX.HTML DANS LE CONF
 bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 {
-//A RAJOUTER: INDEX.HTML TREE
 	t_method	method;
 	std::string	index;
 	v_str		args;
@@ -118,7 +117,7 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 		it++;
 	}
 	if (method.path.empty())
-		return (false);
+		return (display_error(NO_L_PATH));
 	if (!index.empty())
 		serv.html.addExecption(method.path, index);
 	if (l_method)
@@ -144,13 +143,13 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 		if ((*it).find("location:") != std::string::npos)
 		{
 			if (!parse_location(serv, content, it))
-				return (false);
+				return (display_error(LOCATION_PROB));
 			continue ;
 		}
 		if ((*it).find("root:") != std::string::npos)
 		{
 			if (!parse_root(serv, content, it))
-				return (false);
+				return (display_error(ROOT_PROB));
 			continue ;
 		}
 		for (int i = 0; i < 7; i++)
@@ -177,15 +176,15 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 bool	fill_servers(std::vector<Server>& servers, v_str content)
 {
 	v_str	args;
-	Server	tmp_serv;
 	v_str_it it = content.begin();
 
 	while (it != content.end())
 	{
 		if (it != content.end() && (*it).find("server:") != std::string::npos)
 		{
+			Server	tmp_serv;
 			if (!parse_server(tmp_serv, content, it))
-				return (false);
+				return (display_error(SERVER_PROB));
 			servers.push_back(tmp_serv);
 		}
 		else
@@ -195,7 +194,7 @@ bool	fill_servers(std::vector<Server>& servers, v_str content)
 }
 
 
-void	parse_config(char* config_path, std::vector<Server>& servers)
+bool	parse_config(char* config_path, std::vector<Server>& servers)
 {
 	std::ifstream				file;
 	v_str						content;
@@ -206,14 +205,15 @@ void	parse_config(char* config_path, std::vector<Server>& servers)
 		std::cerr << RED
 		<< "Failed to open config file from path: "
 		<< config_path << END << std::endl;
-		return ;
+		return (false);
 	}
 	fill_content(file, content);
 	file.close();
 	if (!fill_servers(servers, content) || !check_duplicates(servers))
 	{
 		std::cerr << RED << "Error while parsing file, see error message above" << END << std::endl;
-		return ;
+		return (false);
 	}
 	display_servers(servers);
+	return (false); // A REMPLACER PAR TRUE
 }

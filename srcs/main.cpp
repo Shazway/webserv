@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/16 03:36:49 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 18:09:00 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,7 +278,8 @@ int	main(int ac, char **av)
 	}
 	else
 	{
-		parse_config(av[1], webserv.servs);
+		if (!parse_config(av[1], webserv.servs))
+			return (1);
 		start(webserv.servs);
 	}
 	return (0);
