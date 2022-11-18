@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/16 03:36:49 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/18 15:17:38 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "Parsing.hpp"
 #include "Webserv.hpp"
 #include <csignal>
+#include <string>
 
 Webserv webserv;
 
@@ -267,6 +268,30 @@ void	start(std::vector<Server>& servers)
 	std::cout << webserv << std::endl;*/
 }
 
+int	checkFile(char* filePath)
+{
+	std::string		str = filePath;
+	int				fd;
+	std::cout << str.find_last_of(".conf") << std::endl;
+	if (str.find_last_of(".conf") != str.length() - 1)
+	{
+		std::cerr << RED <<
+		"/!\\ Wrong file extension:\nTry yourfile.conf /!\\"
+		<< END << std::endl;
+		return (1);
+	}
+	fd = open(filePath, O_RDONLY);
+	if (fd < 3)
+	{
+		std::cerr << RED
+		"/!\\ Unable to open the configuration file:\ncheck the spelling and the permissions of the file/!\\"
+		<< END << std::endl;
+		return (1);
+	}
+	close(fd);
+	return (0);
+}
+
 int	main(int ac, char **av)
 {
 	if (ac != 2)
@@ -278,6 +303,8 @@ int	main(int ac, char **av)
 	}
 	else
 	{
+		if (checkFile(av[1]))
+			return (2);
 		parse_config(av[1], webserv.servs);
 		start(webserv.servs);
 	}
