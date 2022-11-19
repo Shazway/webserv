@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 21:05:25 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:14:44 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,13 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 				serv.redirect.addRedirect(error, "/", redir);
 		}
 		it++;
+	}
+	if (!found[PATH])
+		return (display_error(NO_R_PATH));
+	if (!found[METHOD])
+	{
+		std::cout << YELLOW << "/!\\ Strongly recoomended to add r_method in root: scope" << END << std::endl;
+		return (true);
 	}
 	if (!index.empty())
 		serv.html.addExecption("/", index);
@@ -219,6 +226,10 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 		}
 		it++;
 	}
+	if (!parse[5].found)
+		return (display_error(NO_PORT));
+	if (!parse[3].found)
+		return (display_error(NO_BODY_SIZE));
 	return (true);
 }
 
