@@ -122,7 +122,7 @@ void	CgiHandler::exec_cgi(std::map<int, HttpRequest>::iterator &it, std::map<int
 {
 	int	status;
 	std::string str;
-	char buff[1];
+	char buff[2] = {0, 0};
 	
 	for(int i = 0; _args[i]; i++)
 	{
@@ -135,8 +135,9 @@ void	CgiHandler::exec_cgi(std::map<int, HttpRequest>::iterator &it, std::map<int
 	close(_fd[1]);
 	waitpid(_pid, &status, 0);
 	/* --------RECUP LE RESULTAT DE EXECVE ICI----------- */
+
 	while (read(_fd[0], buff, 1) > 0)
-		str += buff;
+	 	str += buff;
 	std::cout << str << std::endl;
 	/* -------------------------------------------------- */
 	close(_fd[0]);
@@ -163,6 +164,8 @@ std::string CgiHandler::str_convert(std::string arg)
 			int hexval = atoi_hexa(arg.substr(i + 1, 2));
 			unsigned char c = (unsigned char)hexval;
 			new_arg += c;
+			if (c == '\\')
+				new_arg += c;
 			i += 2;
 		}
 	}
