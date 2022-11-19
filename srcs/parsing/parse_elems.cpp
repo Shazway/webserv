@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 19:41:39 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:53:03 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,10 @@ bool	is_str_alpha(std::string str)
 }
 bool	is_str_path(std::string str)
 {
-	if (!str.empty() && str[0] != '/')
-		return (display_error(PATH_SYNTAX));
+	if (str.find("https") == 0)
+		return (true);
+	else if(!str.empty() && str[0] != '/')
+			return (display_error(PATH_SYNTAX));
 	for (size_t i = 0; i < str.size(); i++)
 		if (!isprint(str[i]) && str[i] != '/' && str[i] != '.')
 			return (false);

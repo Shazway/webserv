@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 19:44:11 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 20:13:41 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,14 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 	return (true);
 }
 
+bool	encountered_problem(std::string info, v_str args, v_str_it &it)
+{
+	std::cerr << RED << "Encountered problem at line: " << *it << std::endl
+	<< info << " wrong arguments: " << END;
+	display_v_str(args);
+	return (false);
+}
+
 
 bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 {
@@ -155,13 +163,19 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 		if ((*it).find("location:") != std::string::npos)
 		{
 			if (!parse_location(serv, content, it))
+			{
+				encountered_problem("location", args, it);
 				return (display_error(LOCATION_PROB));
+			}
 			continue ;
 		}
 		if ((*it).find("root:") != std::string::npos)
 		{
 			if (!parse_root(serv, content, it))
+			{
+				encountered_problem("root", args, it);
 				return (display_error(ROOT_PROB));
+			}
 			continue ;
 		}
 		for (int i = 0; i < 7; i++)
@@ -171,12 +185,7 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 				ft_split((*it).data(), args, " ");
 				args.erase(args.begin());
 				if (!parse[i].s(args, serv))
-				{
-					std::cerr << RED << "Encountered problem at line: " << *it << std::endl
-					<< parse[i].serv_info << " wrong arguments: " << END;
-					display_v_str(args);
-					return (false);
-				}
+					return (encountered_problem(parse[i].serv_info, args, it));
 				args.clear();
 			}
 		}
