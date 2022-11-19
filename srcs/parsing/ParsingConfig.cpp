@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingConfig.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 23:30:06 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 23:57:03 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <dirent.h>
 
 #include "Parsing.hpp" 
 #include "ErrorMessages.hpp"
@@ -235,10 +236,10 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 
 bool	valid_upload_path(Server& serv)
 {
-	std::ifstream	folder;
 	std::string		foldername;
-
 	foldername = serv.getRootPath() + serv.getUploadPath();
+	/*std::ifstream	folder;
+
 	folder.open(foldername.c_str(), std::ios_base::in);
 	if (!folder.is_open())
 		return (display_error(UPLOAD_ERROR));
@@ -248,7 +249,13 @@ bool	valid_upload_path(Server& serv)
 		return (display_error(UPLOAD_ERROR));
 	}
 	folder.close();
-	return (true);
+	return (true);*/
+	DIR * rep = opendir(foldername.c_str());
+    if (!rep) /* Si le nom du fichier n'a pas de point (une extension). */
+        return display_error(UPLOAD_ERROR);
+    closedir(rep);
+    return true;
+
 }
 
 bool	fill_servers(std::vector<Server>& servers, v_str content)
