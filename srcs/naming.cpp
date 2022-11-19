@@ -20,6 +20,7 @@ std::string	namingFiles(Server serv, std::string tmpName)
 	name.append(tmpName);
 	//std::string nameNb = name;
 	int	number = 0;
+	std::string name_test = name;
 	int test = open(name.c_str(), O_RDONLY);
 	//std::cout << (test == -1 ? "echec de l ouverture" : "c est ouvert") << std::endl;
 	if (test == -1)
@@ -28,8 +29,9 @@ std::string	namingFiles(Server serv, std::string tmpName)
 	{
 		number++;
 		close(test);
-		test = open((name + " (" + itoa(number) + ")").c_str(), O_RDONLY);
+		name_test = name.substr(0, name.find_last_of(".")) + " (" + itoa(number) + ")" + name.substr(name.find_last_of("."), std::string::npos);
+		test = open(name_test.c_str(), O_RDONLY);
 	}
 	close(test);
-	return (name + " (" + itoa(number) + ")");
+	return (name_test);
 }
