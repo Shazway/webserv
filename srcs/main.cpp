@@ -220,16 +220,13 @@ void	start(std::vector<Server>& servers)
 				webserv.client = webserv.getEvent(i).data.fd;
 				if (webserv.getEvent(i).events & EPOLLIN)
 				{
+					usleep(100);
 					read_char = 1;
 					while (!complete_request(webserv.buffer_strings[webserv.client], webserv.client_serv[webserv.client].getBody()))
 					{
 						memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
 						read_char = recv(webserv.client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
 						//if return 0 close la connection
-						std::cout << CYAN << "buffer_string = " << webserv.buffer_strings[webserv.client] << END << std::endl;
-						std::cout << CYAN << "-------------------------------------------------------" << END << std::endl;
-						std::cout << CYAN << "buff = " << buff << END << std::endl;
-						std::cout << CYAN << "-------------------------------------------------------" << END << std::endl;
 						if (read_char < 0)
 						{
 							webserv.buffer_strings[webserv.client].clear();
