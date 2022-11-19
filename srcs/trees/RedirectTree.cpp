@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RedirectTree.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:36:00 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/15 17:35:25 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 21:12:58 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ std::string	RedirectTree::redirectTo(int error, std::string path)
 	it = _errorcodes.find(error);
 	if (it != _errorcodes.end())
 	{
+		std::cout << "code trouve" << std::endl;
 		//chercher avec le path actuel
 		if ((*it).second.find(path) != (*it).second.end())
 			return (*it).second[path];
@@ -91,6 +92,8 @@ std::string	RedirectTree::redirectTo(int error, std::string path)
 			above = path.substr(0, path.find_last_of("/"));
 			above = redirectTo(error, above);
 		}
+		else
+			above = (*it).second["/"];
 	}
 	return (above);
 }
