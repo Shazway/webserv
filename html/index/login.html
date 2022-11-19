@@ -33,11 +33,13 @@ h1, h2, h3, h4, h5, h6 {
 <div class="w3-content" style="max-width:600px">
     <div style="margin: auto; margin-top: 15%; margin-bottom: 15%;">
         <div class="w3-light-grey w3-padding w3-display-container w3-round-large w3-center">
-            <form action="/cgi/register.sh" method="post">
+            <form action="/cgi/hello.rb" method="post">
                 <h3>Login</h3>
-                <input type="text" name="login" required="true" placeholder="Login" class="w3-center">
+                <input name="first_name" required="true" placeholder="First Name" class="w3-margin w3-center">
                 <br>
-                <input type="password" name="password" required="true" placeholder="Password" class="w3-margin w3-center">
+                <input name="last_name" required="true" placeholder="Last Name" class="w3-center">
+                <br>
+                <input name="age" required="true" placeholder="Age" class="w3-margin w3-center">
                 <br>
                 <input type="submit" value="Submit">
             </form>
