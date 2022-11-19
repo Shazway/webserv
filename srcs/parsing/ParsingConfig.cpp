@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 22:15:30 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 23:30:06 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,6 +233,24 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 	return (true);
 }
 
+bool	valid_upload_path(Server& serv)
+{
+	std::ifstream	folder;
+	std::string		foldername;
+
+	foldername = serv.getRootPath() + serv.getUploadPath();
+	folder.open(foldername.c_str(), std::ios_base::in);
+	if (!folder.is_open())
+		return (display_error(UPLOAD_ERROR));
+	if ((folder.is_open() && folder.peek() != std::ifstream::traits_type::eof()))
+	{
+		folder.close();
+		return (display_error(UPLOAD_ERROR));
+	}
+	folder.close();
+	return (true);
+}
+
 bool	fill_servers(std::vector<Server>& servers, v_str content)
 {
 	v_str	args;
@@ -245,6 +263,8 @@ bool	fill_servers(std::vector<Server>& servers, v_str content)
 			Server	tmp_serv;
 			if (!parse_server(tmp_serv, content, it))
 				return (display_error(SERVER_PROB));
+			if (!valid_upload_path(tmp_serv))
+				return (false);
 			servers.push_back(tmp_serv);
 		}
 		else
