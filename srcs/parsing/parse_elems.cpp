@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 19:19:51 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:41:39 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ bool	is_str_alpha(std::string str)
 }
 bool	is_str_path(std::string str)
 {
+	if (!str.empty() && str[0] != '/')
+		return (display_error(PATH_SYNTAX));
 	for (size_t i = 0; i < str.size(); i++)
 		if (!isprint(str[i]) && str[i] != '/' && str[i] != '.')
 			return (false);
@@ -105,8 +107,9 @@ bool	set_root(v_str & args, Server& serv)
 {
 	if (args.size() != 1)
 		return (display_error(WRONG_ARGS_NB));
-	if (!is_str_path(args[0]))
-		return (display_error(PATH_ERROR));
+	for (size_t i = 0; i < args[0].size(); i++)
+		if (!isprint(args[0][i]) && args[0][i] != '/' && args[0][i] != '.')
+			return (display_error(PATH_ERROR));
 	serv.setRootPath(args[0]);
 	return (true);
 }
