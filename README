@@ -1,0 +1,46 @@
+Welcome to your webserv project!
+
+Project made by mdelwaul, tmoragli and ncaba from 42Paris
+
+How to use it ?
+	"make", then "./webserv [yourconfigfile.conf]"
+	The configuration file is optional, if not given, webserv uses its default one.A configuration file should have the ".conf" extension.
+
+How to write a configuration file ?
+	A configuration file should have the ".conf" extension.
+	Each server is defined as:
+	"server:
+		[]
+		root:
+			r_path []
+			[]
+		location:
+			l_path []
+	"
+	The "root" category is mandatory and unique, whereas "location" is optional and can be used several times under the condition of having different "l_path"s.
+
+	"Server"
+		must have :
+			"port []" : the port you dedicate to this site
+			"body_size [] : the maximal size accepted for an entering request
+		can have :
+			"ip [].[].[].[]" : the theorical ip
+			"autoindex [true/false]" : generates links to the different files in a directory, set to false per default
+			"error_path [] []" : takes an error code and an absolute path within the site, you can have one per code
+			"upload_path []" : takes an absolute path within the site, location where the uploaded files will be stored, set to "/" per default
+	
+	"root"
+		must have :
+			"r_path []" : takes a path to where the site is. Must be the first element of "root"
+		can have:
+			"r_method [GET POST DELETE]" : allows the given methods in incoming requests. Highly recommended. Set to "" per default
+			"r_index []" : takes an absolute path within the site, to the page to print if the request asks for a directory
+			"r_redir [] []" : akes an error code and an absolute path within the site or an extern adress starting with "http", you can have one per code
+
+	"location"
+		must have :
+			"l_path []" : takes an absolute path within the site, indicating the directory concerned by the following specifications. Must be the first element of "location"
+		can have:
+			"l_method [GET POST DELETE]" : allows the given methods in incoming requests
+			"l_index []" : takes an absolute path within the site, to the page to print if the request asks for a directory
+			"l_redir [] []" : takes an error code and an absolute path within the site or an extern adress starting with "http", you can have one per code
