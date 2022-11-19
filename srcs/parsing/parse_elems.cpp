@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 19:23:58 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:19:51 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ bool	set_bodysize(v_str & args, Server& serv)
 {
 	if (args.size() != 1)
 		return (display_error(WRONG_ARGS_NB));
-	
+
 	if (!is_str_num(args[0]))
 		return (display_error(ONLY_NUM));
 	serv.setBody(args[0]);

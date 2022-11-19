@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 20:21:59 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 16:57:54 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,9 +262,7 @@ void	start(std::vector<Server>& servers)
 				try
 				{
 					if (parsingRequest(tmp_request, webserv.buffer_strings[i]))
-					{
 						webserv.buffer_strings[i].clear();
-					}
 					else
 					{
 						//std::cout << RED << tmp_request << END << std::endl;
@@ -280,11 +278,7 @@ void	start(std::vector<Server>& servers)
 		answers_gen(webserv.requests, webserv.answers, webserv.uploads, webserv.client_serv);
 		if (!webserv.answers.empty())
 			send_answers(webserv.answers);
-		/*for (int i = 0; i < EVENT_SIZE; i++)
-			webserv.buffer_strings[i].clear();*/ // DECOMMENTER POUR REPARER LES DOUBLONS !!!!
 	}
-	/*std::cout << "Notre webserv :" << std::endl;
-	std::cout << webserv << std::endl;*/
 }
 
 int	checkFile(char* filePath)

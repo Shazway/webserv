@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/24 20:57:36 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 22:27:14 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:22:13 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,13 +157,13 @@ std::ostream&	operator<<(std::ostream& os, Server const& serv)
 	os << GREEN << "Server name: " << serv.getName() << std::endl
 	<< BLUE << "Port: " << serv.getPort() << std::endl
 	<< GREEN << "IP: " << serv.getIp() << std::endl
+	<< CYAN << "Autoindex: " << (serv.getAutoIndex() ? "true" : "false") << std::endl
 	<< RED << "Body size: " << serv.getBody() << std::endl
 	<< BLUE << "Upload path: " << serv.getUploadPath() << std::endl
 	<< MAGENTA << "Routes: " << serv.getRootPath() << std::endl
 	<< serv.routes << std::endl
 	<< CYAN << "Indexes: " << serv.html << END << std::endl
-	<< WHITE << serv.redirect << END << std::endl
-	<< "Listen fd: " << serv.getSocket() << std::endl;
+	<< WHITE << serv.redirect << END << std::endl;
 	for (std::map<int, std::string>::iterator i = errors.begin(); i != errors.end(); i++)
 	{
 		os << YELLOW << (*i).first << " ";
