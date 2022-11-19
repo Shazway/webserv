@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 20:01:14 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 19:44:11 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 	t_method	method;
 	v_str		args;
 	std::string	index;
+	int			error;
+	std::string	redir;
 
 	if (it != content.end() && (*it).find("root:") != std::string::npos)
 		it++;
@@ -60,11 +62,21 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 				return (false);
 			args.clear();
 		}
+		if ((*it).find("r_redir") != std::string::npos)
+		{
+			ft_split((*it), args, " ");
+			args.erase(args.begin());
+			if (!add_redir(args, redir, error))
+				return (false);
+			args.clear();
+		}
 		it++;
 	}
 	if (!index.empty())
 		serv.html.addExecption("/", index);
 	serv.routes.addExecption("/", METHOD.get, METHOD.post, METHOD.del);
+	if (error != -1 && !redir.empty() && !method.path.empty())
+		serv.redirect.addRedirect(error, method.path, redir);
 	return (true);
 }
 
