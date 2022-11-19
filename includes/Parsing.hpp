@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 20:15:42 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 21:03:46 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@
 #include "HttpRequest.hpp"
 #include "Server.hpp"
 #include "Upload.hpp"
-
-# define METHOD method.allowed
+# define INDEX 0
+# define PATH 1
+# define METHOD 2
+# define METHODS method.allowed
 //Vector string//
 typedef std::vector<std::string> v_str;
 //Vector string iterator//
