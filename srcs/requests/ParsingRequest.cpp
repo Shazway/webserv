@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingRequest.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:02 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/15 16:47:34 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 17:28:53 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 	else if (bufferString == "HTTP 1.1" || bufferString == "HTTP/1.1")
 		request.setHttpVersion("1.1");
 	else
-		std::cout << "None" << std::endl;
+		request.setHttpVersion("");
 	//else
 	//	return (CODE_NO_HTTP_VERSION);
 

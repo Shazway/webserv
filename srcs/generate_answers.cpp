@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 17:55:04 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/19 17:30:27 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,7 +265,9 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 	//gerer ici si le body est trop grand
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
-		if ((*it).second.getContentLength() > client_serv[(*it).first].getBody())
+		if ((*it).second.getHttpVersion.empty())
+			gen_error(it, answers, 505);
+		else if ((*it).second.getContentLength() > client_serv[(*it).first].getBody())
 			gen_error(it, answers, 413);
 		else if ((*it).second.getMethod() == "GET")
 			gen_get(it, answers);
