@@ -124,10 +124,7 @@ void	CgiHandler::exec_cgi(std::map<int, HttpRequest>::iterator &it, std::map<int
 	 	str += buff;
 	close(_fd[0]);
 	if (WEXITSTATUS(status))
-	{
-		std::cerr << RED << "Error with execve" << END << std::endl;
 		gen_error(it, answer, 500);
-	}
 	else
 		generate_success((*it).first, answer, str);
 }
