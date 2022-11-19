@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:34:54 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/18 20:00:13 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 20:15:42 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_parser
 {
 	std::string		serv_info;
 	parse_elem		s;
+	bool			found;
 } t_parser;
 
 typedef struct s_method

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print_functions.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/08 16:21:31 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/09 23:31:22 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/19 20:24:52 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ void	display_v_str(std::vector<std::string> str)
 {
 	for (std::vector<std::string>::iterator i = str.begin(); i != str.end(); i++)
 		std::cout << GREEN << "[" << (*i) << "]" << END << std::endl;
+	if (str.empty())
+		std::cout << YELLOW << "Empty arguments /!\\" << END << std::endl;
 }
 
 void	display_servers(std::vector<Server> servers)

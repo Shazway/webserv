@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/18 17:27:09 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 19:55:50 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 20:17:49 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,5 @@ bool	display_error(std::string error);
 //GUIDE MESSAGES
 # define TRY_THIS "Try this syntax:\nserver:\n\tport <number>\n\tip <ip>\n\tserver_name <server_name>\n\tbody_size <nb>\n\tautoindex <state>\n\terror_path <nb> <path>\n\tupload_path <path>\n\troot:\n\t\tr_path <filename>\n\t\tr_method <methods>\n\t\tr_index <path>\n\tlocation:\n\t\tl_path <path>\n\t\tl_method <methods>\n\t\tl_index <path>\n\t\tl_redir <error code> <link>\n\t\tl_path <path>\n\t\tl_method <methods>"
 # define ARG_ERR "Arguments must be spaced with one space, <port> <number>"
+# define DUPLICATE_ERROR "Duplicate information provided"
 #endif

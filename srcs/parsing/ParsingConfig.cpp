@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 20:13:41 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 20:55:10 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 	t_method	method;
 	v_str		args;
 	std::string	index;
-	int			error;
+	int			error = -1;
 	std::string	redir;
 
 	if (it != content.end() && (*it).find("root:") != std::string::npos)
@@ -69,14 +69,14 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 			if (!add_redir(args, redir, error))
 				return (false);
 			args.clear();
+			if (error != -1 && !redir.empty())
+				serv.redirect.addRedirect(error, "/", redir);
 		}
 		it++;
 	}
 	if (!index.empty())
 		serv.html.addExecption("/", index);
 	serv.routes.addExecption("/", METHOD.get, METHOD.post, METHOD.del);
-	if (error != -1 && !redir.empty() && !method.path.empty())
-		serv.redirect.addRedirect(error, method.path, redir);
 	return (true);
 }
 
@@ -134,15 +134,13 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 		serv.html.addExecption(method.path, index);
 	if (l_method)
 		serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
-	if (error != -1 && !redir.empty() && !method.path.empty())
-		serv.redirect.addRedirect(error, method.path, redir);
 	return (true);
 }
 
 bool	encountered_problem(std::string info, v_str args, v_str_it &it)
 {
-	std::cerr << RED << "Encountered problem at line: " << *it << std::endl
-	<< info << " wrong arguments: " << END;
+	std::cerr << WHITE << "Encountered problem at line: " << RED << *it << END << std::endl
+	<< WHITE << "Wrong arguments for: " << RED << info << END;
 	display_v_str(args);
 	return (false);
 }
@@ -151,10 +149,10 @@ bool	encountered_problem(std::string info, v_str args, v_str_it &it)
 bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 {
 	v_str	args;
-	t_parser	parse[7] = {{"error_path", &add_errorpath}, {"ip", &set_ip},
-							{"name", &set_name}, {"body_size", &set_bodysize},
-							{"autoindex", &set_autoIndex}, {"port", &set_port},
-							{"upload_path", &set_upload}};
+	t_parser	parse[7] = {{"error_path", &add_errorpath, 0}, {"ip", &set_ip, 0},
+							{"name", &set_name, 0}, {"body_size", &set_bodysize, 0},
+							{"autoindex", &set_autoIndex, 0}, {"port", &set_port, 0},
+							{"upload_path", &set_upload, 0}};
 
 	if (it != content.end() && (*it).find("server:") != std::string::npos)
 		it++;
@@ -184,6 +182,13 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 			{
 				ft_split((*it).data(), args, " ");
 				args.erase(args.begin());
+				if (parse[i].found == 1 && parse[i].serv_info != "error_path")
+				{
+					display_error(DUPLICATE_ERROR);
+					encountered_problem(parse[i].serv_info, args, it);
+					return (false);
+				}
+				parse[i].found = 1;
 				if (!parse[i].s(args, serv))
 					return (encountered_problem(parse[i].serv_info, args, it));
 				args.clear();

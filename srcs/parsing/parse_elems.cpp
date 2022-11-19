@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 19:36:47 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 19:53:03 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 20:23:12 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "ErrorMessages.hpp"
 bool	display_error(std::string error)
 {
-	std::cout << RED << error << END << std::endl;
+	std::cerr << WHITE << error << END << std::endl;
 	return (false);
 }
 
