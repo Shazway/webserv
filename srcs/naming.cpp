@@ -15,12 +15,12 @@ std::string	namingFiles(Server serv, std::string tmpName)
 {
 	std::string name = serv.getRootPath();
 	int	number = 0;
-	int test = open(name.c_str(), O_RDONLY);
 
 	name.append(serv.getUploadPath());
 	name.append("/");
 	name.append(tmpName);
-	std::string name_test = name;
+	int test = open(name.c_str(), O_RDONLY);
+	std::string name_test;
 	if (test == -1)
 		return (name);
 	while (test > 0)
