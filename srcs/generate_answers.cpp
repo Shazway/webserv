@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 19:13:55 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/19 20:05:28 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,14 +105,21 @@ void	gen_error(std::map<int, HttpRequest>::iterator &it, std::map<int, std::stri
 	}
 	answers[fd] += "\n";
 
-	if (request._serv.getErrorPath(code).empty())
+	std::string errorPath = request._serv.getErrorPath(code);
+	if (errorPath.empty())
 	{
 		answers[fd] += "Content-Length: " + itoa(global_size);
 		answers[fd] += "\n\n" + errorfile_1 + itoa(code) + " " + errmsg;
 		answers[fd] += errorfile_2 + itoa(code) + " " + errmsg + errorfile_3;
 		return ;
 	}
-	content += write_body(request._serv.getRootPath() + request._serv.getErrorPath(code));
+	if (errorPath.find("http") < 0)
+	{
+		errorPath = request._serv.getRootPath() + request._serv.getErrorPath(code);
+		content = write_body(errorPath);
+	}
+	else
+		content = "<meta http-equiv=\"Refresh\" content=\"0; url=\'" + errorPath + "\'\" />";
 	answers[fd] += ("Content-Length: " + itoa(content.size())) + ("\n\n" + content);
 }
 
