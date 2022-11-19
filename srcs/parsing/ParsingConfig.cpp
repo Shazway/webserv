@@ -6,7 +6,7 @@
 /*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 23:57:03 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/19 23:59:20 by mdelwaul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,20 +238,9 @@ bool	valid_upload_path(Server& serv)
 {
 	std::string		foldername;
 	foldername = serv.getRootPath() + serv.getUploadPath();
-	/*std::ifstream	folder;
-
-	folder.open(foldername.c_str(), std::ios_base::in);
-	if (!folder.is_open())
-		return (display_error(UPLOAD_ERROR));
-	if ((folder.is_open() && folder.peek() != std::ifstream::traits_type::eof()))
-	{
-		folder.close();
-		return (display_error(UPLOAD_ERROR));
-	}
-	folder.close();
-	return (true);*/
 	DIR * rep = opendir(foldername.c_str());
-    if (!rep) /* Si le nom du fichier n'a pas de point (une extension). */
+
+    if (!rep)
         return display_error(UPLOAD_ERROR);
     closedir(rep);
     return true;
