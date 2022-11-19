@@ -18,6 +18,7 @@ Webserv::Webserv()
 {
 	nb_events = EVENT_SIZE;
 	epollfd = epoll_create(nb_events);
+	client = -1;
 	return ;
 }
 
@@ -125,6 +126,7 @@ void	Webserv::add_event(int fd, int flag)
 {
 	struct epoll_event event;
 
+	memset(&event, 0, sizeof(struct epoll_event));
 	event.data.fd = fd;
 	event.events = flag;
 	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &event);
@@ -135,6 +137,7 @@ void	Webserv::remove_event(int fd)
 {
 	struct epoll_event event;
 
+	memset(&event, 0, sizeof(struct epoll_event));
 	event.data.fd = fd;
 	event.events = 0;
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &event);

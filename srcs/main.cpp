@@ -23,6 +23,8 @@ Webserv webserv;
 
 void close_client()
 {
+	if (webserv.client < 3)
+		return ;
 	close(webserv.client);
 }
 
@@ -33,7 +35,7 @@ void signalHandler(int signum)
 		for (std::map<int, Upload>::iterator it = webserv.uploads.begin(); it != webserv.uploads.end(); it++)
 			if ((*it).second._file.is_open())
 				(*it).second.closeFile();
-		close(webserv.client);
+		close_client();
 		std::cout << RED << "\rTerminating server" << END << std::endl;
 		/*usleep(500000);
 		std::cout << "-" << std::flush;
@@ -140,6 +142,8 @@ void	send_answers(std::map<int, std::string>& answers)
 
 void	closeFd(int fd)
 {
+	if (fd < 3)
+		return ;
 	close(fd);
 	webserv.remove_event(fd);
 }
@@ -209,7 +213,6 @@ void	start(std::vector<Server>& servers)
 					}
 					webserv.client_serv[new_client] = webserv.getServer(j);
 					webserv.add_event(new_client, EPOLLIN | EPOLLOUT);
-					std::cout << CYAN << new_client << END << std::endl;
 				}
 			}
 			if (!found)
@@ -223,16 +226,21 @@ void	start(std::vector<Server>& servers)
 						memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
 						read_char = recv(webserv.client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
 						//if return 0 close la connection
-						if (read_char <= 0)
+						std::cout << CYAN << "buffer_string = " << webserv.buffer_strings[webserv.client] << END << std::endl;
+						std::cout << CYAN << "-------------------------------------------------------" << END << std::endl;
+						std::cout << CYAN << "buff = " << buff << END << std::endl;
+						std::cout << CYAN << "-------------------------------------------------------" << END << std::endl;
+						if (read_char < 0)
 						{
-							if (read_char < 0)
-								webserv.buffer_strings[webserv.client].clear();
-							std::cout << "Read a return: " << read_char << std::endl;
+							webserv.buffer_strings[webserv.client].clear();
+							std::cout << CYAN << "Read a return: " << read_char << END << std::endl;
 							closeFd(webserv.client);
-							webserv.requests.erase(webserv.client);
 						}
 						if (read_char <= 0)
+						{
+							webserv.requests.erase(webserv.client);
 							break;
+						}
 						webserv.buffer_strings[webserv.client].append(buff, read_char);
 					}
 					//std::cout << RED << webserv.buffer_strings[client] << END << std::endl;
