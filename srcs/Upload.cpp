@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 17:26:28 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 16:13:54 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:19:28 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,7 @@ void	Upload::openFile(std::string name)
 		return ;
 	_file.open(namingFiles(_serv, name).c_str(), std::ios::out | std::ios::binary | std::ios::ate | std::ios::app);
 	if (!_file.is_open())
-	{
-		std::cout << "Crash ici -> " << namingFiles(_serv, name) << std::endl;
 		throw(FailedToOpenFileException());
-	}
 }
 
 void	Upload::setPath(std::string path)

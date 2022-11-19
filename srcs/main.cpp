@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 17:33:01 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 21:04:51 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:23:37 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,6 @@ void signalHandler(int signum)
 				(*it).second.closeFile();
 		close_client();
 		std::cout << RED << "\rTerminating server" << END << std::endl;
-		/*usleep(500000);
-		std::cout << "-" << std::flush;
-		usleep(500000);
-		std::cout << "\r|" << std::flush;
-		usleep(500000);
-		std::cout << "\r/" << END << std::endl;*/
-		std::cout << "[" << std::flush;
 		for (int i = 0; i < 16; i++)
 		{
 			std::cout << GREEN << "🟩" << std::flush;
@@ -53,8 +46,6 @@ void signalHandler(int signum)
 		std::cout << GREEN << "Done ✓" << END <<std::endl;
 		exit(0);
 	}
-	else
-		std::cout << BLINK_CYAN << "This signal does nothing ! <(^OO^)>" << END << std::endl;
 }
 
 void	separate_lines(std::vector<std::string> &lines, std::string content)
@@ -92,8 +83,6 @@ bool	complete_request(std::string str, size_t maxBodySize)
 
 	if (v.empty())
 		return (false);
-	// Probleme avec la size du body ?
-	//Renvoie false alors que c'est complet
 	i = std::string::npos;
 	while (it != v.end() && !is_empty(*it) && i == std::string::npos)
 	{
@@ -109,7 +98,7 @@ bool	complete_request(std::string str, size_t maxBodySize)
 		tmp = (*it).substr(16, i);
 		bodySize=atoi(tmp.c_str());
 
-		if (bodySize > maxBodySize) //si bodySize est plus grand que la limite, true pour code d'erreur apres
+		if (bodySize > maxBodySize)
 			return (true);
 	}
 	while (it != v.end() && !is_empty((*it)))
@@ -130,13 +119,8 @@ bool	complete_request(std::string str, size_t maxBodySize)
 void	send_answers(std::map<int, std::string>& answers)
 {
 	for (std::map<int, std::string>::iterator it = answers.begin(); it != answers.end(); it++)
-	{
 		if (webserv.getEvent((*it).first).events & EPOLLOUT)
-		{
 			send((*it).first, (*it).second.c_str(), (*it).second.size(), MSG_NOSIGNAL);
-			//std::cout << MAGENTA << "Sending to " << (*it).first << ": [" << (*it).second << "]" << END << std::endl;
-		}
-	}
 	answers.clear();
 }
 
@@ -173,7 +157,6 @@ void	start(std::vector<Server>& servers)
 				fdMax = fd_listen;
 				webserv.setMaxEvent(fdMax);
 			}
-			//std::cout << "FD LISTEN: " << (*it).getSocket() << std::endl;
 			try
 				{webserv.setServer(count, (*it));}
 			catch(const std::exception& e)
@@ -182,10 +165,7 @@ void	start(std::vector<Server>& servers)
 			count++;
 		}
 		else
-		{
-			//std::cout << fd_listen << std::endl;
 			exit(fd_listen);
-		}
 	}
 	while (true)
 	{
@@ -193,14 +173,13 @@ void	start(std::vector<Server>& servers)
 		for (int i = 0; i < ret; i++)
 		{
 			found = false;
-			for (size_t j = 0; j < servers.size(); j++) //tester toutes les sockets en faisant un iterator sur les servers
+			for (size_t j = 0; j < servers.size(); j++)
 			{
 				if (webserv.getEvent(i).data.fd == webserv.getServer(j).getSocket())
 				{
 					int new_client;
 					found = true;
 					new_client = accept(webserv.getServer(j).getSocket(), NULL, NULL);
-					//std::cout << RED << "Accepté pour FD: " << new_client<<END << std::endl;
 					if (new_client <= 0)
 					{
 						std::cerr << RED << "/!\\ Accept for client failed /!\\" << END << std::endl;
@@ -225,12 +204,10 @@ void	start(std::vector<Server>& servers)
 					while (!complete_request(webserv.buffer_strings[webserv.client], webserv.client_serv[webserv.client].getBody()))
 					{
 						memset(buff, 0, sizeof(char) * (BUFFER_SIZE + 1));
-						read_char = recv(webserv.client, buff, BUFFER_SIZE, MSG_DONTWAIT);//errors to check
-						//if return 0 close la connection
+						read_char = recv(webserv.client, buff, BUFFER_SIZE, MSG_DONTWAIT);
 						if (read_char < 0)
 						{
 							webserv.buffer_strings[webserv.client].clear();
-							std::cout << CYAN << "Read a return: " << read_char << END << std::endl;
 							closeFd(webserv.client);
 						}
 						if (read_char <= 0)
@@ -240,36 +217,24 @@ void	start(std::vector<Server>& servers)
 						}
 						webserv.buffer_strings[webserv.client].append(buff, read_char);
 					}
-					//std::cout << RED << webserv.buffer_strings[client] << END << std::endl;
 					found = true;
 				}
 			}
 		}
-		//stocker un fd max, pour opti et pas passer sur les 1000 fd
 		for (int i = 0; i <= fdMax ; i++)
 		{
-			/*if (!webserv.buffer_strings[client].empty())
-				std::cout << GREEN << complete_request(webserv.buffer_strings[client]) << webserv.buffer_strings[client] << END << std::endl;*/
-			//pour une raison inconnue, complete_request renvoie false au lieu de true sur les POST
 			if (complete_request(webserv.buffer_strings[i], webserv.client_serv[i].getBody()))
 			{
-				std::cout << "BUFFER = " << webserv.buffer_strings[i] << std::endl;
-				//std::cout << "Buffer " << i << "=" << webserv.buffer_strings[i] << "." << std::endl;
 				HttpRequest	tmp_request(webserv.client_serv[i]);
 				try
 				{
 					if (parsingRequest(tmp_request, webserv.buffer_strings[i]))
 						webserv.buffer_strings[i].clear();
 					else
-					{
-						//std::cout << RED << tmp_request << END << std::endl;
 						webserv.requests.insert(std::pair<int, HttpRequest>(i, tmp_request));
-					}
 				}
 				catch(const std::exception& e)
-				{
-					std::cerr << e.what() << '\n';
-				}
+					{std::cerr << e.what() << '\n';}
 			}
 		}
 		answers_gen(webserv.requests, webserv.answers, webserv.uploads, webserv.client_serv);
@@ -282,7 +247,6 @@ int	checkFile(char* filePath)
 {
 	std::string		str = filePath;
 	int				fd;
-	std::cout << str.find_last_of(".conf") << std::endl;
 	if (str.find_last_of(".conf") != str.length() - 1)
 	{
 		std::cerr << RED <<

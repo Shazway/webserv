@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   generate_answers.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:22:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 21:28:54 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:23:31 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void	generate_ok(int fd, std::map<int, std::string>& answers, std::ifstream& fil
 	std::string content;
 	std::string	line;
 
-	//ici, check allowedmethod et faire une erreur adaptee
 	answers[fd] = "HTTP/1.1 200 OK\n";
 	content.clear();
 	if (file.is_open())
@@ -158,7 +157,6 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 	HttpRequest	request = (*it).second;
 	int 		fd = (*it).first;
 
-	//GET peut avoir des variables dans la query
 	if (request._serv.checkAllowedMethods("GET", request.getPath()))
 	{
 		std::ifstream file;
@@ -169,7 +167,6 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 			CgiHandler	handler(it, answers);
 			return ;
 		}
-		//std::cout << YELLOW << "First open: [" << abs_path << "]" << END << std::endl;
 		file.open(abs_path.c_str());
 		if (file.is_open() && file.peek() == std::ifstream::traits_type::eof())
 		{
@@ -184,7 +181,6 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 				return ;
 			}
 			abs_path = request._serv.getRootPath() + closest_directory;
-			//std::cout << YELLOW << "[" << abs_path << "]" << END << std::endl;
 			file.open(abs_path.c_str());
 			if (!file.is_open() || file.peek() == std::ifstream::traits_type::eof())
 				gen_error(it, answers, 404);
@@ -204,7 +200,6 @@ void	gen_get(std::map<int, HttpRequest>::iterator &it, std::map<int, std::string
 	}
 	else
 		gen_error(it, answers, 405);
-	//Header à rajouter plus tard \n \n
 }
 
 void	download_file(HttpRequest& request, std::map<int, std::string>& answers,
@@ -246,7 +241,7 @@ void	gen_post(std::map<int, HttpRequest>::iterator &it, std::map<int, std::strin
 
 	if ((*it).second._serv.checkAllowedMethods("POST", (*it).second.getPath()))
 	{
-		if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)// Faut download
+		if ((*it).second.getContentType().find("multipart/form-data") != std::string::npos)
 			download_file((*it).second, answers, uploads, fd);
 		if ((*it).second.getContentType().find("application/x-www-form-urlencoded") != std::string::npos)
 			CgiHandler handler(it, answers);
@@ -261,7 +256,6 @@ void	gen_delete(std::map<int, HttpRequest>::iterator &it, std::map<int, std::str
 	std::ifstream empty;
 	std::string		path =(*it).second._serv.getRootPath() + (*it).second.getPath();
 
-	std::cout << GREEN << (*it).second.getPath() << END << std::endl;
 	if ((*it).second._serv.checkAllowedMethods("DELETE", (*it).second.getPath()))
 	{
 		if (remove(path.c_str()))
@@ -275,7 +269,6 @@ void	gen_delete(std::map<int, HttpRequest>::iterator &it, std::map<int, std::str
 
 void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string>& answers, std::map<int, Upload>& uploads, std::map<int, Server> &client_serv)
 {
-	//gerer ici si le body est trop grand
 	for (std::map<int, HttpRequest>::iterator it = requests.begin(); it != requests.end(); it++)
 	{
 		if ((*it).second.getHttpVersion().empty())
@@ -290,7 +283,6 @@ void	answers_gen(std::map<int, HttpRequest>& requests, std::map<int, std::string
 			gen_delete(it, answers);
 		else
 			gen_error(it, answers, 405);
-		std::cout << BLUE << "[" <<(*it).second.getMethod()<<"]" << " Body: " << ((*it).second.getBody()) << END << std::endl;
 		
 	}
 	requests.clear();

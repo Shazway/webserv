@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingRequest.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:02 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/19 17:28:53 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:21:46 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,24 +72,6 @@ int	parsingRequestLine(HttpRequest &request, std::string bufferString)
 		request.setHttpVersion("1.1");
 	else
 		request.setHttpVersion("");
-	//else
-	//	return (CODE_NO_HTTP_VERSION);
-
-	/*if (bufferString.find("HTTP") != 0 || bufferString.find('\n') < 8)
-		return (CODE_NO_HTTP_VERSION);
-	std::cout << bufferString << std::endl;
-	j = 0;
-	it = bufferString.begin();
-	while (j < 4 || *it == ' ')
-	{
-		j++;
-		it++;
-	}
-	bufferString = bufferString.substr(j, bufferString.find('\n'));
-	if (bufferString.compare("1.0") && bufferString.compare("1.1"))
-		return (CODE_UNSUPPORTED_HTTP_VERSION);
-	request.setHttpVersion(bufferString);*/
-
 	return (0);
 }
 
@@ -120,22 +102,17 @@ int	parsingHeader(HttpRequest &request, std::string bufferString)
 	}
 	return (0);
 }
-//appele par la partie avec les sockets, stocker les httpRequest dans un map
 
 size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 {
 	std::string requestLine;
-	std::cout << BLUE << "Parsing request recieved: \n" << bufferString << END << std::endl;
 	if (bufferString.empty())
 		return (0);
-	// getline de request line
 	int error = parsingRequestLine(request, bufferString);
 	if (error)
 		return (error);
-// getline de header
-	//std::cout << YELLOW << "[" << request.getPath() << "]" << END << std::endl;
 	size_t	n = bufferString.find("\n");
-	//std::cout << RED << "Buffer string before: [" << bufferString << "]" << END << std::endl;
+
 	bufferString = bufferString.substr(n + 1, std::string::npos);
 	n = bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? bufferString.find("\n\n") : bufferString.find("\r\n\r\n");
 	error = parsingHeader(request, bufferString.substr(0, n));
@@ -146,17 +123,10 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 		bufferString = "";
 		request.setContentLength(0);
 	}
-
 	else
 		bufferString = bufferString.substr(n + (bufferString.find("\n\n") < bufferString.find("\r\n\r\n") ? 2 : 4), std::string::npos);
-	//recuperation du body
-	//si on a recupere tout le body, mettre partiallyCompleted a 0, sinon 1
-
-	//return le code d'erreur si souci, sinon 0
-	//std::cout << GREEN << "Buffer string whole: [" << bufferString << "]" << END << std::endl;
 	if (request.getContentLength())
 		request.setBody(bufferString.substr(0, request.getContentLength()));
-	//std::cout << BLUE << "Buffer string sub: " << "["<< request.getBody() << "]" << END << std::endl;
 	if (!bufferString.empty())
 	{
 		if (request.getContentLength() > request._serv.getBody())
@@ -164,7 +134,5 @@ size_t parsingRequest(HttpRequest &request, std::string &bufferString)
 		else
 			bufferString = bufferString.substr(request.getContentLength());
 	}
-	if (!bufferString.empty())
-		std::cout << RED << "PASS" << END << std::endl;
 	return (0);
 }
