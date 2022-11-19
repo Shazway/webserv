@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 17:45:03 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 20:55:10 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 21:05:25 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 	std::string	index;
 	int			error = -1;
 	std::string	redir;
+	bool		found[3] = {0, 0, 0};
 
 	if (it != content.end() && (*it).find("root:") != std::string::npos)
 		it++;
@@ -43,13 +44,20 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 		{
 			ft_split((*it), args, " ");
 			args.erase(args.begin());
-			set_root(args, serv);
+			if (found[PATH] == true)
+				return (display_error(DUPLICATE_ERROR));
+			found[PATH] = true;
+			if (!set_root(args, serv))
+				return (false);
 			args.clear();
 		}
 		if ((*it).find("r_method") != std::string::npos)
 		{
 			ft_split((*it), args, " ");
 			args.erase(args.begin());
+			if (found[METHOD] == true)
+				return (display_error(DUPLICATE_ERROR));
+			found[METHOD] = true;
 			if (!add_methods(args, method.allowed))
 				return (false);
 			args.clear();
@@ -58,6 +66,9 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 		{
 			ft_split((*it), args, " ");
 			args.erase(args.begin());
+			if (found[INDEX] == true)
+				return (display_error(DUPLICATE_ERROR));
+			found[INDEX] = true;
 			if (!add_index(args, index))
 				return (false);
 			args.clear();
@@ -76,7 +87,7 @@ bool	parse_root(Server& serv, v_str& content, v_str_it& it)
 	}
 	if (!index.empty())
 		serv.html.addExecption("/", index);
-	serv.routes.addExecption("/", METHOD.get, METHOD.post, METHOD.del);
+	serv.routes.addExecption("/", METHODS.get, METHODS.post, METHODS.del);
 	return (true);
 }
 
@@ -88,6 +99,7 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 	std::string	redir;
 	int			error = -1;
 	bool		l_method = false;
+	bool		found[3] = {0, 0, 0};
 
 	if (it != content.end() && (*it).find("location:") != std::string::npos)
 		it++;
@@ -97,6 +109,9 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 		{
 			ft_split((*it), args, " ");
 			args.erase(args.begin());
+			if (found[PATH] == true)
+				return (display_error(DUPLICATE_ERROR));
+			found[PATH] = true;
 			if (!method_set_path(args, method.path))
 				return (false);
 			args.clear();
@@ -105,6 +120,9 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 		{
 			ft_split((*it), args, " ");
 			args.erase(args.begin());
+			if (found[METHOD] == true)
+				return (display_error(DUPLICATE_ERROR));
+			found[METHOD] = true;
 			if (!add_methods(args, method.allowed))
 				return (false);
 			l_method = true;
@@ -114,6 +132,9 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 		{
 			ft_split((*it), args, " ");
 			args.erase(args.begin());
+			if (found[INDEX] == true)
+				return (display_error(DUPLICATE_ERROR));
+			found[INDEX] = true;
 			if (!add_index(args, index))
 				return (false);
 			args.clear();
@@ -125,6 +146,8 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 			if (!add_redir(args, redir, error))
 				return (false);
 			args.clear();
+			if (error != -1 && !redir.empty())
+				serv.redirect.addRedirect(error, method.path, redir);
 		}
 		it++;
 	}
@@ -133,7 +156,7 @@ bool	parse_location(Server& serv, v_str& content, v_str_it& it)
 	if (!index.empty())
 		serv.html.addExecption(method.path, index);
 	if (l_method)
-		serv.routes.addExecption(method.path, METHOD.get, METHOD.post, METHOD.del);
+		serv.routes.addExecption(method.path, METHODS.get, METHODS.post, METHODS.del);
 	return (true);
 }
 
@@ -162,7 +185,7 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 		{
 			if (!parse_location(serv, content, it))
 			{
-				encountered_problem("location", args, it);
+				encountered_problem("location ", args, it);
 				return (display_error(LOCATION_PROB));
 			}
 			continue ;
@@ -171,7 +194,7 @@ bool	parse_server(Server& serv, v_str& content, v_str_it& it)
 		{
 			if (!parse_root(serv, content, it))
 			{
-				encountered_problem("root", args, it);
+				encountered_problem("root ", args, it);
 				return (display_error(ROOT_PROB));
 			}
 			continue ;
