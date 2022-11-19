@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:32 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/15 17:51:57 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:25:16 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,23 +77,6 @@ std::ostream &			operator<<( std::ostream & o, IndexTree const & i )
 
 std::pair<std::string, std::string>	IndexTree::getClosestDirectory(std::string path) const
 {
-	/*std::map<std::string, std::string>::const_iterator pin = _subdirectories.begin();
-	std::vector<std::string>	v_path;
-	std::vector<std::string>	v_test;
-	int							res;
-
-
-	ft_split(path, v_path, "/");
-	for (std::map<std::string, std::string>::const_iterator it = _subdirectories.begin(); it != _subdirectories.end(); it++)
-	{
-		ft_split((*it).first, v_test, "/");
-		res = cmp_vector(v_test, v_path);
-		if (res <= 0)
-			pin = it;
-		if (!res)
-			break;
-	}
-	return (*pin);*/
 	std::map<std::string, std::string>::const_iterator pin;
 	
 	do {

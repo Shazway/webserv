@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 15:35:42 by mdelwaul          #+#    #+#             */
-/*   Updated: 2022/11/15 17:35:19 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:23:58 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,11 +100,7 @@ void	MethodTree::addExecption(std::string path, bool get, bool post, bool del)
 
 std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::string path) const
 {
-	std::map<std::string, t_allowedMethods>::const_iterator pin/* = _subdirectories.begin()*/;
-	//std::vector<std::string>	v_path;
-	//std::vector<std::string>	v_test;
-	//int							res;
-
+	std::map<std::string, t_allowedMethods>::const_iterator pin;
 
 	do {
 		pin = _subdirectories.find(path);
@@ -113,18 +109,6 @@ std::pair<std::string, t_allowedMethods>	MethodTree::getClosestDirectory(std::st
 		path = path.substr(0, path.find_last_of("/"));
 	} while (path.find("/") != std::string::npos);
 	return (*(_subdirectories.begin()));
-/*
-	ft_split(path, v_path, "/");
-	for (std::map<std::string, t_allowedMethods>::const_iterator it = _subdirectories.begin(); it != _subdirectories.end(); it++)
-	{
-		ft_split((*it).first, v_test, "/");
-		res = cmp_vector(v_test, v_path);
-		if (res <= 0)
-			pin = it;
-		if (!res)
-			break;
-	}
-	return (*pin);*/
 }
 
 

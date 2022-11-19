@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   post_parse.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdelwaul <mdelwaul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:36:06 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/15 22:31:43 by mdelwaul         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:20:38 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ size_t	find_last_line(std::string const& content, size_t line)
 
 int	add_incomplete_content(Upload& up, std::string content)
 {
-	//std::cout << YELLOW << "Incomplete, <" << content << ">" << std::endl;
 	up.addContent(content);
 	return (INCOMPLETE);
 }
@@ -68,10 +67,8 @@ int	add_complete_content(Upload& up, std::string content)
 {
 	size_t	line;
 
-	//std::cout << MAGENTA << "str before substr :" << content << "." << std::endl;
 	line = find_last_line(content, 3);
 	up.addContent(content.substr(0, line));
-	//std::cout << CYAN << "substr :" << content.substr(0, line) << "." << std::endl;
 
 	up.closeFile();
 	return (COMPLETE);
@@ -83,40 +80,34 @@ void	init_upload(Upload& up, v_str lines, std::string content, std::string& data
 
 	line = find_first_line(content, 1);
 	get_filename(content.substr(line, find_first_line(content, 2) - line), filename);
-	up.setPath(filename); // Setup du filepath (il faut changer le path brut par ce qu'il y a dans serv)
-	up.setDelim(lines.front().substr(0, lines.front().find("\r")));// Setup du delimiteur
+	up.setPath(filename);
+	up.setDelim(lines.front().substr(0, lines.front().find("\r")));
 	data = content.substr(find_first_line(content, 4), content.size() - content.find(up.getDelim()));
 	up.openFile(up.getPath());
 }
 
-int	upload(Upload& up, std::string const& content) //J'aurai du l'appeler download T_T
+int	upload(Upload& up, std::string const& content)
 {
 	std::string	data;
 	v_str		lines;
 	size_t		line;
 
-	//std::cout << RED << "on a un fichier" << std::endl;
 	ft_split(content, lines, "\n");
 	if (content.empty())
-	{
-		std::cout << "mechant upload" << std::endl;
 		return (INCOMPLETE);
-	}
-	if (up._file.is_open()) // Si on a déjà un fichier, alors il est incomplet
+	if (up._file.is_open())
 	{
-		//std::cout << RED << "en fait c etait open" << std::endl;
-		if (content.find(up.getDelim() + "--") == std::string::npos)// Il s'apprete a être complet ?
-			return (add_incomplete_content(up, content)); //non -> on ajoute au fichier et on return incomplet
+		if (content.find(up.getDelim() + "--") == std::string::npos)
+			return (add_incomplete_content(up, content));
 		else
-			return (add_complete_content(up, content));//oui -> on ajoute au fichier et on return complet
+			return (add_complete_content(up, content));
 	}
-	else // Nouveau upload tout frais
+	else
 	{
-		init_upload(up, lines, content, data, line); // On choppe, nom de fichier, path, contenu du début, delimiteur
-	//std::cout << BLUE << "Entre dans upload <" << data << ">" << up.getDelim() <<"?" << std::endl << data.find(up.getDelim()) << std::endl;
-		if (data.find(up.getDelim() + "--") != std::string::npos) // Il y a déjà le delimiteur ?
-			return (add_complete_content(up, data)); //oui-> On ajoute le contenu entier et on return complet
+		init_upload(up, lines, content, data, line);
+		if (data.find(up.getDelim() + "--") != std::string::npos)
+			return (add_complete_content(up, data));
 		else
-			return (add_incomplete_content(up, data));//non-> On ajoute le contenu et on return incomplet
+			return (add_incomplete_content(up, data));
 	}
 }

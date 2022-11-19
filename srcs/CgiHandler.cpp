@@ -6,7 +6,7 @@
 /*   By: tmoragli <tmoragli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 21:52:23 by tmoragli          #+#    #+#             */
-/*   Updated: 2022/11/19 22:13:38 by tmoragli         ###   ########.fr       */
+/*   Updated: 2022/11/19 22:23:02 by tmoragli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ void	generate_success(int fd, std::map<int, std::string>& answers, std::string s
 	std::string content;
 	std::string	line;
 
-	//ici, check allowedmethod et faire une erreur adaptee
 	answers[fd] = "HTTP/1.1 200 OK\n";
 	answers[fd] += "Content-Type: text/html\n";
 	answers[fd] += "Content-Length: ";
