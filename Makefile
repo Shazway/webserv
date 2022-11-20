@@ -37,8 +37,7 @@ $(NAME):	$(OBJ)
 	$(CC) $(FLAGS) $(INC) $(OBJ) -o $(NAME)
 	clear
 	@echo -n "Server ip = \033[36m"
-	@ifconfig | grep 10.11 | awk '{ printf "%s", $$2 }; END { printf "\n" }'
-	@echo -n "\033[0m"
+	@hostname -i --all-ip-addresses
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.cpp
 	mkdir -p $(@D)
